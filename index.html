@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en-GB">
-
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,7 +7,6 @@
 <title>KS Garden Services Price Guide</title>
 
 <style>
-
 :root{
   --g:#245b36;
   --d:#173d25;
@@ -35,10 +33,7 @@ body{
   padding:22px 12px;
 }
 
-.head{
-  text-align:center;
-  margin-bottom:22px;
-}
+.head{text-align:center;margin-bottom:22px}
 
 .head h1{
   color:var(--g);
@@ -61,9 +56,7 @@ body{
   box-shadow:0 4px 16px #0000000d;
 }
 
-.field{
-  margin-bottom:18px;
-}
+.field{margin-bottom:18px}
 
 .field label{
   display:block;
@@ -105,9 +98,7 @@ body{
   gap:8px;
 }
 
-.checks input{
-  width:auto;
-}
+.checks input{width:auto}
 
 .travelbtn{
   width:100%;
@@ -129,7 +120,6 @@ body{
 
 .travel{
   display:none;
-  background:var(--l);
   padding:12px;
   border-radius:9px;
   margin-top:9px;
@@ -180,7 +170,7 @@ body{
 .result.waiting .price,
 .result.blocked .price{
   color:#666;
-  font-size:27px;
+  font-size:26px;
 }
 
 .break{
@@ -200,13 +190,9 @@ body{
   border-bottom:1px solid #eee;
 }
 
-.row:last-child{
-  border:0;
-}
+.row:last-child{border:0}
 
-.row strong{
-  text-align:right;
-}
+.row strong{text-align:right}
 
 .note{
   font-size:12px;
@@ -225,9 +211,7 @@ body{
   margin-top:16px;
 }
 
-.wa.hidden{
-  display:none;
-}
+.wa.hidden{display:none}
 
 .grid{
   display:grid;
@@ -278,42 +262,21 @@ td:last-child{
 }
 
 @media(max-width:650px){
-
-  .wrap{
-    padding:14px 8px;
-  }
-
-  .card{
-    padding:16px;
-  }
-
-  .head h1{
-    font-size:25px;
-  }
-
-  .grid{
-    grid-template-columns:1fr;
-  }
-
-  .sz{
-    text-align:left;
-  }
-
+  .wrap{padding:14px 8px}
+  .card{padding:16px}
+  .head h1{font-size:25px}
+  .grid{grid-template-columns:1fr}
+  .sz{text-align:left}
   .sz strong{
     display:inline-block;
     width:50px;
   }
-
-  .price{
-    font-size:35px;
+  .price{font-size:35px}
+  .result.waiting .price,
+  .result.blocked .price{
+    font-size:23px;
   }
-
-  .row{
-    font-size:14px;
-  }
-
 }
-
 </style>
 </head>
 
@@ -322,280 +285,217 @@ td:last-child{
 <main class="wrap">
 
 <div class="head">
-
-<h1>🌿 Garden Service Price Guide</h1>
-
-<p>
-Get an instant estimate for your garden. Choose your service,
-approximate size and condition, then enter your postcode to
-check whether we cover your area and calculate travel.
-</p>
-
+  <h1>🌿 Garden Service Price Guide</h1>
+  <p>
+    Choose your service, approximate size and condition,
+    then enter your postcode to check coverage and receive
+    your instant estimate.
+  </p>
 </div>
 
 
 <section class="card">
 
 <div class="field">
+  <label>1. What service do you need?</label>
 
-<label>1. What service do you need?</label>
+  <select id="service">
+    <option value="grass">Grass Cutting &amp; Edging</option>
+    <option value="maintenance">Regular Garden Maintenance</option>
+    <option value="hedge">Hedge Trimming</option>
+    <option value="shrubs">Shrub Pruning &amp; Shaping</option>
+    <option value="weeding">Weeding &amp; Border Tidy</option>
+    <option value="tidy">Garden Tidy-Up</option>
+    <option value="clearance">Garden Clearance</option>
+    <option value="scarify">Lawn Scarifying</option>
+    <option value="treatment">Lawn Treatment</option>
+    <option value="leaves">Leaf Clearance</option>
+    <option value="pressure">Pressure Washing</option>
+  </select>
+</div>
 
-<select id="service">
 
-<option value="grass">Grass Cutting &amp; Edging</option>
-<option value="maintenance">Regular Garden Maintenance</option>
-<option value="hedge">Hedge Trimming</option>
-<option value="shrubs">Shrub Pruning &amp; Shaping</option>
-<option value="weeding">Weeding &amp; Border Tidy</option>
-<option value="tidy">Garden Tidy-Up</option>
-<option value="clearance">Garden Clearance</option>
-<option value="scarify">Lawn Scarifying</option>
-<option value="treatment">Lawn Treatment</option>
-<option value="leaves">Leaf Clearance</option>
-<option value="pressure">Pressure Washing</option>
+<div class="field">
+  <label>2. Approximate size</label>
 
-</select>
+  <select id="size">
+    <option value="s">Small</option>
+    <option value="m">Medium</option>
+    <option value="l">Large</option>
+    <option value="xl">XL</option>
+    <option value="xxl">XXL</option>
+  </select>
+
+  <div class="help" id="help"></div>
+</div>
+
+
+<div class="field" id="maintenanceField" style="display:none">
+
+  <label>3. Which parts of the garden need maintaining?</label>
+
+  <select id="maintArea">
+    <option value="front">Front garden only</option>
+    <option value="back">Back garden only</option>
+    <option value="both">Front &amp; back gardens</option>
+  </select>
+
+  <label style="margin-top:14px">
+    What does the garden include?
+  </label>
+
+  <div class="checks">
+
+    <label>
+      <input type="checkbox"
+             class="maintWork"
+             value="Lawn cutting"
+             data-extra="0"
+             checked>
+      Lawn cutting &amp; edging
+    </label>
+
+    <label>
+      <input type="checkbox"
+             class="maintWork"
+             value="Weeding"
+             data-extra="10">
+      Weeding &amp; border tidy
+    </label>
+
+    <label>
+      <input type="checkbox"
+             class="maintWork"
+             value="Shrub pruning"
+             data-extra="15">
+      Shrub pruning &amp; shaping
+    </label>
+
+    <label>
+      <input type="checkbox"
+             class="maintWork"
+             value="General tidy"
+             data-extra="10">
+      General tidy-up
+    </label>
+
+  </div>
+
+  <div class="help">
+    Choose the closest garden size based on the overall
+    amount of work. Front and back gardens and additional
+    maintenance tasks are taken into account in your estimate.
+  </div>
+
+</div>
+
+
+<div class="field" id="lawnsField">
+
+  <label>3. How many lawn areas need cutting?</label>
+
+  <select id="lawns">
+    <option value="one">One lawn</option>
+    <option value="two">Front &amp; back lawns</option>
+    <option value="three">Three or more separate lawn areas</option>
+  </select>
+
+  <div class="help">
+    Add the front and back lawns together when choosing
+    the approximate size above.
+  </div>
 
 </div>
 
 
 <div class="field">
 
-<label>2. Approximate size</label>
+  <label id="conditionLabel">
+    4. Current condition
+  </label>
 
-<select id="size">
-
-<option value="s">Small</option>
-<option value="m">Medium</option>
-<option value="l">Large</option>
-<option value="xl">XL</option>
-<option value="xxl">XXL</option>
-
-</select>
-
-<div class="help" id="help"></div>
-
-</div>
-
-
-<div
-class="field"
-id="maintenanceField"
-style="display:none">
-
-<label>
-3. Which parts of the garden need maintaining?
-</label>
-
-<select id="maintArea">
-
-<option value="front">Front garden only</option>
-<option value="back">Back garden only</option>
-<option value="both">Front &amp; back gardens</option>
-
-</select>
-
-
-<label style="margin-top:14px">
-What does the garden include?
-</label>
-
-<div class="checks">
-
-<label>
-<input
-type="checkbox"
-class="maintWork"
-value="Lawn cutting"
-data-extra="0"
-checked>
-Lawn cutting &amp; edging
-</label>
-
-<label>
-<input
-type="checkbox"
-class="maintWork"
-value="Weeding"
-data-extra="10">
-Weeding &amp; border tidy
-</label>
-
-<label>
-<input
-type="checkbox"
-class="maintWork"
-value="Shrub pruning"
-data-extra="15">
-Shrub pruning &amp; shaping
-</label>
-
-<label>
-<input
-type="checkbox"
-class="maintWork"
-value="General tidy"
-data-extra="10">
-General tidy-up
-</label>
-
-</div>
-
-
-<div class="help">
-
-Regular maintenance pricing now takes account of whether
-you need the front garden, back garden or both maintained,
-along with the types of work selected.
-
-The final ongoing price will still be confirmed after
-seeing the garden.
-
-</div>
-
-</div>
-
-
-<div
-class="field"
-id="lawnsField">
-
-<label>
-3. How many lawn areas need cutting?
-</label>
-
-<select id="lawns">
-
-<option value="one">One lawn</option>
-<option value="two">Front &amp; back lawns</option>
-<option value="three">Three or more separate lawn areas</option>
-
-</select>
-
-<div class="help">
-
-Add the front and back lawns together when choosing the
-approximate size above.
-
-It does not need to be exact — just choose the closest match.
-
-</div>
+  <select id="condition">
+    <option value="normal">Regularly Maintained</option>
+    <option value="needs">Needs Attention</option>
+    <option value="overgrown">Overgrown</option>
+  </select>
 
 </div>
 
 
 <div class="field">
 
-<label id="conditionLabel">
-4. Current condition
-</label>
+  <label id="postcodeLabel">
+    5. Your postcode
+  </label>
 
-<select id="condition">
+  <input
+    id="postcode"
+    maxlength="8"
+    autocomplete="postal-code"
+    placeholder="e.g. WA12 0AT">
 
-<option value="normal">Regularly Maintained</option>
-<option value="needs">Needs Attention</option>
-<option value="overgrown">Overgrown</option>
+  <small>
+    Your postcode is used to check whether KS Garden Services
+    covers your area and calculate approximate travel.
+  </small>
 
-</select>
+  <button
+    class="travelbtn"
+    id="travelbtn"
+    type="button">
+    📍 Check Postcode &amp; Get Price
+  </button>
 
-</div>
-
-
-<div class="field">
-
-<label id="postcodeLabel">
-5. Your postcode
-</label>
-
-<input
-id="postcode"
-maxlength="8"
-autocomplete="postal-code"
-placeholder="e.g. WA12 0AT">
-
-<small>
-Your postcode is used to check our service area and
-calculate approximate travel.
-</small>
-
-<button
-class="travelbtn"
-id="travelbtn"
-type="button">
-
-📍 Check Postcode &amp; Travel
-
-</button>
-
-<div
-class="travel"
-id="travel">
-</div>
+  <div class="travel" id="travel"></div>
 
 </div>
 
 
 <div class="field">
 
-<label id="wasteLabel">
-6. Green waste
-</label>
+  <label id="wasteLabel">
+    6. Green waste
+  </label>
 
-<select id="waste">
+  <select id="waste">
+    <option value="no">
+      Use my green bin / removal not required
+    </option>
 
-<option value="no">
-Use my green bin / removal not required
-</option>
-
-<option value="yes">
-Please remove green waste
-</option>
-
-</select>
+    <option value="yes">
+      Please remove green waste
+    </option>
+  </select>
 
 </div>
 
 
-<div
-class="result waiting"
-id="resultBox">
+<div class="result waiting" id="resultBox">
 
-<small>
-<b>YOUR ESTIMATED STARTING PRICE</b>
-</small>
+  <small>
+    <b>YOUR ESTIMATED STARTING PRICE</b>
+  </small>
 
-<div
-class="price"
-id="price">
+  <div class="price" id="price">
+    Check your postcode
+  </div>
 
-Enter your postcode
+  <div class="break" id="break"></div>
 
-</div>
+  <p class="note">
+    Enter and check your postcode above to see your price.
+    This online estimate is a guide only. Your final price
+    will always be agreed before work begins.
+  </p>
 
-<div
-class="break"
-id="break">
-</div>
-
-<p class="note">
-
-Your postcode must be checked before an instant estimate
-is displayed.
-
-This online price is a guide only and is not a confirmed
-quotation. Final pricing will be agreed before work begins.
-
-</p>
-
-<a
-class="wa hidden"
-id="wa"
-target="_blank"
-rel="noopener">
-
-💬 Request My Free Quote
-
-</a>
+  <a
+    class="wa hidden"
+    id="wa"
+    target="_blank"
+    rel="noopener">
+    💬 Request My Free Quote
+  </a>
 
 </div>
 
@@ -605,35 +505,35 @@ rel="noopener">
 <section class="card">
 
 <h3 class="title">
-What Size Should I Choose?
+  What Size Should I Choose?
 </h3>
 
 <div class="grid">
 
-<div class="sz">
-<strong>S</strong>
-Small or straightforward job
-</div>
+  <div class="sz">
+    <strong>S</strong>
+    Small or straightforward job
+  </div>
 
-<div class="sz">
-<strong>M</strong>
-Average residential garden
-</div>
+  <div class="sz">
+    <strong>M</strong>
+    Average residential garden
+  </div>
 
-<div class="sz">
-<strong>L</strong>
-Larger or substantial work
-</div>
+  <div class="sz">
+    <strong>L</strong>
+    Larger or substantial work
+  </div>
 
-<div class="sz">
-<strong>XL</strong>
-Very large or extensive work
-</div>
+  <div class="sz">
+    <strong>XL</strong>
+    Very large or extensive work
+  </div>
 
-<div class="sz">
-<strong>XXL</strong>
-Major/full-day scale work
-</div>
+  <div class="sz">
+    <strong>XXL</strong>
+    Major/full-day scale work
+  </div>
 
 </div>
 
@@ -643,34 +543,34 @@ Major/full-day scale work
 <section class="card">
 
 <h3 class="title">
-🚐 Travel
+  🚐 Travel
 </h3>
 
 <table>
 
 <tr>
-<td>Up to 5 miles</td>
-<td>Included</td>
+  <td>Up to 5 miles</td>
+  <td>Included</td>
 </tr>
 
 <tr>
-<td>5–10 miles</td>
-<td>+£5</td>
+  <td>5–10 miles</td>
+  <td>+£5</td>
 </tr>
 
 <tr>
-<td>10–15 miles</td>
-<td>+£10</td>
+  <td>10–15 miles</td>
+  <td>+£10</td>
 </tr>
 
 <tr>
-<td>15–20 miles</td>
-<td>+£15</td>
+  <td>15–20 miles</td>
+  <td>+£15</td>
 </tr>
 
 <tr>
-<td>Outside regular service area</td>
-<td>Contact us</td>
+  <td>Outside regular service area</td>
+  <td>Contact us</td>
 </tr>
 
 </table>
@@ -683,14 +583,11 @@ Major/full-day scale work
 <b>About our guide prices</b>
 
 <p>
-
 Every garden is different. Garden size, access, slopes,
 obstacles, growth, hedge height, waste volume and the
 amount of work required can affect the final price.
-
 Where suitable and agreed, we can use your own green
 waste bin. Removal of green waste is chargeable.
-
 </p>
 
 <b>
@@ -708,1521 +605,1696 @@ Approximate travel distances use postcode and OpenStreetMap routing data.
 
 <script>
 
-/* =========================================
+/* ==========================================
    PRICES
-========================================= */
+========================================== */
 
 const P = {
 
-grass:[
-"Grass Cutting & Edging",
-30,40,55,75,100
-],
+  grass:[
+    "Grass Cutting & Edging",
+    30,40,55,75,100
+  ],
 
-maintenance:[
-"Regular Garden Maintenance",
-30,60,90,120,180
-],
+  maintenance:[
+    "Regular Garden Maintenance",
+    30,60,90,120,180
+  ],
 
-hedge:[
-"Hedge Trimming",
-40,60,90,130,190
-],
+  hedge:[
+    "Hedge Trimming",
+    40,60,90,130,190
+  ],
 
-shrubs:[
-"Shrub Pruning & Shaping",
-35,50,75,110,160
-],
+  shrubs:[
+    "Shrub Pruning & Shaping",
+    35,50,75,110,160
+  ],
 
-weeding:[
-"Weeding & Border Tidy",
-30,50,75,110,160
-],
+  weeding:[
+    "Weeding & Border Tidy",
+    30,50,75,110,160
+  ],
 
-tidy:[
-"Garden Tidy-Up",
-60,100,150,225,300
-],
+  tidy:[
+    "Garden Tidy-Up",
+    60,100,150,225,300
+  ],
 
-clearance:[
-"Garden Clearance",
-120,180,275,400,550
-],
+  clearance:[
+    "Garden Clearance",
+    120,180,275,400,550
+  ],
 
-scarify:[
-"Lawn Scarifying",
-50,75,110,160,220
-],
+  scarify:[
+    "Lawn Scarifying",
+    50,75,110,160,220
+  ],
 
-treatment:[
-"Lawn Treatment",
-30,40,55,75,100
-],
+  treatment:[
+    "Lawn Treatment",
+    30,40,55,75,100
+  ],
 
-leaves:[
-"Leaf Clearance",
-40,60,90,130,180
-],
+  leaves:[
+    "Leaf Clearance",
+    40,60,90,130,180
+  ],
 
-pressure:[
-"Pressure Washing",
-60,90,130,180,250
-]
+  pressure:[
+    "Pressure Washing",
+    60,90,130,180,250
+  ]
 
 };
 
 
 const sizes = {
 
-s:["Small",1],
-m:["Medium",2],
-l:["Large",3],
-xl:["XL",4],
-xxl:["XXL",5]
+  s:["Small",1],
+  m:["Medium",2],
+  l:["Large",3],
+  xl:["XL",4],
+  xxl:["XXL",5]
 
 };
 
 
 const mult = {
 
-normal:1,
-needs:1.25,
-overgrown:1.5
+  normal:1,
+  needs:1.25,
+  overgrown:1.5
 
 };
 
 
 const cn = {
 
-normal:"Regularly Maintained",
-needs:"Needs Attention",
-overgrown:"Overgrown"
+  normal:"Regularly Maintained",
+  needs:"Needs Attention",
+  overgrown:"Overgrown"
 
 };
 
 
 const waste = {
 
-s:20,
-m:35,
-l:55,
-xl:80,
-xxl:110
+  s:20,
+  m:35,
+  l:55,
+  xl:80,
+  xxl:110
 
 };
 
 
 const lawn = {
 
-s:"up to 50m² (roughly up to 2–3 car parking spaces)",
+  s:"up to 50m² (roughly up to 2–3 car parking spaces)",
 
-m:"51–100m² (roughly 3–5 car parking spaces)",
+  m:"51–100m² (roughly 3–5 car parking spaces)",
 
-l:"101–200m² (roughly 5–10 car parking spaces)",
+  l:"101–200m² (roughly 5–10 car parking spaces)",
 
-xl:"201–350m² (a large family garden)",
+  xl:"201–350m² (a large family garden)",
 
-xxl:"350m²+ (a very large garden / extensive lawn)"
+  xxl:"350m²+ (a very large garden / extensive lawn)"
 
 };
 
 
 const helps = {
 
-grass:"lawn",
-scarify:"lawn",
-treatment:"lawn",
-hedge:"hedge",
-maintenance:"garden",
-shrubs:"shrub work",
-weeding:"border/weeding job",
-tidy:"garden tidy-up",
-clearance:"garden clearance",
-leaves:"leaf-clearance job",
-pressure:"patio/paved area"
+  grass:"lawn",
+  scarify:"lawn",
+  treatment:"lawn",
+  hedge:"hedge",
+  maintenance:"garden",
+  shrubs:"shrub work",
+  weeding:"border/weeding job",
+  tidy:"garden tidy-up",
+  clearance:"garden clearance",
+  leaves:"leaf-clearance job",
+  pressure:"patio/paved area"
 
 };
 
 
-/* =========================================
+/* ==========================================
    STATE
-========================================= */
-
-let tc = 0;
-let tm = 0;
-let pc = "";
+========================================== */
 
 let postcodeChecked = false;
 
 let areaStatus = "unchecked";
+
 let areaMessage = "";
+
 let detectedArea = "";
+
+let pc = "";
+
+let tm = 0;
+
+let tc = 0;
 
 let routeOK = false;
 
 
-/* =========================================
+/* ==========================================
    ELEMENTS
-========================================= */
+========================================== */
 
 const $ = id =>
 document.getElementById(id);
 
-const service = $("service");
-const size = $("size");
-const condition = $("condition");
-const post = $("postcode");
-const wa = $("wa");
+
+const service =
+$("service");
+
+const size =
+$("size");
+
+const condition =
+$("condition");
+
+const post =
+$("postcode");
+
+const wa =
+$("wa");
 
 
-/* =========================================
-   LOCATION HELPERS
-========================================= */
-
-function cleanText(value){
-
-return String(value || "")
-.toLowerCase()
-.trim();
-
-}
-
+/* ==========================================
+   LOCATION TEXT
+========================================== */
 
 function locationText(data){
 
-return [
+  return [
 
-data.postcode,
-data.parish,
-data.admin_ward,
-data.admin_district,
-data.region,
-data.nuts,
-data.pfa
+    data.postcode,
+    data.parish,
+    data.admin_ward,
+    data.admin_district,
+    data.region,
+    data.nuts,
+    data.pfa
 
-]
-.filter(Boolean)
-.join(" ")
-.toLowerCase();
+  ]
+  .filter(Boolean)
+  .join(" ")
+  .toLowerCase();
 
 }
 
 
-/* =========================================
+/* ==========================================
    SERVICE AREA
-========================================= */
+========================================== */
 
 function serviceArea(data){
 
-const postcode =
-String(data.postcode || "")
-.toUpperCase()
-.replace(/\s+/g,"");
+  const postcode =
 
-const location =
-locationText(data);
+    String(data.postcode || "")
+    .toUpperCase()
+    .replace(/\s+/g,"");
 
 
-/*
-CORE AREA
-*/
+  const location =
+    locationText(data);
 
-if(postcode.startsWith("WA12")){
 
-return {
-status:"yes",
-area:"Newton-le-Willows",
-message:
-"Great news — this postcode is within our core Newton-le-Willows service area."
-};
+  /* NEWTON-LE-WILLOWS */
+
+  if(postcode.startsWith("WA12")){
+
+    return {
+
+      status:"yes",
+
+      area:"Newton-le-Willows",
+
+      message:
+      "Great news — this postcode is within our core Newton-le-Willows service area."
+
+    };
+
+  }
+
+
+  /* ASHTON / BRYN */
+
+  if(postcode.startsWith("WN4")){
+
+    return {
+
+      status:"yes",
+
+      area:"Ashton-in-Makerfield / Bryn",
+
+      message:
+      "Great news — this postcode is within our Ashton-in-Makerfield / Bryn service area."
+
+    };
+
+  }
+
+
+  /* GREAT SANKEY */
+
+  if(
+    postcode.startsWith("WA5") &&
+    (
+      location.includes("great sankey") ||
+      location.includes("sankey")
+    )
+  ){
+
+    return {
+
+      status:"yes",
+
+      area:"Great Sankey",
+
+      message:
+      "Great news — this postcode is within our Great Sankey service area."
+
+    };
+
+  }
+
+
+  if(postcode.startsWith("WA5")){
+
+    return {
+
+      status:"maybe",
+
+      area:"Selected WA5 area",
+
+      message:
+      "We cover Great Sankey and selected nearby WA5 locations. Please contact Karl so we can confirm this exact address."
+
+    };
+
+  }
+
+
+  /* SELECTED WARRINGTON */
+
+  const targetPlaces = {
+
+    "orford":"Orford",
+
+    "fearnhead":"Fearnhead",
+
+    "padgate":"Padgate",
+
+    "woolston":"Woolston",
+
+    "winwick":"Winwick",
+
+    "birchwood":"Birchwood",
+
+    "croft":"Croft",
+
+    "culcheth":"Culcheth"
+
+  };
+
+
+  const foundPlace =
+
+    Object.keys(targetPlaces).find(
+
+      place =>
+      location.includes(place)
+
+    );
+
+
+  if(
+    (
+      postcode.startsWith("WA1") ||
+      postcode.startsWith("WA2") ||
+      postcode.startsWith("WA3")
+    )
+    &&
+    foundPlace
+  ){
+
+    return {
+
+      status:"yes",
+
+      area:targetPlaces[foundPlace],
+
+      message:
+      "Great news — this postcode appears to be within our "+
+      targetPlaces[foundPlace]+
+      " service area."
+
+    };
+
+  }
+
+
+  if(
+    postcode.startsWith("WA1") ||
+    postcode.startsWith("WA2") ||
+    postcode.startsWith("WA3")
+  ){
+
+    return {
+
+      status:"maybe",
+
+      area:"Selected Warrington area",
+
+      message:
+      "We cover selected parts of this Warrington postcode area. Please contact Karl so we can confirm your exact address and round availability."
+
+    };
+
+  }
+
+
+  /* HAYDOCK */
+
+  if(
+    (
+      postcode.startsWith("WA9") ||
+      postcode.startsWith("WA11")
+    )
+    &&
+    location.includes("haydock")
+  ){
+
+    return {
+
+      status:"yes",
+
+      area:"Haydock",
+
+      message:
+      "Great news — this postcode appears to be within our Haydock service area."
+
+    };
+
+  }
+
+
+  if(
+    postcode.startsWith("WA9") ||
+    postcode.startsWith("WA11")
+  ){
+
+    return {
+
+      status:"maybe",
+
+      area:"Selected St Helens area",
+
+      message:
+      "We cover Haydock and selected east St Helens locations. Please contact Karl so we can confirm your exact address."
+
+    };
+
+  }
+
+
+  /* NEARBY */
+
+  if(
+    postcode.startsWith("WA10") ||
+    postcode.startsWith("WN5")
+  ){
+
+    return {
+
+      status:"no",
+
+      area:"Outside regular rounds",
+
+      message:
+      "This postcode is outside our normal regular-maintenance rounds. Larger one-off jobs may still be considered."
+
+    };
+
+  }
+
+
+  /* EVERYTHING ELSE */
+
+  return {
+
+    status:"no",
+
+    area:"Outside regular rounds",
+
+    message:
+    "This postcode is outside our normal regular-maintenance service area. Larger one-off jobs may still be considered."
+
+  };
 
 }
 
 
-/*
-ASHTON / BRYN
-*/
-
-if(postcode.startsWith("WN4")){
-
-return {
-status:"yes",
-area:"Ashton-in-Makerfield",
-message:
-"Great news — this postcode is within our Ashton-in-Makerfield / Bryn service area."
-};
-
-}
-
-
-/*
-GREAT SANKEY
-
-WA5 covers a wider area, so where the postcode
-dataset clearly identifies Great Sankey we accept it.
-
-Other WA5 addresses are treated as selected coverage.
-*/
-
-if(
-postcode.startsWith("WA5") &&
-(
-location.includes("great sankey") ||
-location.includes("sankey")
-)
-){
-
-return {
-status:"yes",
-area:"Great Sankey",
-message:
-"Great news — this postcode is within our Great Sankey service area."
-};
-
-}
-
-
-if(postcode.startsWith("WA5")){
-
-return {
-status:"maybe",
-area:"Selected WA5",
-message:
-"We cover Great Sankey and selected nearby WA5 locations. Please contact Karl so we can confirm this exact address."
-};
-
-}
-
-
-/*
-SELECTED WARRINGTON AREAS
-*/
-
-const targetPlaces = [
-
-"orford",
-"fearnhead",
-"padgate",
-"woolston",
-"winwick",
-"birchwood",
-"croft",
-"culcheth"
-
-];
-
-
-const foundPlace =
-targetPlaces.find(
-place =>
-location.includes(place)
-);
-
-
-if(
-(
-postcode.startsWith("WA1") ||
-postcode.startsWith("WA2") ||
-postcode.startsWith("WA3")
-)
-&&
-foundPlace
-){
-
-const prettyPlaces = {
-
-orford:"Orford",
-fearnhead:"Fearnhead",
-padgate:"Padgate",
-woolston:"Woolston",
-winwick:"Winwick",
-birchwood:"Birchwood",
-croft:"Croft",
-culcheth:"Culcheth"
-
-};
-
-
-return {
-
-status:"yes",
-
-area:prettyPlaces[foundPlace],
-
-message:
-"Great news — this postcode appears to be within our "+
-prettyPlaces[foundPlace]+
-" service area."
-
-};
-
-}
-
-
-/*
-SELECTED WA1 / WA2 / WA3 WHERE LOCATION
-CANNOT BE SAFELY IDENTIFIED
-*/
-
-if(
-postcode.startsWith("WA1") ||
-postcode.startsWith("WA2") ||
-postcode.startsWith("WA3")
-){
-
-return {
-
-status:"maybe",
-
-area:"Selected Warrington area",
-
-message:
-"We cover selected parts of this Warrington postcode area. Please contact Karl so we can confirm your exact address and round availability."
-
-};
-
-}
-
-
-/*
-HAYDOCK / EAST ST HELENS
-*/
-
-if(
-(
-postcode.startsWith("WA9") ||
-postcode.startsWith("WA11")
-)
-&&
-location.includes("haydock")
-){
-
-return {
-
-status:"yes",
-
-area:"Haydock",
-
-message:
-"Great news — this postcode appears to be within our Haydock service area."
-
-};
-
-}
-
-
-if(
-postcode.startsWith("WA9") ||
-postcode.startsWith("WA11")
-){
-
-return {
-
-status:"maybe",
-
-area:"Selected St Helens area",
-
-message:
-"We cover Haydock and selected east St Helens locations. Please contact Karl so we can confirm your exact address."
-
-};
-
-}
-
-
-/*
-NEARBY BUT NOT NORMAL REGULAR ROUND
-*/
-
-if(
-postcode.startsWith("WA10") ||
-postcode.startsWith("WN5")
-){
-
-return {
-
-status:"no",
-
-area:"Outside regular rounds",
-
-message:
-"This postcode is outside our normal regular-maintenance rounds. Larger one-off jobs may still be considered — please contact Karl."
-
-};
-
-}
-
-
-/*
-OTHER POSTCODES
-*/
-
-return {
-
-status:"no",
-
-area:"Outside regular rounds",
-
-message:
-"This postcode is outside our normal regular-maintenance service area. Larger one-off jobs may still be considered — please contact Karl."
-
-};
-
-}
-
-
-/* =========================================
-   MAINTENANCE OPTIONS
-========================================= */
+/* ==========================================
+   MAINTENANCE DETAILS
+========================================== */
 
 function maintenanceDetails(){
 
-if(service.value !== "maintenance"){
+  if(service.value !== "maintenance"){
 
-return {
-areaExtra:0,
-workExtra:0,
-description:""
-};
+    return {
+
+      areaExtra:0,
+      workExtra:0,
+      description:""
+
+    };
+
+  }
+
+
+  const area =
+    $("maintArea").value;
+
+
+  const areaExtra =
+    area==="both"
+    ?15
+    :0;
+
+
+  const selected =
+
+    [
+      ...document.querySelectorAll(
+        ".maintWork:checked"
+      )
+    ];
+
+
+  const workExtra =
+
+    selected.reduce(
+
+      (total,item) =>
+
+      total +
+      Number(
+        item.dataset.extra || 0
+      ),
+
+      0
+
+    );
+
+
+  const areaName =
+
+    area==="front"
+    ?
+    "Front garden only"
+
+    :
+
+    area==="back"
+    ?
+    "Back garden only"
+
+    :
+
+    "Front & back gardens";
+
+
+  return {
+
+    areaExtra,
+
+    workExtra,
+
+    description:
+
+      areaName+
+
+      (
+        selected.length
+
+        ?
+
+        " — "+
+        selected
+        .map(item=>item.value)
+        .join(", ")
+
+        :
+
+        ""
+
+      )
+
+  };
 
 }
 
 
-const area =
-$("maintArea").value;
-
-
-let areaExtra = 0;
-
-
-if(area === "both"){
-
-areaExtra = 15;
-
-}
-
-
-const selected =
-[
-...document.querySelectorAll(
-".maintWork:checked"
-)
-];
-
-
-let workExtra =
-selected.reduce(
-
-(total,item) =>
-total +
-Number(item.dataset.extra || 0),
-
-0
-
-);
-
-
-const names =
-selected.map(
-item => item.value
-);
-
-
-let areaName =
-
-area === "front"
-?
-"Front garden only"
-:
-area === "back"
-?
-"Back garden only"
-:
-"Front & back gardens";
-
-
-return {
-
-areaExtra,
-workExtra,
-
-description:
-areaName+
-(
-names.length
-?
-" — "+names.join(", ")
-:
-""
-
-)
-
-};
-
-}
-
-
-/* =========================================
-   HELP
-========================================= */
+/* ==========================================
+   HELP TEXT
+========================================== */
 
 function help(){
 
-let s =
-size.value;
-
-let n =
-sizes[s][0];
-
-let v =
-service.value;
-
-let isLawn =
-[
-"grass",
-"scarify",
-"treatment"
-].includes(v);
+  const s =
+    size.value;
 
 
-$("help").textContent =
-
-"📏 Size guide: "+
-
-(
-isLawn
-
-?
-
-n+" – "+lawn[s]+". "+
-
-(
-v==="grass"
-?
-"If you have front and back lawns, use their combined total area. "
-:
-""
-)
-
-+
-
-"It does not need to be exact — choose the closest match."
-
-:
-
-n+" "+helps[v]+
-" – choose the closest match; final size/workload is confirmed when quoted."
-
-);
+  const n =
+    sizes[s][0];
 
 
-$("lawnsField").style.display =
-v==="grass"
-?
-"block"
-:
-"none";
+  const v =
+    service.value;
 
 
-$("maintenanceField").style.display =
-v==="maintenance"
-?
-"block"
-:
-"none";
+  const isLawn =
+
+    [
+      "grass",
+      "scarify",
+      "treatment"
+    ]
+    .includes(v);
 
 
-let off =
-(
-v==="grass" ||
-v==="maintenance"
-)
-?
-1
-:
-0;
+  $("help").textContent =
+
+    "📏 Size guide: "+
+
+    (
+      isLawn
+
+      ?
+
+      n+
+      " – "+
+      lawn[s]+
+      ". "+
+
+      (
+        v==="grass"
+
+        ?
+
+        "If you have front and back lawns, use their combined total area. "
+
+        :
+
+        ""
+
+      )
+
+      +
+
+      "It does not need to be exact — choose the closest match."
+
+      :
+
+      n+
+      " "+
+      helps[v]+
+      " – choose the closest match; final size/workload is confirmed when quoted."
+
+    );
 
 
-$("conditionLabel").textContent =
-(3+off)+". Current condition";
+  $("lawnsField").style.display =
+
+    v==="grass"
+    ?
+    "block"
+    :
+    "none";
 
 
-$("postcodeLabel").textContent =
-(4+off)+". Your postcode";
+  $("maintenanceField").style.display =
+
+    v==="maintenance"
+    ?
+    "block"
+    :
+    "none";
 
 
-$("wasteLabel").textContent =
-(5+off)+". Green waste";
+  const off =
+
+    (
+      v==="grass" ||
+      v==="maintenance"
+    )
+
+    ?
+
+    1
+
+    :
+
+    0;
+
+
+  $("conditionLabel").textContent =
+
+    (3+off)+
+    ". Current condition";
+
+
+  $("postcodeLabel").textContent =
+
+    (4+off)+
+    ". Your postcode";
+
+
+  $("wasteLabel").textContent =
+
+    (5+off)+
+    ". Green waste";
 
 }
 
 
-/* =========================================
-   UPDATE PRICE
-========================================= */
+/* ==========================================
+   PRICE UPDATE
+========================================== */
 
 function update(){
 
-const v =
-service.value;
-
-const s =
-size.value;
-
-const i =
-sizes[s][1];
-
-const base =
-P[v][i];
+  const v =
+    service.value;
 
 
-const conditionExtra =
-
-Math.ceil(
-
-(
-base *
-(
-mult[condition.value]-1
-)
-)
-
-/5
-
-)*5;
+  const s =
+    size.value;
 
 
-const wasteExtra =
-
-$("waste").value==="yes"
-?
-waste[s]
-:
-0;
+  const i =
+    sizes[s][1];
 
 
-const maint =
-maintenanceDetails();
+  const base =
+    P[v][i];
 
 
-const total =
+  const conditionExtra =
 
-Math.ceil(
+    Math.ceil(
 
-(
-base +
-conditionExtra +
-wasteExtra +
-maint.areaExtra +
-maint.workExtra +
-(
-postcodeChecked &&
-areaStatus==="yes" &&
-routeOK
-?
-tc
-:
-0
-)
-)
+      (
+        base *
+        (
+          mult[condition.value]-1
+        )
+      )
 
-/5
+      /5
 
-)*5;
+    )*5;
 
 
-const resultBox =
-$("resultBox");
+  const wasteExtra =
+
+    $("waste").value==="yes"
+
+    ?
+
+    waste[s]
+
+    :
+
+    0;
 
 
-const price =
-$("price");
+  const maint =
+    maintenanceDetails();
 
 
-const rows = [
+  const total =
 
-[
-"Service",
-P[v][0]+" — £"+base
-]
+    Math.ceil(
 
-];
+      (
+        base +
+        conditionExtra +
+        wasteExtra +
+        maint.areaExtra +
+        maint.workExtra +
+        tc
+      )
+
+      /5
+
+    )*5;
 
 
-if(v==="maintenance"){
+  const resultBox =
+    $("resultBox");
 
-if(maint.areaExtra){
 
-rows.push([
-"Front & back gardens",
-"+£"+maint.areaExtra
-]);
+  const price =
+    $("price");
+
+
+  /* ======================================
+     POSTCODE HAS NOT BEEN CHECKED
+     NO PRICES ARE SHOWN
+  ====================================== */
+
+  if(!postcodeChecked){
+
+    resultBox.className =
+      "result waiting";
+
+
+    price.textContent =
+      "Check your postcode";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Not checked</strong>'+
+      '</div>';
+
+
+    wa.classList.add("hidden");
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     SELECTED AREA
+     STILL NO PRICES
+  ====================================== */
+
+  if(areaStatus==="maybe"){
+
+    resultBox.className =
+      "result blocked";
+
+
+    price.textContent =
+      "Area Check Required";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Please confirm</strong>'+
+      '</div>';
+
+
+    wa.classList.remove("hidden");
+
+
+    wa.textContent =
+      "💬 Ask About My Area";
+
+
+    setWhatsApp(
+      v,
+      s,
+      maint,
+      "Area check required"
+    );
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     OUTSIDE AREA
+     NO PRICES
+  ====================================== */
+
+  if(areaStatus==="no"){
+
+    resultBox.className =
+      "result blocked";
+
+
+    price.textContent =
+      "Outside Regular Area";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Outside regular rounds</strong>'+
+      '</div>';
+
+
+    wa.classList.remove("hidden");
+
+
+    wa.textContent =
+      "💬 Ask About a One-Off Job";
+
+
+    setWhatsApp(
+      v,
+      s,
+      maint,
+      "Outside regular service area"
+    );
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     COVERED BUT ROUTE NOT READY
+  ====================================== */
+
+  if(
+    areaStatus==="yes" &&
+    !routeOK
+  ){
+
+    resultBox.className =
+      "result waiting";
+
+
+    price.textContent =
+      "Calculating...";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Covered</strong>'+
+      '</div>';
+
+
+    wa.classList.add("hidden");
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     APPROVED POSTCODE
+     NOW SHOW ALL £ PRICES
+  ====================================== */
+
+  resultBox.className =
+    "result";
+
+
+  price.textContent =
+    "From £"+total;
+
+
+  let rows = [
+
+    [
+      "Service",
+      P[v][0]+
+      " — £"+
+      base
+    ]
+
+  ];
+
+
+  if(
+    v==="maintenance" &&
+    maint.areaExtra
+  ){
+
+    rows.push([
+
+      "Front & back gardens",
+
+      "+£"+
+      maint.areaExtra
+
+    ]);
+
+  }
+
+
+  if(
+    v==="maintenance" &&
+    maint.workExtra
+  ){
+
+    rows.push([
+
+      "Selected maintenance work",
+
+      "+£"+
+      maint.workExtra
+
+    ]);
+
+  }
+
+
+  if(conditionExtra){
+
+    rows.push([
+
+      cn[condition.value],
+
+      "+£"+
+      conditionExtra
+
+    ]);
+
+  }
+
+
+  if(wasteExtra){
+
+    rows.push([
+
+      "Green waste removal",
+
+      "+£"+
+      wasteExtra
+
+    ]);
+
+  }
+
+
+  rows.push([
+
+    "Service area",
+
+    detectedArea ||
+    "Covered"
+
+  ]);
+
+
+  rows.push([
+
+    "Travel",
+
+    tm+
+    " miles — "+
+    (
+      tc
+      ?
+      "+£"+tc
+      :
+      "Included"
+    )
+
+  ]);
+
+
+  $("break").innerHTML =
+
+    rows.map(
+
+      r =>
+
+      '<div class="row">'+
+      '<span>'+
+      r[0]+
+      '</span>'+
+      '<strong>'+
+      r[1]+
+      '</strong>'+
+      '</div>'
+
+    )
+    .join("");
+
+
+  wa.classList.remove("hidden");
+
+
+  wa.textContent =
+    "💬 Request My Free Quote";
+
+
+  setWhatsApp(
+
+    v,
+
+    s,
+
+    maint,
+
+    "From £"+total
+
+  );
+
+
+  help();
 
 }
 
 
-if(maint.workExtra){
+/* ==========================================
+   WHATSAPP
+========================================== */
 
-rows.push([
-"Selected maintenance work",
-"+£"+maint.workExtra
-]);
-
-}
-
-}
-
-
-if(conditionExtra){
-
-rows.push([
-
-cn[condition.value],
-
-"+£"+conditionExtra
-
-]);
-
-}
-
-
-if(wasteExtra){
-
-rows.push([
-
-"Green waste removal",
-
-"+£"+wasteExtra
-
-]);
-
-}
-
-
-/* =========================================
-   NOT CHECKED
-========================================= */
-
-if(!postcodeChecked){
-
-resultBox.className =
-"result waiting";
-
-
-price.textContent =
-"Enter your postcode";
-
-
-rows.push([
-
-"Service area",
-
-"Not checked"
-
-]);
-
-
-$("break").innerHTML =
-rows.map(
-
-r =>
-'<div class="row"><span>'+
-r[0]+
-'</span><strong>'+
-r[1]+
-'</strong></div>'
-
-).join("");
-
-
-wa.classList.add("hidden");
-
-
-help();
-
-return;
-
-}
-
-
-/* =========================================
-   COVERED
-========================================= */
-
-if(
-areaStatus==="yes" &&
-routeOK
+function setWhatsApp(
+  v,
+  s,
+  maint,
+  result
 ){
 
-resultBox.className =
-"result";
+  let maintenanceText = "";
 
 
-price.textContent =
-"From £"+total;
+  if(v==="maintenance"){
+
+    maintenanceText =
+
+      "\nMaintenance requested: "+
+
+      (
+        maint.description ||
+        "Not specified"
+      );
+
+  }
 
 
-rows.push([
+  const msg =
 
-"Service area",
+    "Hi Karl, I've used the price guide on the KS Garden Services website.\n\n"+
 
-detectedArea ||
-"Covered"
+    "Service: "+
+    P[v][0]+
+    "\n"+
 
-]);
+    "Size: "+
+    sizes[s][0]+
 
+    maintenanceText+
+    "\n"+
 
-rows.push([
+    "Condition: "+
+    cn[condition.value]+
+    "\n"+
 
-"Travel",
+    "Green waste removal: "+
+    (
+      $("waste").value==="yes"
 
-tm+" miles — "+
-(
-tc
-?
-"+£"+tc
-:
-"Included"
-)
+      ?
 
-]);
+      "Yes"
 
+      :
 
-wa.classList.remove("hidden");
+      "No / green bin available"
+    )+
+    "\n"+
 
-wa.textContent =
-"💬 Request My Free Quote";
+    "Postcode: "+
+    (
+      pc ||
+      post.value.trim() ||
+      "Not entered"
+    )+
+    "\n"+
 
-}
+    "Area: "+
+    (
+      detectedArea ||
+      "Not confirmed"
+    )+
+    "\n"+
 
+    "Approx. travel: "+
+    (
+      routeOK
+      ?
+      tm+" miles"
+      :
+      "Not calculated"
+    )+
+    "\n"+
 
-/* =========================================
-   MAYBE
-========================================= */
+    "Guide result: "+
+    result+
+    "\n\n"+
 
-else if(areaStatus==="maybe"){
-
-resultBox.className =
-"result blocked";
-
-
-price.textContent =
-"Area Check Required";
-
-
-rows.push([
-
-"Service area",
-
-"Please confirm"
-
-]);
-
-
-wa.classList.remove("hidden");
-
-wa.textContent =
-"💬 Ask About My Area";
-
-}
-
-
-/* =========================================
-   OUTSIDE
-========================================= */
-
-else{
-
-resultBox.className =
-"result blocked";
+    "Could I get a confirmed quote please?";
 
 
-price.textContent =
-"Outside Regular Area";
+  wa.href =
 
-
-rows.push([
-
-"Service area",
-
-"Contact us"
-
-]);
-
-
-wa.classList.remove("hidden");
-
-wa.textContent =
-"💬 Ask About a One-Off Job";
+    "https://wa.me/447715559170?text="+
+    encodeURIComponent(msg);
 
 }
 
 
-$("break").innerHTML =
-
-rows.map(
-
-r =>
-'<div class="row"><span>'+
-r[0]+
-'</span><strong>'+
-r[1]+
-'</strong></div>'
-
-).join("");
-
-
-/* =========================================
-   WHATSAPP
-========================================= */
-
-let maintText =
-
-v==="maintenance"
-?
-"\nMaintenance requested: "+
-(
-maint.description ||
-"Not specified"
-)
-:
-"";
-
-
-let msg =
-
-"Hi Karl, I've used the price guide on the KS Garden Services website.\n\n"+
-
-"Service: "+
-P[v][0]+
-"\n"+
-
-"Size: "+
-sizes[s][0]+
-maintText+
-"\n"+
-
-"Condition: "+
-cn[condition.value]+
-"\n"+
-
-"Green waste removal: "+
-(
-$("waste").value==="yes"
-?
-"Yes"
-:
-"No / green bin available"
-)+
-"\n"+
-
-"Postcode: "+
-(
-pc ||
-post.value.trim() ||
-"Not entered"
-)+
-"\n"+
-
-"Area: "+
-(
-detectedArea ||
-"Not confirmed"
-)+
-"\n"+
-
-"Approx. travel: "+
-(
-routeOK
-?
-tm+" miles"
-:
-"Not calculated"
-)+
-"\n"+
-
-"Guide result: "+
-(
-areaStatus==="yes" &&
-routeOK
-?
-"From £"+total
-:
-areaStatus==="maybe"
-?
-"Area check required"
-:
-"Outside regular service area"
-)+
-"\n\n"+
-
-"Could I get a confirmed quote please?";
-
-
-wa.href =
-
-"https://wa.me/447715559170?text="+
-encodeURIComponent(msg);
-
-
-help();
-
-}
-
-
-/* =========================================
+/* ==========================================
    POSTCODE LOOKUP
-========================================= */
+========================================== */
 
 async function geo(p){
 
-const r =
-await fetch(
+  const r =
 
-"https://api.postcodes.io/postcodes/"+
-encodeURIComponent(
-p.replace(/\s/g,"")
-)
+    await fetch(
 
-);
+      "https://api.postcodes.io/postcodes/"+
+      encodeURIComponent(
+        p.replace(/\s/g,"")
+      )
 
-
-if(!r.ok)
-throw new Error("Postcode lookup failed");
+    );
 
 
-const j =
-await r.json();
+  if(!r.ok)
+    throw new Error(
+      "Postcode lookup failed"
+    );
 
 
-if(!j.result)
-throw new Error("Postcode not found");
+  const j =
+    await r.json();
 
 
-return j.result;
+  if(!j.result)
+    throw new Error(
+      "Postcode not found"
+    );
+
+
+  return j.result;
 
 }
 
 
-/* =========================================
-   ROUTE
-========================================= */
+/* ==========================================
+   ROUTING
+========================================== */
 
 async function route(a,b){
 
-const r =
-await fetch(
+  const r =
 
-"https://router.project-osrm.org/route/v1/driving/"+
-a.longitude+
-","+
-a.latitude+
-";"+
-b.longitude+
-","+
-b.latitude+
-"?overview=false"
+    await fetch(
 
-);
+      "https://router.project-osrm.org/route/v1/driving/"+
 
+      a.longitude+
+      ","+
+      a.latitude+
+      ";"+
+      b.longitude+
+      ","+
+      b.latitude+
+      "?overview=false"
 
-if(!r.ok)
-throw new Error("Routing failed");
+    );
 
 
-const j =
-await r.json();
+  if(!r.ok)
+    throw new Error(
+      "Routing failed"
+    );
 
 
-if(!j.routes?.length)
-throw new Error("No route");
+  const j =
+    await r.json();
 
 
-return
+  if(!j.routes?.length)
+    throw new Error(
+      "No route"
+    );
 
-j.routes[0].distance /
-1609.344;
+
+  return
+
+    j.routes[0].distance /
+    1609.344;
 
 }
 
 
-/* =========================================
-   CHECK POSTCODE
-========================================= */
+/* ==========================================
+   POSTCODE BUTTON
+========================================== */
 
 $("travelbtn").onclick =
 async()=>{
 
 
-const p =
-post.value.trim();
+  const p =
+    post.value.trim();
 
 
-const box =
-$("travel");
+  const box =
+    $("travel");
 
 
-box.style.display =
-"block";
+  box.style.display =
+    "block";
 
 
-box.className =
-"travel";
+  box.className =
+    "travel";
 
 
-if(!p){
+  if(!p){
 
-box.classList.add("no");
+    box.classList.add("no");
 
-box.textContent =
-"⚠️ Please enter your postcode.";
 
-return;
+    box.textContent =
+      "⚠️ Please enter your postcode.";
 
-}
 
+    return;
 
-const btn =
-$("travelbtn");
+  }
 
 
-btn.disabled =
-true;
+  const btn =
+    $("travelbtn");
 
 
-btn.textContent =
-"Checking...";
+  btn.disabled =
+    true;
 
 
-box.textContent =
-"📍 Checking your postcode and service area...";
+  btn.textContent =
+    "Checking...";
 
 
-try{
+  box.textContent =
+    "📍 Checking your postcode and service area...";
 
 
-const destination =
-await geo(p);
+  try{
 
 
-pc =
-destination.postcode;
+    const destination =
+      await geo(p);
 
 
-post.value =
-pc;
+    pc =
+      destination.postcode;
 
 
-const area =
-serviceArea(destination);
+    post.value =
+      pc;
 
 
-postcodeChecked =
-true;
+    const area =
+      serviceArea(destination);
 
 
-areaStatus =
-area.status;
+    postcodeChecked =
+      true;
 
 
-areaMessage =
-area.message;
+    areaStatus =
+      area.status;
 
 
-detectedArea =
-area.area;
+    areaMessage =
+      area.message;
 
 
-routeOK =
-false;
+    detectedArea =
+      area.area;
 
 
-tc =
-0;
+    routeOK =
+      false;
 
 
-tm =
-0;
+    tc =
+      0;
 
 
-/* =========================================
-   SELECTED AREA
-========================================= */
+    tm =
+      0;
 
-if(areaStatus==="maybe"){
 
-box.classList.add("maybe");
+    /* SELECTED AREA */
 
+    if(areaStatus==="maybe"){
 
-box.innerHTML =
+      box.classList.add("maybe");
 
-"⚠️ <strong>Selected Service Area</strong><br>"+
 
-areaMessage;
+      box.innerHTML =
 
+        "⚠️ <strong>Selected Service Area</strong><br>"+
 
-update();
+        areaMessage;
 
-return;
 
-}
+      update();
 
 
-/* =========================================
-   OUTSIDE AREA
-========================================= */
+      return;
 
-if(areaStatus==="no"){
+    }
 
-box.classList.add("no");
 
+    /* OUTSIDE */
 
-box.innerHTML =
+    if(areaStatus==="no"){
 
-"📍 <strong>Outside Our Regular Service Area</strong><br>"+
+      box.classList.add("no");
 
-areaMessage;
 
+      box.innerHTML =
 
-update();
+        "📍 <strong>Outside Our Regular Service Area</strong><br>"+
 
-return;
+        areaMessage;
 
-}
 
+      update();
 
-/* =========================================
-   APPROVED AREA
-========================================= */
 
-box.textContent =
-"✅ Area covered — calculating travel...";
+      return;
 
+    }
 
-const base =
-await geo("WA12 0AT");
 
+    /* APPROVED */
 
-tm =
+    box.classList.add("yes");
 
-Math.round(
 
-(
-await route(
-base,
-destination
-)
-)*10
+    box.innerHTML =
 
-)/10;
+      "✅ <strong>Area covered</strong><br>"+
 
+      areaMessage+
 
-routeOK =
-true;
+      "<br><br>Calculating travel...";
 
 
-tc =
+    update();
 
-tm<=5
-?
-0
-:
-tm<=10
-?
-5
-:
-tm<=15
-?
-10
-:
-tm<=20
-?
-15
-:
-20;
 
+    const base =
+      await geo("WA12 0AT");
 
-box.classList.add("yes");
 
+    tm =
 
-box.innerHTML =
+      Math.round(
 
-"✅ <strong>We cover your area</strong><br>"+
+        (
+          await route(
+            base,
+            destination
+          )
+        )*10
 
-areaMessage+
+      )/10;
 
-"<br><br>"+
 
-"📍 Approx. driving distance: <strong>"+
-tm+
-" miles</strong><br>"+
+    routeOK =
+      true;
 
-"🚐 "+
 
-(
-tc
-?
-"Travel contribution: <strong>£"+
-tc+
-"</strong>"
-:
-"Travel: <strong>Included</strong>"
-);
+    tc =
 
+      tm<=5
+      ?
+      0
 
-update();
+      :
 
+      tm<=10
+      ?
+      5
 
-}
+      :
 
-catch(e){
+      tm<=15
+      ?
+      10
 
+      :
 
-postcodeChecked =
-false;
+      tm<=20
+      ?
+      15
 
+      :
 
-areaStatus =
-"unchecked";
+      20;
 
 
-areaMessage =
-"";
+    box.className =
+      "travel yes";
 
 
-detectedArea =
-"";
+    box.innerHTML =
 
+      "✅ <strong>We cover your area</strong><br>"+
 
-routeOK =
-false;
+      areaMessage+
 
+      "<br><br>"+
 
-tc =
-0;
+      "📍 Approx. driving distance: <strong>"+
+      tm+
+      " miles</strong><br>"+
 
+      "🚐 "+
 
-tm =
-0;
+      (
+        tc
 
+        ?
 
-pc =
-"";
+        "Travel contribution: <strong>£"+
+        tc+
+        "</strong>"
 
+        :
 
-box.className =
-"travel no";
+        "Travel: <strong>Included</strong>"
+      );
 
 
-box.textContent =
+    update();
 
-"⚠️ We couldn't check that postcode. Please check it and try again.";
 
+  }
 
-update();
+  catch(e){
 
 
-}
+    postcodeChecked =
+      false;
 
-finally{
 
+    areaStatus =
+      "unchecked";
 
-btn.disabled =
-false;
 
+    areaMessage =
+      "";
 
-btn.textContent =
-"📍 Check Postcode & Travel";
 
+    detectedArea =
+      "";
 
-}
 
+    routeOK =
+      false;
+
+
+    tc =
+      0;
+
+
+    tm =
+      0;
+
+
+    pc =
+      "";
+
+
+    box.className =
+      "travel no";
+
+
+    box.textContent =
+
+      "⚠️ We couldn't check that postcode. Please check it and try again.";
+
+
+    update();
+
+
+  }
+
+  finally{
+
+
+    btn.disabled =
+      false;
+
+
+    btn.textContent =
+      "📍 Check Postcode & Get Price";
+
+
+  }
 
 };
 
 
-/* =========================================
-   RESET POSTCODE WHEN CHANGED
-========================================= */
+/* ==========================================
+   RESET WHEN POSTCODE CHANGES
+========================================== */
 
 post.oninput =
 ()=>{
 
 
-postcodeChecked =
-false;
+  postcodeChecked =
+    false;
 
 
-areaStatus =
-"unchecked";
+  areaStatus =
+    "unchecked";
 
 
-areaMessage =
-"";
+  areaMessage =
+    "";
 
 
-detectedArea =
-"";
+  detectedArea =
+    "";
 
 
-routeOK =
-false;
+  routeOK =
+    false;
 
 
-tc =
-0;
+  tc =
+    0;
 
 
-tm =
-0;
+  tm =
+    0;
 
 
-pc =
-"";
+  pc =
+    "";
 
 
-$("travel").style.display =
-"none";
+  $("travel").style.display =
+    "none";
 
 
-$("travel").className =
-"travel";
+  $("travel").className =
+    "travel";
 
 
-update();
-
+  update();
 
 };
 
 
-/* =========================================
-   CHANGE EVENTS
-========================================= */
+/* ==========================================
+   FORM CHANGES
+========================================== */
 
 [
-service,
-size,
-condition,
-$("waste"),
-$("lawns"),
-$("maintArea"),
-...document.querySelectorAll(".maintWork")
+  service,
+  size,
+  condition,
+  $("waste"),
+  $("lawns"),
+  $("maintArea"),
+  ...document.querySelectorAll(
+    ".maintWork"
+  )
 
-].forEach(
+]
+.forEach(
 
-element => {
+  element => {
 
-element.onchange =
-update;
+    element.onchange =
+      update;
 
-}
+  }
 
 );
 
 
-/* =========================================
-   START
-========================================= */
+/* START */
 
 update();
 
