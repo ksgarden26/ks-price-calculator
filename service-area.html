@@ -5,10 +5,9 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>KS Garden Services Area Checker</title>
+<title>KS Garden Services - Postcode Checker</title>
 
 <style>
 
@@ -21,13 +20,9 @@ body{
   margin:0;
   padding:0;
   width:100%;
-  background:#fff;
+  background:#ffffff;
   font-family:Arial,Helvetica,sans-serif;
   color:#333;
-}
-
-body{
-  padding:10px;
 }
 
 .checker{
@@ -36,37 +31,40 @@ body{
   margin:0 auto;
   padding:32px 25px;
   background:#f7f7f7;
-  border:1px solid #e4e4e4;
+  border:1px solid #e1e1e1;
   border-radius:14px;
   text-align:center;
 }
 
 .label{
-  margin-bottom:9px;
+  display:block;
+  margin-bottom:8px;
   color:#47735a;
-  font-size:12px;
+  font-size:11px;
   font-weight:bold;
-  letter-spacing:2px;
+  letter-spacing:1.8px;
 }
 
 h2{
-  margin:0 0 9px;
+  margin:0 0 8px;
+  font-size:28px;
   color:#292929;
-  font-size:29px;
 }
 
 .intro{
-  margin:0 auto 23px;
+  max-width:580px;
+  margin:0 auto 20px;
   color:#666;
+  font-size:14px;
   line-height:1.6;
 }
 
-.form{
+.form-row{
   display:flex;
-  width:100%;
-  max-width:570px;
-  margin:0 auto;
+  justify-content:center;
   gap:8px;
+  max-width:500px;
+  margin:0 auto;
 }
 
 input{
@@ -76,7 +74,7 @@ input{
   border:1px solid #ccc;
   border-radius:7px;
   background:#fff;
-  font-size:17px;
+  font-size:16px;
   text-transform:uppercase;
   outline:none;
 }
@@ -86,75 +84,73 @@ input:focus{
 }
 
 button{
-  padding:14px 22px;
+  padding:14px 20px;
   border:0;
   border-radius:7px;
-  background:#333;
+  background:#47735a;
   color:#fff;
-  font-size:14px;
+  font-size:15px;
   font-weight:bold;
   cursor:pointer;
 }
 
 button:hover{
-  background:#111;
+  opacity:.92;
 }
 
 .result{
   display:none;
-  width:100%;
-  max-width:570px;
-  margin:16px auto 0;
+  max-width:580px;
+  margin:18px auto 0;
   padding:17px;
-  border-radius:8px;
+  border-radius:9px;
   line-height:1.55;
 }
 
 .result.yes{
   display:block;
-  background:#edf5ef;
-  border:1px solid #c5dcca;
+  background:#eaf4ed;
+  border:1px solid #bcd8c5;
+  color:#28563a;
 }
 
 .result.maybe{
   display:block;
-  background:#fff7e5;
-  border:1px solid #e7d39c;
+  background:#fff7e4;
+  border:1px solid #ead49a;
+  color:#70581c;
 }
 
 .result.no{
   display:block;
-  background:#eee;
-  border:1px solid #d3d3d3;
+  background:#f7eeee;
+  border:1px solid #dfc4c4;
+  color:#703d3d;
 }
 
-.result strong{
+.result-title{
   display:block;
   margin-bottom:5px;
+  font-size:17px;
+  font-weight:bold;
 }
 
-.contact{
+.whatsapp{
   display:none;
-  margin-top:15px;
-}
-
-.contact.show{
-  display:block;
-}
-
-.contact a{
-  display:inline-block;
-  padding:11px 17px;
+  width:max-content;
+  max-width:100%;
+  margin:14px auto 0;
+  padding:12px 17px;
+  border-radius:7px;
   background:#47735a;
   color:#fff;
-  border-radius:6px;
-  text-decoration:none;
-  font-weight:bold;
   font-size:14px;
+  font-weight:bold;
+  text-decoration:none;
 }
 
 .note{
-  max-width:570px;
+  max-width:600px;
   margin:18px auto 0;
   color:#777;
   font-size:12px;
@@ -163,19 +159,16 @@ button:hover{
 
 @media(max-width:600px){
 
-  body{
-    padding:5px;
-  }
-
   .checker{
     padding:25px 15px;
+    border-radius:10px;
   }
 
   h2{
     font-size:24px;
   }
 
-  .form{
+  .form-row{
     flex-direction:column;
   }
 
@@ -192,32 +185,35 @@ button:hover{
 
 <body>
 
+
 <div class="checker">
 
-  <div class="label">
+  <span class="label">
     CHECK YOUR LOCATION
-  </div>
+  </span>
 
   <h2>
     Do we cover your postcode?
   </h2>
 
   <p class="intro">
-    Enter your postcode below for a quick indication.
+    Enter your postcode below for a quick guide to whether
+    KS Garden Services covers your area.
   </p>
 
 
-  <div class="form">
+  <div class="form-row">
 
     <input
-      type="text"
       id="postcode"
+      type="text"
       placeholder="e.g. WA12 0AT"
-      autocomplete="postal-code">
+      autocomplete="postal-code"
+      maxlength="8">
 
     <button
       type="button"
-      id="checkButton">
+      onclick="checkPostcode()">
       Check postcode
     </button>
 
@@ -230,134 +226,112 @@ button:hover{
   </div>
 
 
-  <div
-    id="contact"
-    class="contact">
-
-    <a
-      id="whatsapp"
-      href="#"
-      target="_blank">
-      Check with us on WhatsApp
-    </a>
-
-  </div>
+  <a
+    id="whatsapp"
+    class="whatsapp"
+    href="#"
+    target="_blank"
+    rel="noopener">
+    Confirm your address on WhatsApp
+  </a>
 
 
-  <div class="note">
-
-    This checker provides a guide only.
-    Final coverage depends on your exact location,
-    the work required and current availability.
-
-  </div>
+  <p class="note">
+    This checker is a guide for regular garden maintenance.
+    Coverage can depend on your exact address, the type of work
+    required and current round availability. Larger one-off jobs
+    outside our regular area may still be considered.
+  </p>
 
 </div>
 
 
 <script>
 
-const postcodeInput =
-document.getElementById("postcode");
-
-const checkButton =
-document.getElementById("checkButton");
-
-const result =
-document.getElementById("result");
-
-const contact =
-document.getElementById("contact");
-
-const whatsapp =
-document.getElementById("whatsapp");
-
-
-function normalisePostcode(value){
+function cleanPostcode(value){
 
   return value
     .toUpperCase()
-    .replace(/[^A-Z0-9]/g,"");
-
-}
-
-
-function setWhatsApp(postcode){
-
-  const message =
-    "Hi Karl, I've used the service area checker on your website. " +
-    "My postcode is " +
-    postcode +
-    ". Could you let me know if you cover my address?";
-
-  whatsapp.href =
-    "https://wa.me/447715559170?text=" +
-    encodeURIComponent(message);
+    .replace(/\s+/g,"")
+    .trim();
 
 }
 
 
 function showResult(type,title,message,postcode){
 
+  const result =
+    document.getElementById("result");
+
+  const whatsapp =
+    document.getElementById("whatsapp");
+
+
   result.className =
     "result " + type;
 
+
   result.innerHTML =
-    "<strong>" +
+    '<span class="result-title">' +
     title +
-    "</strong>" +
+    '</span>' +
     message;
 
-  setWhatsApp(postcode);
 
-  contact.className =
-    "contact show";
+  whatsapp.style.display =
+    "inline-block";
+
+
+  const text =
+    "Hi Karl, I used the postcode checker on the KS Garden Services website. My postcode is " +
+    postcode +
+    ". Could you confirm whether you cover my address?";
+
+
+  whatsapp.href =
+    "https://wa.me/447715559170?text=" +
+    encodeURIComponent(text);
 
 }
 
 
-function checkArea(){
+
+function checkPostcode(){
+
+  const input =
+    document.getElementById("postcode");
 
   const postcode =
-    normalisePostcode(
-      postcodeInput.value
-    );
-
-
-  result.className =
-    "result";
-
-  result.innerHTML =
-    "";
-
-  contact.className =
-    "contact";
+    cleanPostcode(input.value);
 
 
   if(postcode.length < 5){
 
-    result.className =
-      "result maybe";
-
-    result.innerHTML =
-      "<strong>Please enter a full postcode.</strong>" +
-      "For example: WA12 0AT.";
+    showResult(
+      "no",
+      "Please enter your full postcode.",
+      "For example: WA12 0AT.",
+      postcode
+    );
 
     return;
 
   }
 
 
-  /* =========================
-     NEWTON-LE-WILLOWS
-  ========================== */
+
+  /* =================================
+     WA12
+     NEWTON-LE-WILLOWS / EARLESTOWN
+     CORE SERVICE AREA
+  ================================= */
 
   if(postcode.startsWith("WA12")){
 
     showResult(
       "yes",
-      "✓ You're in our core service area.",
-      "Newton-le-Willows and the surrounding area are our main priority for regular garden maintenance.",
+      "✓ Yes — you're in our core service area.",
+      "Newton-le-Willows, Earlestown and the surrounding WA12 area are covered for regular garden maintenance.",
       postcode
     );
 
@@ -366,16 +340,18 @@ function checkArea(){
   }
 
 
-  /* =========================
-     ASHTON-IN-MAKERFIELD
-  ========================== */
+
+  /* =================================
+     WN4
+     ASHTON-IN-MAKERFIELD / BRYN
+  ================================= */
 
   if(postcode.startsWith("WN4")){
 
     showResult(
       "yes",
-      "✓ We regularly cover this area.",
-      "Ashton-in-Makerfield is within our regular service area.",
+      "✓ Yes — we cover your area.",
+      "Ashton-in-Makerfield and Bryn are within our regular garden maintenance area.",
       postcode
     );
 
@@ -384,20 +360,38 @@ function checkArea(){
   }
 
 
-  /* =========================
+
+  /* =================================
+     WA5
+     GREAT SANKEY / WEST WARRINGTON
+  ================================= */
+
+  if(postcode.startsWith("WA5")){
+
+    showResult(
+      "yes",
+      "✓ Yes — we cover your area.",
+      "Great Sankey and selected nearby WA5 locations are within our regular service area.",
+      postcode
+    );
+
+    return;
+
+  }
+
+
+
+  /* =================================
+     WA1
      WARRINGTON
-  ========================== */
+  ================================= */
 
-  if(
-    postcode.startsWith("WA1") ||
-    postcode.startsWith("WA2") ||
-    postcode.startsWith("WA3")
-  ){
+  if(postcode.startsWith("WA1")){
 
     showResult(
       "maybe",
-      "You're within or close to our normal working area.",
-      "We cover selected parts of Warrington including Winwick, Orford, Fearnhead, Padgate, Woolston, Birchwood and Croft. Please send us your postcode so we can confirm.",
+      "You're within our Warrington working area.",
+      "We cover selected WA1 locations including areas around Padgate and Woolston. Send us your full address and we'll confirm availability.",
       postcode
     );
 
@@ -406,19 +400,18 @@ function checkArea(){
   }
 
 
-  /* =========================
-     HAYDOCK / ST HELENS
-  ========================== */
 
-  if(
-    postcode.startsWith("WA11") ||
-    postcode.startsWith("WA9")
-  ){
+  /* =================================
+     WA2
+     ORFORD / FERNHEAD / WINWICK
+  ================================= */
+
+  if(postcode.startsWith("WA2")){
 
     showResult(
       "maybe",
-      "You may be within our service area.",
-      "We cover selected locations around Haydock and the Newton-le-Willows side of St Helens. Please check your exact address with us.",
+      "You're within our Warrington working area.",
+      "We cover selected WA2 locations including Orford, Fearnhead and Winwick. Send us your full address and we'll confirm availability.",
       postcode
     );
 
@@ -427,9 +420,70 @@ function checkArea(){
   }
 
 
-  /* =========================
+
+  /* =================================
+     WA3
+     CULCHETH / CROFT
+  ================================= */
+
+  if(postcode.startsWith("WA3")){
+
+    showResult(
+      "maybe",
+      "You're within our Warrington working area.",
+      "We cover selected WA3 locations including Culcheth and Croft. Send us your full address and we'll confirm availability.",
+      postcode
+    );
+
+    return;
+
+  }
+
+
+
+  /* =================================
+     WA11
+     HAYDOCK / EAST ST HELENS
+  ================================= */
+
+  if(postcode.startsWith("WA11")){
+
+    showResult(
+      "maybe",
+      "You're close to our regular service area.",
+      "We cover Haydock and selected nearby locations. Send us your full address and we'll confirm whether it fits one of our regular rounds.",
+      postcode
+    );
+
+    return;
+
+  }
+
+
+
+  /* =================================
+     WA9
+     SELECTED EAST ST HELENS
+  ================================= */
+
+  if(postcode.startsWith("WA9")){
+
+    showResult(
+      "maybe",
+      "You're close to our regular service area.",
+      "Some locations in this postcode district may be covered depending on the exact address and round availability.",
+      postcode
+    );
+
+    return;
+
+  }
+
+
+
+  /* =================================
      NEARBY AREAS
-  ========================== */
+  ================================= */
 
   if(
     postcode.startsWith("WA10") ||
@@ -439,7 +493,7 @@ function checkArea(){
     showResult(
       "maybe",
       "You're just outside our main regular area.",
-      "Depending on the location and work required, we may still be able to help.",
+      "We may still be able to help depending on your exact location, the work required and current availability.",
       postcode
     );
 
@@ -448,42 +502,37 @@ function checkArea(){
   }
 
 
-  /* =========================
+
+  /* =================================
      OUTSIDE AREA
-  ========================== */
+  ================================= */
 
   showResult(
     "no",
-    "Outside our regular maintenance area.",
-    "We keep our regular rounds local to Newton-le-Willows. Larger one-off jobs further away may still be considered.",
+    "This postcode is outside our normal regular rounds.",
+    "We concentrate our regular maintenance rounds around Newton-le-Willows and selected nearby areas. Larger one-off gardening jobs further away may still be considered.",
     postcode
   );
 
 }
 
 
-checkButton.addEventListener(
-  "click",
-  checkArea
-);
 
+document
+  .getElementById("postcode")
+  .addEventListener(
+    "keydown",
+    function(event){
 
-postcodeInput.addEventListener(
-  "keydown",
-  function(event){
-
-    if(event.key === "Enter"){
-
-      event.preventDefault();
-
-      checkArea();
+      if(event.key === "Enter"){
+        checkPostcode();
+      }
 
     }
-
-  }
-);
+  );
 
 </script>
+
 
 </body>
 
