@@ -1889,10 +1889,17 @@ async function route(a,b){
     );
 
 
-  return
+  const distanceMetres = j.routes[0].distance;
 
-    j.routes[0].distance /
-    1609.344;
+  if(
+    typeof distanceMetres !== "number" ||
+    !Number.isFinite(distanceMetres) ||
+    distanceMetres < 0
+  ){
+    throw new Error("Invalid route distance");
+  }
+
+  return distanceMetres / 1609.344;
 
 }
 
@@ -2077,6 +2084,10 @@ async()=>{
       )/10;
 
 
+    if(!Number.isFinite(tm) || tm < 0){
+      throw new Error("Invalid travel distance");
+    }
+
     routeOK =
       true;
 
@@ -2189,7 +2200,9 @@ async()=>{
 
     box.textContent =
 
-      "⚠️ We couldn't check that postcode. Please check it and try again.";
+      e.message === "Invalid route distance" || e.message === "Invalid travel distance" || e.message === "Routing failed" || e.message === "No route"
+      ? "⚠️ We couldn't calculate travel. No travel charge has been added. Please try again or contact Karl."
+      : "⚠️ We couldn't check that postcode. Please check it and try again.";
 
 
     update();
