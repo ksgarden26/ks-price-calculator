@@ -202,7 +202,7 @@ body{
 
 .wa{
   display:block;
-  background:#25D366;
+  background:var(--g);
   color:#fff!important;
   text-decoration:none;
   padding:15px;
@@ -494,8 +494,15 @@ td:last-child{
     id="wa"
     target="_blank"
     rel="noopener">
-    💬 Request My Free Quote
+    ✉️ Request My Quote by Email
   </a>
+
+  <p class="note">
+    This opens your email app with your enquiry details ready to review and send.
+    You can attach garden photos before sending.
+    If your email app does not open, <a href="https://ksgardenservices.co.uk/contact" target="_top">use our enquiry form</a>
+    or email <a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a>.
+  </p>
 
 </div>
 
@@ -1444,10 +1451,10 @@ function update(){
 
 
     wa.textContent =
-      "💬 Ask About My Area";
+      "✉️ Ask About My Area by Email";
 
 
-    setWhatsApp(
+    setEmail(
       v,
       s,
       maint,
@@ -1497,10 +1504,10 @@ function update(){
 
 
     wa.textContent =
-      "💬 Ask About a One-Off Job";
+      "✉️ Email About a One-Off Job";
 
 
-    setWhatsApp(
+    setEmail(
       v,
       s,
       maint,
@@ -1689,10 +1696,10 @@ function update(){
 
 
   wa.textContent =
-    "💬 Request My Free Quote";
+    "✉️ Request My Quote by Email";
 
 
-  setWhatsApp(
+  setEmail(
 
     v,
 
@@ -1711,10 +1718,10 @@ function update(){
 
 
 /* ==========================================
-   WHATSAPP
+   EMAIL ENQUIRIES
 ========================================== */
 
-function setWhatsApp(
+function setEmail(
   v,
   s,
   maint,
@@ -1750,6 +1757,7 @@ function setWhatsApp(
     sizes[s][0]+
 
     maintenanceText+
+    (v === "grass" ? "\nLawn areas: "+$("lawns").options[$("lawns").selectedIndex].text : "")+
     "\n"+
 
     "Condition: "+
@@ -1799,13 +1807,16 @@ function setWhatsApp(
     result+
     "\n\n"+
 
-    "Could I get a confirmed quote please?";
+    "Could I get a confirmed quote please?\n\n"+
+    "Name: \nFull garden address: \nPhone number (optional): \n"+
+    "Additional details: \n\nI can attach garden photos to this email.";
 
 
   wa.href =
 
-    "https://wa.me/447715559170?text="+
-    encodeURIComponent(msg);
+    "mailto:info@ksgardenservices.co.uk?subject="+
+    encodeURIComponent("Website quote request — "+P[v][0])+
+    "&body="+encodeURIComponent(msg);
 
 }
 
