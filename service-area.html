@@ -232,9 +232,14 @@ button:hover{
     href="#"
     target="_blank"
     rel="noopener">
-    Confirm your address on WhatsApp
+    Confirm Your Area by Email
   </a>
 
+
+  <p class="note">
+    The email button opens your email app. Review your message and send it to Karl.
+    If it does not open, <a href="https://ksgardenservices.co.uk/contact" target="_top">use our enquiry form</a>.
+  </p>
 
   <p class="note">
     This checker is a guide for regular garden maintenance.
@@ -289,8 +294,9 @@ function showResult(type,title,message,postcode){
 
 
   whatsapp.href =
-    "https://wa.me/447715559170?text=" +
-    encodeURIComponent(text);
+    "mailto:info@ksgardenservices.co.uk?subject=" +
+    encodeURIComponent("Website service-area enquiry — " + postcode) +
+    "&body=" + encodeURIComponent(text + "\n\nName: \nFull garden address: \nWork required: ");
 
 }
 
