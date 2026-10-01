@@ -576,7 +576,7 @@ td:last-child{
     Enter and check your postcode above to see your estimate. Your final price will always be confirmed before work begins.
   </p>
 
-  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button>
+  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button><div id="quoteSuccess" style="display:none;margin-top:12px;padding:13px 14px;border-radius:10px;background:#edf7ef;border:1px solid #b8d8bf;color:#173d25;font-weight:700;line-height:1.45">✅ Enquiry received. Your email app should open so you can review and send the prepared message.</div>
   <button class="resetbtn" id="resetBtn" type="button">↻ Start Again</button>
 
   <p class="note">
@@ -2249,6 +2249,9 @@ wa.addEventListener("click",function(){
 
   update();
   sendLeadToCRM();
+  $("quoteSuccess").style.display="block";
+  wa.textContent="✅ Enquiry Received";
+  wa.disabled=true;
 
   const mailto="mailto:info@ksgardenservices.co.uk?subject="+
     encodeURIComponent(wa.dataset.subject || "Website quote request")+
@@ -2273,6 +2276,10 @@ $("resetBtn").addEventListener("click",()=>{
   $("custPhone").value="";
   $("custEmail").value="";
   $("details").value="";
+  $("quoteSuccess").style.display="none";
+  wa.textContent="✉️ Request This Quote";
+  wa.disabled=false;
+  wa.dataset.crmSent="";
   postcodeChecked=false;
   areaStatus="unchecked";
   areaMessage="";
