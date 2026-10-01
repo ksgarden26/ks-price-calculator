@@ -1648,8 +1648,8 @@ function setEmail(v,s,maint,result){
     "Hi Karl, I've used the price guide on the KS Garden Services website.\n\n"+
     "Service: "+P[v][0]+"\n"+
     "Size: "+sizes[s][0]+
-    maintenanceText++
-    serviceDetailText
+    maintenanceText+
+    serviceDetailText+
     (v === "grass" ? "\nLawn areas: "+$("lawns").options[$("lawns").selectedIndex].text : "")+
     "\nCondition: "+cn[condition.value]+
     "\nGreen waste removal: "+($("waste").value==="yes" ? "Yes" : "No / green bin available")+
@@ -1658,8 +1658,8 @@ function setEmail(v,s,maint,result){
     "\nInternal travel: "+(routeOK ? tm+" miles / £"+tc+" allowance" : "Not calculated")+
     "\nGuide result: "+result+
     "\n\nCustomer details"+
-    "\nName: "+(name || "Not entered")++
-    "\nGarden address: "+(address || "Not entered")
+    "\nName: "+(name || "Not entered")+
+    "\nGarden address: "+(address || "Not entered")+
     "\nPhone: "+(phone || "Not entered")+
     "\nEmail: "+(email || "Not entered")+
     "\nAdditional details: "+(details || "None provided")+
