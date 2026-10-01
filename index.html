@@ -537,7 +537,7 @@ td:last-child{
 </div>
 
 
-<div class="field">
+<div class="field" id="wasteField">
 
   <label id="wasteLabel">
     6. Green waste
@@ -1699,6 +1699,7 @@ function setEmail(v,s,maint,result){
     "Service: "+P[v][0]+"\n"+
     "Size: "+sizes[s][0]+
     maintenanceText+
+    serviceDetailText+
     (v === "grass" ? "\nLawn areas: "+$("lawns").options[$("lawns").selectedIndex].text : "")+
     "\nCondition: "+cn[condition.value]+
     "\nGreen waste removal: "+($("waste").value==="yes" ? "Yes" : "No / green bin available")+
@@ -1708,6 +1709,7 @@ function setEmail(v,s,maint,result){
     "\nGuide result: "+result+
     "\n\nCustomer details"+
     "\nName: "+(name || "Not entered")+
+    "\nGarden address: "+(address || "Not entered")+
     "\nPhone: "+(phone || "Not entered")+
     "\nEmail: "+(email || "Not entered")+
     "\nAdditional details: "+(details || "None provided")+
