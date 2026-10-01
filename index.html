@@ -409,6 +409,27 @@ td:last-child{
 </div>
 
 
+<div class="field" id="hedgeField" style="display:none">
+  <label>3. Tell me about the hedge</label>
+  <select id="hedgeSize">
+    <option value="small">Up to 5m long / easy to reach</option>
+    <option value="medium">About 5–10m long</option>
+    <option value="large">Over 10m long or tall</option>
+  </select>
+  <div class="help">Choose the closest match. You can add exact measurements or photos when requesting your quote.</div>
+</div>
+
+<div class="field" id="pressureField" style="display:none">
+  <label>3. What are you having pressure washed?</label>
+  <select id="pressureType">
+    <option value="patio">Patio</option>
+    <option value="driveway">Driveway</option>
+    <option value="paths">Paths / paved areas</option>
+    <option value="mixed">A mixture of areas</option>
+  </select>
+  <div class="help">Choose the approximate size above based on the total area being cleaned.</div>
+</div>
+
 <div class="field">
 
   <label id="conditionLabel">
@@ -1217,19 +1238,26 @@ function help(){
 
 
   $("maintenanceField").style.display =
+    v==="maintenance" ? "block" : "none";
 
-    v==="maintenance"
-    ?
-    "block"
-    :
-    "none";
+  $("hedgeField").style.display =
+    v==="hedge" ? "block" : "none";
+
+  $("pressureField").style.display =
+    v==="pressure" ? "block" : "none";
+
+  const wasteRelevant = !["treatment","pressure"].includes(v);
+  $("wasteField").style.display = wasteRelevant ? "block" : "none";
+  if(!wasteRelevant) $("waste").value = "no";
 
 
   const off =
 
     (
       v==="grass" ||
-      v==="maintenance"
+      v==="maintenance" ||
+      v==="hedge" ||
+      v==="pressure"
     )
 
     ?
@@ -2080,6 +2108,8 @@ post.oninput =
   $("waste"),
   $("lawns"),
   $("maintArea"),
+  $("hedgeSize"),
+  $("pressureType"),
   ...document.querySelectorAll(
     ".maintWork"
   )
@@ -2106,9 +2136,9 @@ wa.addEventListener("click",function(){
   const address=$("custAddress").value.trim();\n  const phone=$("custPhone").value.trim();
   const email=$("custEmail").value.trim();
 
-  if(!name || !phone){
-    alert("Please enter your name and phone number before requesting a quote.");
-    (!name ? $("custName") : $("custPhone")).focus();
+  if(!name || !address || !phone){
+    alert("Please enter your name, garden address and phone number before requesting a quote.");
+    (!name ? $("custName") : !address ? $("custAddress") : $("custPhone")).focus();
     return;
   }
 
