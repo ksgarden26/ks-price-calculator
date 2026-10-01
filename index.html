@@ -255,6 +255,17 @@ body{
   animation:ksSpin 2.8s linear infinite;
 }
 @keyframes ksSpin{to{transform:rotate(360deg)}}
+.loaderScene{position:relative;width:240px;height:76px;margin:14px auto 8px;overflow:hidden}
+.grassStrip{position:absolute;left:0;right:0;bottom:8px;height:4px;background:var(--g);border-radius:4px}
+.mowerGuy{position:absolute;left:-62px;bottom:12px;font-size:30px;white-space:nowrap;animation:mowAcross 3.8s ease-in-out infinite}
+.plantGrow{position:absolute;right:18px;bottom:12px;font-size:32px;transform-origin:bottom center;animation:plantGrow 2.4s ease-in-out infinite}
+.clipping{position:absolute;bottom:17px;font-size:13px;opacity:0;animation:clipFly 3.8s linear infinite}
+.clipping.c1{animation-delay:.6s}.clipping.c2{animation-delay:1.1s}.clipping.c3{animation-delay:1.6s}
+@keyframes mowAcross{0%{left:-62px}45%,60%{left:118px}100%{left:245px}}
+@keyframes plantGrow{0%,100%{transform:scale(.65) rotate(-3deg);opacity:.65}50%{transform:scale(1.08) rotate(3deg);opacity:1}}
+@keyframes clipFly{0%,25%{opacity:0;transform:translate(70px,0) rotate(0)}35%{opacity:1}60%{opacity:0;transform:translate(120px,-18px) rotate(100deg)}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.loaderLogo,.loaderFallback,.mowerGuy,.plantGrow,.clipping{animation:none}}
+
 
 .grid{
   display:grid;
@@ -607,6 +618,14 @@ Your final price will always be agreed before work begins.
       onerror="this.style.display='none';document.getElementById('loaderFallback').style.display='flex'">
     <div class="loaderFallback" id="loaderFallback">KS</div>
     <strong>Preparing your estimate…</strong>
+    <div class="loaderScene" aria-hidden="true">
+      <div class="grassStrip"></div>
+      <div class="mowerGuy">🧑‍🌾 🏡</div>
+      <div class="plantGrow">🌱</div>
+      <span class="clipping c1">🌿</span>
+      <span class="clipping c2">·</span>
+      <span class="clipping c3">🌿</span>
+    </div>
     <div class="note" style="margin-top:8px">Checking your area and calculating your price.</div>
   </div>
 </div>
