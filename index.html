@@ -579,12 +579,12 @@ td:last-child{
   <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button><div id="quoteSuccess" style="display:none;margin-top:12px;padding:15px;border-radius:10px;background:#edf7ef;border:1px solid #b8d8bf;color:#173d25;line-height:1.5">
     <strong>✅ Details received</strong><br>
     Next, please attach 2–4 clear photos of the garden or area you would like quoted. Wide shots are best, plus any close-ups of problem areas or access.
-    <button id="openEmailBtn" type="button" class="travelbtn" style="margin-top:12px">📷 Open Gmail &amp; Add Photos</button>
+    <button id="openEmailBtn" type="button" class="travelbtn" style="margin-top:12px">📷 Open Email &amp; Add Photos</button>
   </div>
   <button class="resetbtn" id="resetBtn" type="button">↻ Start Again</button>
 
   <p class="note">
-    This opens Gmail in your browser with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
+    Choose how you would like to open your email, with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
     You can attach garden photos before sending.
     If your email app does not open, <a href="https://ksgardenservices.co.uk/contact" target="_top">use our enquiry form</a>
     or email <a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a>.
@@ -2269,21 +2269,70 @@ $("openEmailBtn").addEventListener("click",function(){
   const subject=wa.dataset.subject || "Website quote request";
   const body=(wa.dataset.body || "")+
     "\n\nPlease attach 2–4 clear garden photos before sending this email.";
+  const to="info@ksgardenservices.co.uk";
 
-  const gmailUrl=
-    "https://mail.google.com/mail/?view=cm&fs=1"+
-    "&to="+encodeURIComponent("info@ksgardenservices.co.uk")+
-    "&su="+encodeURIComponent(subject)+
-    "&body="+encodeURIComponent(body);
+  let chooser=$("emailChooser");
+  if(!chooser){
+    chooser=document.createElement("div");
+    chooser.id="emailChooser";
+    chooser.style.cssText="margin-top:12px;padding:14px;border:1px solid #d8e2d9;border-radius:10px;background:#fff;text-align:left";
+    chooser.innerHTML=
+      '<strong style="display:block;margin-bottom:9px;color:#173d25">How would you like to send your email?</strong>'+
+      '<div style="display:grid;gap:8px">'+
+      '<button type="button" class="travelbtn" id="gmailChoice">Gmail</button>'+
+      '<button type="button" class="travelbtn" id="outlookChoice">Outlook / Hotmail</button>'+
+      '<button type="button" class="travelbtn" id="yahooChoice">Yahoo Mail</button>'+
+      '<button type="button" class="travelbtn" id="defaultChoice">Default Email App</button>'+
+      '<button type="button" class="resetbtn" id="copyChoice">Copy Email Details</button>'+
+      '</div>';
+    $("quoteSuccess").appendChild(chooser);
 
-  const win=window.open(gmailUrl,"_blank");
+    const openTop=url=>{
+      const w=window.open(url,"_blank");
+      if(!w){
+        try{ window.top.location.href=url; }
+        catch(err){ window.location.href=url; }
+      }
+    };
 
-  if(!win){
-    try{
-      window.top.location.href=gmailUrl;
-    }catch(err){
-      window.location.href=gmailUrl;
-    }
+    $("gmailChoice").onclick=()=>openTop(
+      "https://mail.google.com/mail/?view=cm&fs=1"+
+      "&to="+encodeURIComponent(to)+
+      "&su="+encodeURIComponent(subject)+
+      "&body="+encodeURIComponent(body)
+    );
+
+    $("outlookChoice").onclick=()=>openTop(
+      "https://outlook.live.com/mail/0/deeplink/compose?to="+encodeURIComponent(to)+
+      "&subject="+encodeURIComponent(subject)+
+      "&body="+encodeURIComponent(body)
+    );
+
+    $("yahooChoice").onclick=()=>openTop(
+      "https://compose.mail.yahoo.com/?to="+encodeURIComponent(to)+
+      "&subject="+encodeURIComponent(subject)+
+      "&body="+encodeURIComponent(body)
+    );
+
+    $("defaultChoice").onclick=()=>{
+      const mailto="mailto:"+to+
+        "?subject="+encodeURIComponent(subject)+
+        "&body="+encodeURIComponent(body);
+      try{ window.top.location.href=mailto; }
+      catch(err){ window.location.href=mailto; }
+    };
+
+    $("copyChoice").onclick=async()=>{
+      const text="To: "+to+"\nSubject: "+subject+"\n\n"+body;
+      try{
+        await navigator.clipboard.writeText(text);
+        $("copyChoice").textContent="✅ Copied — paste into your email";
+      }catch(err){
+        alert(text);
+      }
+    };
+  }else{
+    chooser.style.display = chooser.style.display==="none" ? "block" : "none";
   }
 });
 
