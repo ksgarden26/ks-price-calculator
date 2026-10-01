@@ -502,13 +502,7 @@ td:last-child{
     will always be agreed before work begins.
   </p>
 
-  <a
-    class="wa hidden"
-    id="wa"
-    target="_blank"
-    rel="noopener">
-    ✉️ Request My Quote by Email
-  </a>
+  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request My Quote by Email</button>
 
   <p class="note">
     This opens your email app with your enquiry details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
@@ -1772,9 +1766,7 @@ function setEmail(v,s,maint,result){
 
   wa.dataset.subject = "Website quote request — "+P[v][0];
   wa.dataset.body = msg;
-  wa.href = "mailto:info@ksgardenservices.co.uk?subject="+
-    encodeURIComponent(wa.dataset.subject)+
-    "&body="+encodeURIComponent(msg);
+
 }
 
 /* ==========================================
@@ -2278,26 +2270,34 @@ post.oninput =
   $(id).addEventListener("input",update);
 });
 
-wa.addEventListener("click",function(e){
+wa.addEventListener("click",function(){
   const name=$("custName").value.trim();
   const phone=$("custPhone").value.trim();
   const email=$("custEmail").value.trim();
 
   if(!name || !phone){
-    e.preventDefault();
     alert("Please enter your name and phone number before requesting a quote.");
     (!name ? $("custName") : $("custPhone")).focus();
     return;
   }
 
   if(email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){
-    e.preventDefault();
     alert("Please check the email address you entered.");
     $("custEmail").focus();
     return;
   }
 
   update();
+
+  const mailto="mailto:info@ksgardenservices.co.uk?subject="+
+    encodeURIComponent(wa.dataset.subject || "Website quote request")+
+    "&body="+encodeURIComponent(wa.dataset.body || "");
+
+  try{
+    window.top.location.href=mailto;
+  }catch(err){
+    window.location.href=mailto;
+  }
 });
 
 
