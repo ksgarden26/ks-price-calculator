@@ -1772,7 +1772,9 @@ function setEmail(v,s,maint,result){
 
   wa.dataset.subject = "Website quote request — "+P[v][0];
   wa.dataset.body = msg;
-  wa.href = "#";
+  wa.href = "mailto:info@ksgardenservices.co.uk?subject="+
+    encodeURIComponent(wa.dataset.subject)+
+    "&body="+encodeURIComponent(msg);
 }
 
 /* ==========================================
@@ -2277,31 +2279,25 @@ post.oninput =
 });
 
 wa.addEventListener("click",function(e){
-  e.preventDefault();
-
   const name=$("custName").value.trim();
   const phone=$("custPhone").value.trim();
+  const email=$("custEmail").value.trim();
 
   if(!name || !phone){
+    e.preventDefault();
     alert("Please enter your name and phone number before requesting a quote.");
     (!name ? $("custName") : $("custPhone")).focus();
     return;
   }
 
-  const email=$("custEmail").value.trim();
-  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+  if(email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){
+    e.preventDefault();
     alert("Please check the email address you entered.");
     $("custEmail").focus();
     return;
   }
 
   update();
-
-  window.location.href =
-    "mailto:info@ksgardenservices.co.uk?subject="+
-    encodeURIComponent(wa.dataset.subject || "Website quote request")+
-    "&body="+
-    encodeURIComponent(wa.dataset.body || "");
 });
 
 
