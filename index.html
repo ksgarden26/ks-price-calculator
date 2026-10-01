@@ -2178,6 +2178,57 @@ post.oninput =
   $(id).addEventListener("input",update);
 });
 
+function buildCRMLead(){
+  const guideText=$("price").textContent || "";
+  return {
+    name:$("custName").value.trim(),
+    address:$("custAddress").value.trim(),
+    phone:$("custPhone").value.trim(),
+    email:$("custEmail").value.trim(),
+    postcode:pc || post.value.trim(),
+    service:P[service.value][0],
+    guidePrice:Number((guideText.match(/[0-9]+(?:\.[0-9]+)?/)||[""])[0]) || "",
+    status:"New Enquiry",
+    source:"Website",
+    details:$("details").value.trim(),
+    travelMiles:routeOK ? tm : "",
+    waste:$("waste").value==="yes" ? "Please remove green waste" : "No / green bin available",
+    size:sizes[size.value][0],
+    condition:cn[condition.value],
+    area:detectedArea || "",
+    website:""
+  };
+}
+
+function sendLeadToCRM(){
+  if(wa.dataset.crmSent==="1") return;
+  try{
+    const payload=JSON.stringify(buildCRMLead());
+    const endpoint="https://script.google.com/macros/s/AKfycbwW8E1QVRoCPLFqN2S7zUKpFKoFJWqUneAJuwFyd-0nzwcAK4NFJm94W85aHrUGelOdiw/exec";
+    let sent=false;
+
+    if(navigator.sendBeacon){
+      sent=navigator.sendBeacon(
+        endpoint,
+        new Blob([payload],{type:"text/plain;charset=UTF-8"})
+      );
+    }
+
+    if(!sent){
+      fetch(endpoint,{
+        method:"POST",
+        mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=UTF-8"},
+        body:payload
+      }).catch(()=>{});
+    }
+
+    wa.dataset.crmSent="1";
+  }catch(err){
+    console.warn("CRM submission skipped",err);
+  }
+}
+
 wa.addEventListener("click",function(){
   const name=$("custName").value.trim();
   const address=$("custAddress").value.trim();
@@ -2197,53 +2248,14 @@ wa.addEventListener("click",function(){
   }
 
   update();
-
-  if(wa.dataset.crmSent!=="1"){
-    const guideText=$("price").textContent || "";
-    const lead={
-      name:name,
-      address:address,
-      phone:phone,
-      email:email,
-      postcode:pc || post.value.trim(),
-      service:P[service.value][0],
-      guidePrice:Number((guideText.match(/[0-9]+(?:\.[0-9]+)?/)||[""])[0]) || "",
-      status:"New Enquiry",
-      source:"Website",
-      details:$("details").value.trim(),
-      travelMiles:routeOK ? tm : "",
-      waste:$("waste").value==="yes" ? "Please remove green waste" : "No / green bin available",
-      size:sizes[size.value][0],
-      condition:cn[condition.value],
-      area:detectedArea || "",
-      website:""
-    };
-
-    try{
-      fetch("https://script.google.com/macros/s/AKfycbwW8E1QVRoCPLFqN2S7zUKpFKoFJWqUneAJuwFyd-0nzwcAK4NFJm94W85aHrUGelOdiw/exec",{
-        method:"POST",
-        mode:"no-cors",
-        keepalive:true,
-        headers:{"Content-Type":"text/plain;charset=UTF-8"},
-        body:JSON.stringify(lead)
-      });
-      wa.dataset.crmSent="1";
-    }catch(err){
-      console.warn("CRM lead submission could not be started",err);
-    }
-  }
+  sendLeadToCRM();
 
   const mailto="mailto:info@ksgardenservices.co.uk?subject="+
     encodeURIComponent(wa.dataset.subject || "Website quote request")+
     "&body="+encodeURIComponent(wa.dataset.body || "");
 
-  try{
-    window.top.location.href=mailto;
-  }catch(err){
-    window.location.href=mailto;
-  }
+  window.location.href=mailto;
 });
-
 
 $("resetBtn").addEventListener("click",()=>{
   service.value="grass";
