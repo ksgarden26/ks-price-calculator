@@ -262,61 +262,6 @@ td:last-child{
   margin-top:12px;
 }
 
-
-.loaderOverlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(255,255,255,.94);
-  z-index:9999;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:24px;
-}
-.loaderOverlay.show{display:flex}
-.loaderMark{
-  width:92px;height:92px;
-  margin:0 auto 18px;
-  border-radius:50%;
-  border:6px solid #d8e2d9;
-  border-top-color:var(--g);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  animation:ksSpin 1.15s linear infinite;
-}
-.loaderMark span{
-  width:66px;height:66px;
-  border-radius:50%;
-  background:var(--g);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:24px;
-  font-weight:800;
-  letter-spacing:1px;
-}
-.loaderOverlay h3{color:var(--g);margin:0 0 6px;font-size:22px}
-.loaderOverlay p{margin:0;color:#555}
-@keyframes ksSpin{to{transform:rotate(360deg)}}
-.loaderMark span{animation:ksCounterSpin 1.15s linear infinite}
-@keyframes ksCounterSpin{to{transform:rotate(-360deg)}}
-.resetbtn{
-  width:100%;
-  margin-top:10px;
-  padding:13px;
-  border:1px solid var(--g);
-  border-radius:10px;
-  background:#fff;
-  color:var(--g);
-  font-weight:700;
-  font-size:15px;
-  cursor:pointer;
-}
-.resetbtn:hover{background:var(--l)}
-
 @media(max-width:650px){
   .wrap{padding:14px 8px}
   .card{padding:16px}
@@ -338,15 +283,7 @@ td:last-child{
 
 <body>
 
-<div class="loaderOverlay" id="loaderOverlay" aria-live="polite" aria-busy="true">
-  <div>
-    <div class="loaderMark"><span>KS</span></div>
-    <h3>Preparing your estimate…</h3>
-    <p>Checking your area and calculating your price.</p>
-  </div>
-</div>
-
-<main class="wrap" id="calculatorTop">
+<main class="wrap">
 
 <div class="head">
   <h1>🌿 Garden Service Price Guide</h1>
@@ -537,7 +474,7 @@ td:last-child{
 </div>
 
 
-<div class="field" id="wasteField">
+<div class="field">
 
   <label id="wasteLabel">
     6. Green waste
@@ -587,7 +524,6 @@ td:last-child{
   </p>
 
   <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button>
-  <button class="resetbtn" id="resetBtn" type="button">↻ Start Again</button>
 
   <p class="note">
     This opens your email app with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
@@ -1699,7 +1635,6 @@ function setEmail(v,s,maint,result){
     "Service: "+P[v][0]+"\n"+
     "Size: "+sizes[s][0]+
     maintenanceText+
-    serviceDetailText+
     (v === "grass" ? "\nLawn areas: "+$("lawns").options[$("lawns").selectedIndex].text : "")+
     "\nCondition: "+cn[condition.value]+
     "\nGreen waste removal: "+($("waste").value==="yes" ? "Yes" : "No / green bin available")+
@@ -1709,7 +1644,6 @@ function setEmail(v,s,maint,result){
     "\nGuide result: "+result+
     "\n\nCustomer details"+
     "\nName: "+(name || "Not entered")+
-    "\nGarden address: "+(address || "Not entered")+
     "\nPhone: "+(phone || "Not entered")+
     "\nEmail: "+(email || "Not entered")+
     "\nAdditional details: "+(details || "None provided")+
@@ -1814,13 +1748,6 @@ async function route(a,b){
 }
 
 
-function showLoader(){
-  $("loaderOverlay").classList.add("show");
-}
-function hideLoader(){
-  $("loaderOverlay").classList.remove("show");
-}
-
 /* ==========================================
    POSTCODE BUTTON
 ========================================== */
@@ -1858,8 +1785,6 @@ async()=>{
 
   }
 
-
-  showLoader();
 
   const btn =
     $("travelbtn");
@@ -2105,7 +2030,6 @@ async()=>{
 
   finally{
 
-    hideLoader();
 
     btn.disabled =
       false;
@@ -2209,8 +2133,7 @@ post.oninput =
 
 wa.addEventListener("click",function(){
   const name=$("custName").value.trim();
-  const address=$("custAddress").value.trim();
-  const phone=$("custPhone").value.trim();
+  const address=$("custAddress").value.trim();\n  const phone=$("custPhone").value.trim();
   const email=$("custEmail").value.trim();
 
   if(!name || !address || !phone){
@@ -2238,37 +2161,6 @@ wa.addEventListener("click",function(){
   }
 });
 
-
-$("resetBtn").addEventListener("click",()=>{
-  service.value="grass";
-  size.value="s";
-  condition.value="normal";
-  $("waste").value="no";
-  $("lawns").value="one";
-  $("maintArea").value="front";
-  document.querySelectorAll(".maintWork").forEach((el,i)=>el.checked=(i===0));
-  $("hedgeSize").value="small";
-  $("pressureType").value="patio";
-  post.value="";
-  $("custName").value="";
-  $("custAddress").value="";
-  $("custPhone").value="";
-  $("custEmail").value="";
-  $("details").value="";
-  postcodeChecked=false;
-  areaStatus="unchecked";
-  areaMessage="";
-  detectedArea="";
-  pc="";
-  tm=0;
-  tc=0;
-  routeOK=false;
-  $("travel").style.display="none";
-  $("travel").className="travel";
-  $("resultNote").textContent="Enter and check your postcode above to see your estimate. Your final price will always be confirmed before work begins.";
-  update();
-  $("calculatorTop").scrollIntoView({behavior:"smooth",block:"start"});
-});
 
 /* START */
 
