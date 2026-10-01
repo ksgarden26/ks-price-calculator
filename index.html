@@ -547,8 +547,8 @@ td:last-child{
 
 
 <div class="field" id="contactFields" style="display:none">
-  <label>Your name *</label>
-  <input id="custName" autocomplete="name" placeholder="Your name">
+  <label>Full name *</label>
+  <input id="custName" autocomplete="name" placeholder="First name and surname">
   <label style="margin-top:14px">Garden address *</label>
   <input id="custAddress" autocomplete="street-address" placeholder="House number and street">
   <label style="margin-top:14px">Phone number *</label>
@@ -2240,8 +2240,14 @@ wa.addEventListener("click",function(){
   const email=$("custEmail").value.trim();
 
   if(!name || !address || !phone){
-    alert("Please enter your name, garden address and phone number before requesting a quote.");
+    alert("Please enter your full name, garden address and phone number before requesting a quote.");
     (!name ? $("custName") : !address ? $("custAddress") : $("custPhone")).focus();
+    return;
+  }
+
+  if(name.trim().split(/\s+/).length < 2){
+    alert("Please enter both your first name and surname.");
+    $("custName").focus();
     return;
   }
 
