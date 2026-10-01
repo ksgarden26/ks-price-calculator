@@ -66,7 +66,8 @@ body{
 }
 
 .field select,
-.field input{
+.field input,
+.field textarea{
   width:100%;
   padding:13px;
   border:1px solid #bbb;
@@ -470,6 +471,18 @@ td:last-child{
 
 </div>
 
+
+<div class="field" id="contactFields" style="display:none">
+  <label>Your name *</label>
+  <input id="custName" autocomplete="name" placeholder="Your name">
+  <label style="margin-top:14px">Phone number *</label>
+  <input id="custPhone" type="tel" autocomplete="tel" placeholder="Your phone number">
+  <label style="margin-top:14px">Email address</label>
+  <input id="custEmail" type="email" autocomplete="email" placeholder="Your email address">
+  <label style="margin-top:14px">Anything else I should know?</label>
+  <textarea id="details" rows="5" placeholder="For example: access, parking, slopes, pets, specific areas you would like working on, or anything else that may help with your quote." style="resize:vertical;font-family:Arial,sans-serif"></textarea>
+  <div class="help">Your name and phone number are required for an email quote request. You can add garden photos in your email app before sending.</div>
+</div>
 
 <div class="result waiting" id="resultBox">
 
@@ -1407,6 +1420,7 @@ function update(){
 
 
     wa.classList.add("hidden");
+    $("contactFields").style.display="none";
 
 
     help();
@@ -1448,6 +1462,7 @@ function update(){
 
 
     wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
 
 
     wa.textContent =
@@ -1501,6 +1516,7 @@ function update(){
 
 
     wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
 
 
     wa.textContent =
@@ -1693,6 +1709,7 @@ function update(){
 
 
   wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
 
 
   wa.textContent =
@@ -1721,105 +1738,42 @@ function update(){
    EMAIL ENQUIRIES
 ========================================== */
 
-function setEmail(
-  v,
-  s,
-  maint,
-  result
-){
+function setEmail(v,s,maint,result){
+
+  const name = $("custName").value.trim();
+  const phone = $("custPhone").value.trim();
+  const email = $("custEmail").value.trim();
+  const details = $("details").value.trim();
 
   let maintenanceText = "";
 
-
   if(v==="maintenance"){
-
-    maintenanceText =
-
-      "\nMaintenance requested: "+
-
-      (
-        maint.description ||
-        "Not specified"
-      );
-
+    maintenanceText = "\nMaintenance requested: "+(maint.description || "Not specified");
   }
 
-
   const msg =
-
     "Hi Karl, I've used the price guide on the KS Garden Services website.\n\n"+
-
-    "Service: "+
-    P[v][0]+
-    "\n"+
-
-    "Size: "+
-    sizes[s][0]+
-
+    "Service: "+P[v][0]+"\n"+
+    "Size: "+sizes[s][0]+
     maintenanceText+
     (v === "grass" ? "\nLawn areas: "+$("lawns").options[$("lawns").selectedIndex].text : "")+
-    "\n"+
+    "\nCondition: "+cn[condition.value]+
+    "\nGreen waste removal: "+($("waste").value==="yes" ? "Yes" : "No / green bin available")+
+    "\nPostcode: "+(pc || post.value.trim() || "Not entered")+
+    "\nArea: "+(detectedArea || "Not confirmed")+
+    "\nApprox. travel: "+(routeOK ? tm+" miles" : "Not calculated")+
+    "\nGuide result: "+result+
+    "\n\nCustomer details"+
+    "\nName: "+(name || "Not entered")+
+    "\nPhone: "+(phone || "Not entered")+
+    "\nEmail: "+(email || "Not entered")+
+    "\nAdditional details: "+(details || "None provided")+
+    "\n\nCould I get a confirmed quote please?\n\nI can attach garden photos to this email.";
 
-    "Condition: "+
-    cn[condition.value]+
-    "\n"+
-
-    "Green waste removal: "+
-    (
-      $("waste").value==="yes"
-
-      ?
-
-      "Yes"
-
-      :
-
-      "No / green bin available"
-    )+
-    "\n"+
-
-    "Postcode: "+
-    (
-      pc ||
-      post.value.trim() ||
-      "Not entered"
-    )+
-    "\n"+
-
-    "Area: "+
-    (
-      detectedArea ||
-      "Not confirmed"
-    )+
-    "\n"+
-
-    "Approx. travel: "+
-    (
-      routeOK
-      ?
-      tm+" miles"
-      :
-      "Not calculated"
-    )+
-    "\n"+
-
-    "Guide result: "+
-    result+
-    "\n\n"+
-
-    "Could I get a confirmed quote please?\n\n"+
-    "Name: \nFull garden address: \nPhone number (required): \n"+
-    "Additional details: \n\nI can attach garden photos to this email.";
-
-
-  wa.href =
-
-    "mailto:info@ksgardenservices.co.uk?subject="+
-    encodeURIComponent("Website quote request — "+P[v][0])+
-    "&body="+encodeURIComponent(msg);
-
+  wa.dataset.subject = "Website quote request — "+P[v][0];
+  wa.dataset.body = msg;
+  wa.href = "#";
 }
-
 
 /* ==========================================
    POSTCODE LOOKUP
@@ -2316,6 +2270,39 @@ post.oninput =
   }
 
 );
+
+
+["custName","custPhone","custEmail","details"].forEach(id=>{
+  $(id).addEventListener("input",update);
+});
+
+wa.addEventListener("click",function(e){
+  e.preventDefault();
+
+  const name=$("custName").value.trim();
+  const phone=$("custPhone").value.trim();
+
+  if(!name || !phone){
+    alert("Please enter your name and phone number before requesting a quote.");
+    (!name ? $("custName") : $("custPhone")).focus();
+    return;
+  }
+
+  const email=$("custEmail").value.trim();
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert("Please check the email address you entered.");
+    $("custEmail").focus();
+    return;
+  }
+
+  update();
+
+  window.location.href =
+    "mailto:info@ksgardenservices.co.uk?subject="+
+    encodeURIComponent(wa.dataset.subject || "Website quote request")+
+    "&body="+
+    encodeURIComponent(wa.dataset.body || "");
+});
 
 
 /* START */
