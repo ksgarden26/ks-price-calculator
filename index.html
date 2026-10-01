@@ -565,7 +565,8 @@ td:last-child{
     Enter and check your postcode above to see your estimate. Your final price will always be confirmed before work begins.
   </p>
 
-  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button>\n  <button class="resetbtn" id="resetBtn" type="button">↻ Start Again</button>
+  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button>
+  <button class="resetbtn" id="resetBtn" type="button">↻ Start Again</button>
 
   <p class="note">
     This opens your email app with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
@@ -600,6 +601,15 @@ Your final price will always be agreed before work begins.
 
 </main>
 
+<div class="loaderOverlay" id="loaderOverlay" aria-hidden="true">
+  <div class="loaderCard">
+    <img class="loaderLogo" id="loaderLogo" src="ks-logo.png" alt="KS Garden Services"
+      onerror="this.style.display='none';document.getElementById('loaderFallback').style.display='flex'">
+    <div class="loaderFallback" id="loaderFallback">KS</div>
+    <strong>Preparing your estimate…</strong>
+    <div class="note" style="margin-top:8px">Checking your area and calculating your price.</div>
+  </div>
+</div>
 
 <script>
 
@@ -1638,7 +1648,8 @@ function setEmail(v,s,maint,result){
     "Hi Karl, I've used the price guide on the KS Garden Services website.\n\n"+
     "Service: "+P[v][0]+"\n"+
     "Size: "+sizes[s][0]+
-    maintenanceText+
+    maintenanceText++
+    serviceDetailText
     (v === "grass" ? "\nLawn areas: "+$("lawns").options[$("lawns").selectedIndex].text : "")+
     "\nCondition: "+cn[condition.value]+
     "\nGreen waste removal: "+($("waste").value==="yes" ? "Yes" : "No / green bin available")+
@@ -1647,7 +1658,8 @@ function setEmail(v,s,maint,result){
     "\nInternal travel: "+(routeOK ? tm+" miles / £"+tc+" allowance" : "Not calculated")+
     "\nGuide result: "+result+
     "\n\nCustomer details"+
-    "\nName: "+(name || "Not entered")+
+    "\nName: "+(name || "Not entered")++
+    "\nGarden address: "+(address || "Not entered")
     "\nPhone: "+(phone || "Not entered")+
     "\nEmail: "+(email || "Not entered")+
     "\nAdditional details: "+(details || "None provided")+
@@ -1752,6 +1764,15 @@ async function route(a,b){
 }
 
 
+function showLoader(){
+  $("loaderOverlay").classList.add("show");
+  $("loaderOverlay").setAttribute("aria-hidden","false");
+}
+function hideLoader(){
+  $("loaderOverlay").classList.remove("show");
+  $("loaderOverlay").setAttribute("aria-hidden","true");
+}
+
 /* ==========================================
    POSTCODE BUTTON
 ========================================== */
@@ -1792,6 +1813,8 @@ async()=>{
 
   const btn =
     $("travelbtn");
+
+  showLoader();
 
 
   btn.disabled =
@@ -2034,8 +2057,9 @@ async()=>{
 
   finally{
 
+    hideLoader();
 
-    btn.disabled =
+btn.disabled =
       false;
 
 
@@ -2166,6 +2190,37 @@ wa.addEventListener("click",function(){
   }
 });
 
+
+$("resetBtn").addEventListener("click",()=>{
+  service.value="grass";
+  size.value="s";
+  condition.value="normal";
+  $("waste").value="no";
+  $("lawns").value="one";
+  $("maintArea").value="front";
+  document.querySelectorAll(".maintWork").forEach((el,i)=>{ el.checked=(i===0); });
+  $("hedgeSize").value="small";
+  $("pressureType").value="patio";
+  post.value="";
+  $("custName").value="";
+  $("custAddress").value="";
+  $("custPhone").value="";
+  $("custEmail").value="";
+  $("details").value="";
+  postcodeChecked=false;
+  areaStatus="unchecked";
+  areaMessage="";
+  detectedArea="";
+  pc="";
+  tm=0;
+  tc=0;
+  routeOK=false;
+  $("travel").style.display="none";
+  $("travel").className="travel";
+  hideLoader();
+  update();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
 
 /* START */
 
