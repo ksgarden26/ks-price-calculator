@@ -579,12 +579,12 @@ td:last-child{
   <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button><div id="quoteSuccess" style="display:none;margin-top:12px;padding:15px;border-radius:10px;background:#edf7ef;border:1px solid #b8d8bf;color:#173d25;line-height:1.5">
     <strong>✅ Details received</strong><br>
     Next, please attach 2–4 clear photos of the garden or area you would like quoted. Wide shots are best, plus any close-ups of problem areas or access.
-    <button id="openEmailBtn" type="button" class="travelbtn" style="margin-top:12px">📷 Open Email &amp; Add Photos</button>
+    <button id="openEmailBtn" type="button" class="travelbtn" style="margin-top:12px">📷 Open Gmail &amp; Add Photos</button>
   </div>
   <button class="resetbtn" id="resetBtn" type="button">↻ Start Again</button>
 
   <p class="note">
-    This opens your email app with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
+    This opens Gmail in your browser with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
     You can attach garden photos before sending.
     If your email app does not open, <a href="https://ksgardenservices.co.uk/contact" target="_top">use our enquiry form</a>
     or email <a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a>.
@@ -2266,17 +2266,24 @@ wa.addEventListener("click",function(){
 });
 
 $("openEmailBtn").addEventListener("click",function(){
-  const mailto="mailto:info@ksgardenservices.co.uk?subject="+
-    encodeURIComponent(wa.dataset.subject || "Website quote request")+
-    "&body="+encodeURIComponent(
-      (wa.dataset.body || "")+
-      "\n\nPlease attach 2–4 clear garden photos before sending this email."
-    );
+  const subject=wa.dataset.subject || "Website quote request";
+  const body=(wa.dataset.body || "")+
+    "\n\nPlease attach 2–4 clear garden photos before sending this email.";
 
-  try{
-    window.top.location.href=mailto;
-  }catch(err){
-    window.location.href=mailto;
+  const gmailUrl=
+    "https://mail.google.com/mail/?view=cm&fs=1"+
+    "&to="+encodeURIComponent("info@ksgardenservices.co.uk")+
+    "&su="+encodeURIComponent(subject)+
+    "&body="+encodeURIComponent(body);
+
+  const win=window.open(gmailUrl,"_blank");
+
+  if(!win){
+    try{
+      window.top.location.href=gmailUrl;
+    }catch(err){
+      window.location.href=gmailUrl;
+    }
   }
 });
 
