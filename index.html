@@ -438,7 +438,7 @@ td:last-child{
 
   <small>
     Your postcode is used to check whether KS Garden Services
-    covers your area and calculate approximate travel.
+    covers your area and provide the correct estimate.
   </small>
 
   <button
@@ -487,7 +487,7 @@ td:last-child{
 <div class="result waiting" id="resultBox">
 
   <small>
-    <b>YOUR ESTIMATED STARTING PRICE</b>
+    <b>YOUR ESTIMATED PRICE</b>
   </small>
 
   <div class="price" id="price">
@@ -498,14 +498,14 @@ td:last-child{
 
   <p class="note">
     Enter and check your postcode above to see your price.
-    This online estimate is a guide only. Your final price
-    will always be agreed before work begins.
+    This online estimate is based on the details you provide. Your final price
+    will always be confirmed before work begins.
   </p>
 
-  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request My Quote by Email</button>
+  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button>
 
   <p class="note">
-    This opens your email app with your enquiry details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
+    This opens your email app with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
     You can attach garden photos before sending.
     If your email app does not open, <a href="https://ksgardenservices.co.uk/contact" target="_top">use our enquiry form</a>
     or email <a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a>.
@@ -554,44 +554,6 @@ td:last-child{
 </section>
 
 
-<section class="card">
-
-<h3 class="title">
-  🚐 Travel
-</h3>
-
-<table>
-
-<tr>
-  <td>Up to 5 miles</td>
-  <td>Included</td>
-</tr>
-
-<tr>
-  <td>5–10 miles</td>
-  <td>+£5</td>
-</tr>
-
-<tr>
-  <td>10–15 miles</td>
-  <td>+£10</td>
-</tr>
-
-<tr>
-  <td>15–20 miles</td>
-  <td>+£15</td>
-</tr>
-
-<tr>
-  <td>Outside regular service area</td>
-  <td>Contact us</td>
-</tr>
-
-</table>
-
-</section>
-
-
 <section class="card note">
 
 <b>About our guide prices</b>
@@ -608,9 +570,6 @@ waste bin. Removal of green waste is chargeable.
 Your final price will always be agreed before work begins.
 </b>
 
-<div class="tiny">
-Approximate travel distances use postcode and OpenStreetMap routing data.
-</div>
 
 </section>
 
@@ -1579,127 +1538,17 @@ function update(){
 
 
   price.textContent =
-    "From £"+total;
-
-
-  let rows = [
-
-    [
-      "Service",
-      P[v][0]+
-      " — £"+
-      base
-    ]
-
-  ];
-
-
-  if(
-    v==="maintenance" &&
-    maint.areaExtra
-  ){
-
-    rows.push([
-
-      "Front & back gardens",
-
-      "+£"+
-      maint.areaExtra
-
-    ]);
-
-  }
-
-
-  if(
-    v==="maintenance" &&
-    maint.workExtra
-  ){
-
-    rows.push([
-
-      "Selected maintenance work",
-
-      "+£"+
-      maint.workExtra
-
-    ]);
-
-  }
-
-
-  if(conditionExtra){
-
-    rows.push([
-
-      cn[condition.value],
-
-      "+£"+
-      conditionExtra
-
-    ]);
-
-  }
-
-
-  if(wasteExtra){
-
-    rows.push([
-
-      "Green waste removal",
-
-      "+£"+
-      wasteExtra
-
-    ]);
-
-  }
-
-
-  rows.push([
-
-    "Service area",
-
-    detectedArea ||
-    "Covered"
-
-  ]);
-
-
-  rows.push([
-
-    "Travel",
-
-    tm+
-    " miles — "+
-    (
-      tc
-      ?
-      "+£"+tc
-      :
-      "Included"
-    )
-
-  ]);
-
+    "£"+total;
 
   $("break").innerHTML =
-
-    rows.map(
-
-      r =>
-
-      '<div class="row">'+
-      '<span>'+
-      r[0]+
-      '</span>'+
-      '<strong>'+
-      r[1]+
-      '</strong>'+
-      '</div>'
-
-    )
-    .join("");
+    '<div class="row">'+
+    '<span>Service</span>'+
+    '<strong>'+P[v][0]+'</strong>'+
+    '</div>'+
+    '<div class="row">'+
+    '<span>Service area</span>'+
+    '<strong>'+(detectedArea || "Covered")+'</strong>'+
+    '</div>';
 
 
   wa.classList.remove("hidden");
@@ -1707,7 +1556,7 @@ function update(){
 
 
   wa.textContent =
-    "✉️ Request My Quote by Email";
+    "✉️ Request This Quote";
 
 
   setEmail(
@@ -1718,7 +1567,7 @@ function update(){
 
     maint,
 
-    "From £"+total
+    "£"+total
 
   );
 
@@ -1755,7 +1604,7 @@ function setEmail(v,s,maint,result){
     "\nGreen waste removal: "+($("waste").value==="yes" ? "Yes" : "No / green bin available")+
     "\nPostcode: "+(pc || post.value.trim() || "Not entered")+
     "\nArea: "+(detectedArea || "Not confirmed")+
-    "\nApprox. travel: "+(routeOK ? tm+" miles" : "Not calculated")+
+    "\nInternal travel: "+(routeOK ? tm+" miles / £"+tc+" allowance" : "Not calculated")+
     "\nGuide result: "+result+
     "\n\nCustomer details"+
     "\nName: "+(name || "Not entered")+
@@ -2017,9 +1866,7 @@ async()=>{
 
       "✅ <strong>Area covered</strong><br>"+
 
-      areaMessage+
-
-      "<br><br>Calculating travel...";
+      areaMessage+"<br><br>Calculating your estimate...";
 
 
     update();
@@ -2085,32 +1932,8 @@ async()=>{
 
 
     box.innerHTML =
-
       "✅ <strong>We cover your area</strong><br>"+
-
-      areaMessage+
-
-      "<br><br>"+
-
-      "📍 Approx. driving distance: <strong>"+
-      tm+
-      " miles</strong><br>"+
-
-      "🚐 "+
-
-      (
-        tc
-
-        ?
-
-        "Travel contribution: <strong>£"+
-        tc+
-        "</strong>"
-
-        :
-
-        "Travel: <strong>Included</strong>"
-      );
+      areaMessage;
 
 
     update();
