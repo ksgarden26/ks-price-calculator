@@ -412,7 +412,7 @@ td:last-child{
 <div class="field">
 
   <label id="conditionLabel">
-    4. Current condition
+    4. What condition is it currently in?
   </label>
 
   <select id="condition">
@@ -475,13 +475,15 @@ td:last-child{
 <div class="field" id="contactFields" style="display:none">
   <label>Your name *</label>
   <input id="custName" autocomplete="name" placeholder="Your name">
+  <label style="margin-top:14px">Garden address *</label>
+  <input id="custAddress" autocomplete="street-address" placeholder="House number and street">
   <label style="margin-top:14px">Phone number *</label>
   <input id="custPhone" type="tel" autocomplete="tel" placeholder="Your phone number">
   <label style="margin-top:14px">Email address</label>
   <input id="custEmail" type="email" autocomplete="email" placeholder="Your email address">
   <label style="margin-top:14px">Anything else I should know?</label>
   <textarea id="details" rows="5" placeholder="For example: access, parking, slopes, pets, specific areas you would like working on, or anything else that may help with your quote." style="resize:vertical;font-family:Arial,sans-serif"></textarea>
-  <div class="help">Your name and phone number are required for an email quote request. You can add garden photos in your email app before sending.</div>
+  <div class="help">Your name, garden address and phone number are required to request a quote. You can add garden photos in your email app before sending.</div>
 </div>
 
 <div class="result waiting" id="resultBox">
@@ -496,10 +498,8 @@ td:last-child{
 
   <div class="break" id="break"></div>
 
-  <p class="note">
-    Enter and check your postcode above to see your price.
-    This online estimate is based on the details you provide. Your final price
-    will always be confirmed before work begins.
+  <p class="note" id="resultNote">
+    Enter and check your postcode above to see your estimate. Your final price will always be confirmed before work begins.
   </p>
 
   <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button>
@@ -1244,7 +1244,7 @@ function help(){
   $("conditionLabel").textContent =
 
     (3+off)+
-    ". Current condition";
+    ". What condition is it currently in?";
 
 
   $("postcodeLabel").textContent =
@@ -1584,11 +1584,19 @@ function update(){
 function setEmail(v,s,maint,result){
 
   const name = $("custName").value.trim();
+  const address = $("custAddress").value.trim();
   const phone = $("custPhone").value.trim();
   const email = $("custEmail").value.trim();
   const details = $("details").value.trim();
 
   let maintenanceText = "";
+  let serviceDetailText = "";
+  if(v==="hedge"){
+    serviceDetailText = "\nHedge details: "+$("hedgeSize").options[$("hedgeSize").selectedIndex].text;
+  }
+  if(v==="pressure"){
+    serviceDetailText = "\nPressure washing area: "+$("pressureType").options[$("pressureType").selectedIndex].text;
+  }
 
   if(v==="maintenance"){
     maintenanceText = "\nMaintenance requested: "+(maint.description || "Not specified");
@@ -2089,13 +2097,13 @@ post.oninput =
 );
 
 
-["custName","custPhone","custEmail","details"].forEach(id=>{
+["custName","custAddress","custPhone","custEmail","details"].forEach(id=>{
   $(id).addEventListener("input",update);
 });
 
 wa.addEventListener("click",function(){
   const name=$("custName").value.trim();
-  const phone=$("custPhone").value.trim();
+  const address=$("custAddress").value.trim();\n  const phone=$("custPhone").value.trim();
   const email=$("custEmail").value.trim();
 
   if(!name || !phone){
