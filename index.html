@@ -846,15 +846,15 @@ const waste = {
 
 const lawn = {
 
-  s:"up to 50m² (roughly up to 2–3 car parking spaces)",
+  s:"up to 50m² (roughly up to 4 car parking spaces)",
 
-  m:"51–100m² (roughly 3–5 car parking spaces)",
+  m:"51–100m² (roughly 4–8 car parking spaces)",
 
-  l:"101–200m² (roughly 5–10 car parking spaces)",
+  l:"101–200m² (roughly 8–16 car parking spaces)",
 
-  xl:"201–350m² (a large family garden)",
+  xl:"201–350m² (roughly 16–28 car parking spaces)",
 
-  xxl:"350m²+ (a very large garden / extensive lawn)"
+  xxl:"over 350m² (roughly 28+ car parking spaces — manual quote)"
 
 };
 
@@ -1419,6 +1419,24 @@ function help(){
     $("pressureSandNote").style.display = needsSand ? "block" : "none";
   }
 
+  const genericSizeLabels = {
+    s:"Small",
+    m:"Medium",
+    l:"Large",
+    xl:"XL",
+    xxl:"XXL"
+  };
+  const lawnSizeLabels = {
+    s:"Small — up to 50m² / about 4 parking spaces",
+    m:"Medium — 51–100m² / about 4–8 spaces",
+    l:"Large — 101–200m² / about 8–16 spaces",
+    xl:"XL — 201–350m² / about 16–28 spaces",
+    xxl:"Over 350m² / 28+ spaces — manual quote"
+  };
+  ["s","m","l","xl","xxl"].forEach((key,index)=>{
+    size.options[index].text = isLawn ? lawnSizeLabels[key] : genericSizeLabels[key];
+  });
+
   const conditionOptions = {
     grass:["Regularly cut","Long / needs attention","Very long / overgrown"],
     maintenance:["Regularly maintained","Needs some catching up","Overgrown / first tidy needed"],
@@ -1821,6 +1839,29 @@ function update(){
     wa.classList.remove("hidden");
     $("contactFields").style.display="block";
     wa.textContent = "✉️ Request a Pressure Washing Quote";
+
+    setEmail(v,s,maint,"Manual quote required");
+    help();
+    return;
+  }
+
+  /* ======================================
+     VERY LARGE LAWN
+     MANUAL QUOTE REQUIRED
+  ====================================== */
+
+  if(["grass","scarify","treatment"].includes(v) && s==="xxl"){
+    resultBox.className = "result blocked";
+    price.textContent = "Manual Quote Required";
+
+    $("break").innerHTML =
+      '<div class="row"><span>Service</span><strong>'+P[v][0]+'</strong></div>'+
+      '<div class="row"><span>Lawn size</span><strong>Over 350m² / roughly 28+ parking spaces</strong></div>'+
+      '<div class="row"><span>Next step</span><strong>Send photos / site assessment</strong></div>';
+
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+    wa.textContent = "✉️ Request a Lawn Quote";
 
     setEmail(v,s,maint,"Manual quote required");
     help();
