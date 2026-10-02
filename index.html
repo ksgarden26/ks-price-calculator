@@ -395,7 +395,7 @@ td:last-child{
   </select>
 
   <label style="margin-top:14px">
-    What does the garden include?
+    What needs doing on a typical visit?
   </label>
 
   <div class="checks">
@@ -413,7 +413,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="Borders"
-             data-extra="0"
+             data-extra="10"
              checked>
       Border weeding &amp; tidying
     </label>
@@ -422,7 +422,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="Routine hedge and shrub trimming"
-             data-extra="0"
+             data-extra="20"
              checked>
       Routine hedge &amp; shrub trimming
     </label>
@@ -431,7 +431,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="General tidy"
-             data-extra="0"
+             data-extra="10"
              checked>
       General tidy-up &amp; blow down
     </label>
@@ -439,7 +439,7 @@ td:last-child{
   </div>
 
   <div class="help">
-    Regular maintenance includes lawn cutting &amp; edging, border care, routine hedge/shrub trimming and a general tidy-up. The visit price is kept between £30 and £60 for a regularly maintained garden.
+    The garden size gives the starting visit price. Extra routine work such as border care, hedge/shrub trimming and a general tidy-up is then allowed for in the estimate, so a fuller maintenance visit can cost more than a lawn-only visit.
   </div>
 
   <label style="margin-top:14px">Would you like any treatments used if needed?</label>
@@ -1606,10 +1606,6 @@ function update(){
       /5
 
     )*5;
-
-  if(v==="maintenance" && condition.value==="normal" && $("waste").value==="no" && tc===0){
-    total = Math.min(60, Math.max(30, total));
-  }
 
   const freq = $("frequency") ? $("frequency").value : "fortnightly";
   const freqNames = {
