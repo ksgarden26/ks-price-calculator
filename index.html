@@ -412,33 +412,44 @@ td:last-child{
     <label>
       <input type="checkbox"
              class="maintWork"
-             value="Weeding"
-             data-extra="0">
-      Weeding &amp; border tidy
+             value="Borders"
+             data-extra="0"
+             checked>
+      Border weeding &amp; tidying
     </label>
 
     <label>
       <input type="checkbox"
              class="maintWork"
-             value="Shrub pruning"
-             data-extra="0">
-      Shrub pruning &amp; shaping
+             value="Routine hedge and shrub trimming"
+             data-extra="0"
+             checked>
+      Routine hedge &amp; shrub trimming
     </label>
 
     <label>
       <input type="checkbox"
              class="maintWork"
              value="General tidy"
-             data-extra="0">
-      General tidy-up
+             data-extra="0"
+             checked>
+      General tidy-up &amp; blow down
     </label>
 
   </div>
 
   <div class="help">
-    Choose the closest garden size based on the overall
-    amount of work. Routine mowing, edging, weeding, light shrub pruning and general tidying are included in the regular-maintenance visit price.
+    Regular maintenance includes lawn cutting &amp; edging, border care, routine hedge/shrub trimming and a general tidy-up. The visit price is kept between £30 and £60 for a regularly maintained garden.
   </div>
+
+  <label style="margin-top:14px">How often would you like a visit?</label>
+  <select id="frequency">
+    <option value="weekly">Weekly</option>
+    <option value="fortnightly" selected>Fortnightly</option>
+    <option value="fourweekly">Every 4 weeks</option>
+    <option value="monthly">Monthly</option>
+  </select>
+  <div class="help">We’ll also show an approximate average monthly cost so you can budget more easily.</div>
 
 </div>
 
@@ -648,7 +659,7 @@ const P = {
 
   maintenance:[
     "Regular Garden Maintenance",
-    30,45,60,80,110
+    30,35,45,55,60
   ],
 
   hedge:[
@@ -1116,10 +1127,7 @@ function maintenanceDetails(){
     $("maintArea").value;
 
 
-  const areaExtra =
-    area==="both"
-    ?10
-    :0;
+  const areaExtra = 0;
 
 
   const selected =
@@ -1380,7 +1388,7 @@ function update(){
     maintenanceDetails();
 
 
-  const total =
+  let total =
 
     Math.ceil(
 
@@ -1396,6 +1404,27 @@ function update(){
       /5
 
     )*5;
+
+  if(v==="maintenance" && condition.value==="normal" && $("waste").value==="no" && tc===0){
+    total = Math.min(60, Math.max(30, total));
+  }
+
+  const freq = $("frequency") ? $("frequency").value : "fortnightly";
+  const freqNames = {
+    weekly:"Weekly",
+    fortnightly:"Fortnightly",
+    fourweekly:"Every 4 weeks",
+    monthly:"Monthly"
+  };
+  const monthlyFactors = {
+    weekly:52/12,
+    fortnightly:26/12,
+    fourweekly:13/12,
+    monthly:1
+  };
+  const monthlyCost = v==="maintenance"
+    ? Math.round(total * monthlyFactors[freq])
+    : 0;
 
 
   const resultBox =
@@ -1616,7 +1645,11 @@ function update(){
     '<div class="row">'+
     '<span>Approx. travel distance</span>'+
     '<strong>'+tm+' miles</strong>'+
-    '</div>';
+    '</div>'+
+    (v==="maintenance"
+      ? '<div class="row"><span>Visit frequency</span><strong>'+freqNames[freq]+'</strong></div>'+
+        '<div class="row"><span>Approx. average per month</span><strong>£'+monthlyCost+'</strong></div>'
+      : '');
 
 
   wa.classList.remove("hidden");
@@ -1667,7 +1700,16 @@ function setEmail(v,s,maint,result){
   }
 
   if(v==="maintenance"){
-    maintenanceText = "\nMaintenance requested: "+(maint.description || "Not specified");
+    const freq = $("frequency") ? $("frequency").value : "fortnightly";
+    const freqNames = {weekly:"Weekly",fortnightly:"Fortnightly",fourweekly:"Every 4 weeks",monthly:"Monthly"};
+    const monthlyFactors = {weekly:52/12,fortnightly:26/12,fourweekly:13/12,monthly:1};
+    const visitMatch = String(result).match(/[0-9]+(?:\.[0-9]+)?/);
+    const visitPrice = visitMatch ? Number(visitMatch[0]) : 0;
+    const monthlyCost = visitPrice ? Math.round(visitPrice * monthlyFactors[freq]) : "";
+    maintenanceText =
+      "\nMaintenance requested: "+(maint.description || "Not specified")+
+      "\nFrequency: "+freqNames[freq]+
+      (monthlyCost ? "\nApprox. average monthly cost: £"+monthlyCost : "");
   }
 
   const msg =
@@ -2170,6 +2212,7 @@ function resetQuoteSubmission(){
   $("waste"),
   $("lawns"),
   $("maintArea"),
+  $("frequency"),
   $("hedgeSize"),
   $("pressureType"),
   ...document.querySelectorAll(".maintWork")
