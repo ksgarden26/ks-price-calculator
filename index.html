@@ -554,7 +554,7 @@ td:last-child{
   <label style="margin-top:14px">Phone number *</label>
   <input id="custPhone" type="tel" autocomplete="tel" placeholder="Your phone number">
   <label style="margin-top:14px">Email address</label>
-  <input id="custEmail" type="email" autocomplete="email" placeholder="Your email address">
+  <input id="custEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="Your email address">
   <label style="margin-top:14px">Anything else I should know?</label>
   <textarea id="details" rows="5" placeholder="For example: access, parking, slopes, pets, specific areas you would like working on, or anything else that may help with your quote." style="resize:vertical;font-family:Arial,sans-serif"></textarea>
   <div class="help">Your name, garden address and phone number are required to request a quote. You can add garden photos in your email app before sending.</div>
@@ -618,7 +618,7 @@ Your final price will always be agreed before work begins.
 
 <div class="loaderOverlay" id="loaderOverlay" aria-hidden="true">
   <div class="loaderCard">
-    <img class="loaderLogo" id="loaderLogo" src="ks-logo.png" alt="KS Garden Services"
+    <img class="loaderLogo" id="loaderLogo" src="KS%20Garden%20Services%20Logo.png" alt="KS Garden Services"
       onerror="this.style.display='none';document.getElementById('loaderFallback').style.display='flex'">
     <div class="loaderFallback" id="loaderFallback">KS</div>
     <strong>Preparing your estimate…</strong>
@@ -1613,6 +1613,10 @@ function update(){
     '<div class="row">'+
     '<span>Service area</span>'+
     '<strong>'+(detectedArea || "Covered")+'</strong>'+
+    '</div>'+
+    '<div class="row">'+
+    '<span>Approx. travel distance</span>'+
+    '<strong>'+tm+' miles</strong>'+
     '</div>';
 
 
@@ -1678,7 +1682,7 @@ function setEmail(v,s,maint,result){
     "\nGreen waste removal: "+($("waste").value==="yes" ? "Yes" : "No / green bin available")+
     "\nPostcode: "+(pc || post.value.trim() || "Not entered")+
     "\nArea: "+(detectedArea || "Not confirmed")+
-    "\nInternal travel: "+(routeOK ? tm+" miles / £"+tc+" allowance" : "Not calculated")+
+    "\nTravel distance: "+(routeOK ? tm+" miles" : "Not calculated")+"\n"+
     "\nGuide result: "+result+
     "\n\nCustomer details"+
     "\nName: "+(name || "Not entered")+
@@ -2102,6 +2106,8 @@ btn.disabled =
 post.oninput =
 ()=>{
 
+  resetQuoteSubmission();
+
 
   postcodeChecked =
     false;
@@ -2152,6 +2158,12 @@ post.oninput =
    FORM CHANGES
 ========================================== */
 
+function resetQuoteSubmission(){
+  $("quoteSuccess").style.display="none";
+  wa.disabled=false;
+  wa.dataset.crmSent="";
+}
+
 [
   service,
   size,
@@ -2161,21 +2173,13 @@ post.oninput =
   $("maintArea"),
   $("hedgeSize"),
   $("pressureType"),
-  ...document.querySelectorAll(
-    ".maintWork"
-  )
-
-]
-.forEach(
-
-  element => {
-
-    element.onchange =
-      update;
-
-  }
-
-);
+  ...document.querySelectorAll(".maintWork")
+].filter(Boolean).forEach(element => {
+  element.addEventListener("change",()=>{
+    resetQuoteSubmission();
+    update();
+  });
+});
 
 
 ["custName","custAddress","custPhone","custEmail","details"].forEach(id=>{
@@ -2251,10 +2255,14 @@ wa.addEventListener("click",function(){
     return;
   }
 
-  if(email && !$("custEmail").checkValidity()){
-    alert("Please check the email address you entered.");
-    $("custEmail").focus();
-    return;
+  if(email){
+    $("custEmail").value=email.toLowerCase();
+    const emailOK=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    if(!emailOK){
+      alert("Please check the email address you entered.");
+      $("custEmail").focus();
+      return;
+    }
   }
 
   update();
@@ -2352,10 +2360,8 @@ $("resetBtn").addEventListener("click",()=>{
   $("custPhone").value="";
   $("custEmail").value="";
   $("details").value="";
-  $("quoteSuccess").style.display="none";
+  resetQuoteSubmission();
   wa.textContent="✉️ Request This Quote";
-  wa.disabled=false;
-  wa.dataset.crmSent="";
   postcodeChecked=false;
   areaStatus="unchecked";
   areaMessage="";
