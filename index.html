@@ -1434,7 +1434,8 @@ function help(){
     xxl:"Over 350m² / 28+ spaces — manual quote"
   };
   ["s","m","l","xl","xxl"].forEach((key,index)=>{
-    size.options[index].text = isLawn ? lawnSizeLabels[key] : genericSizeLabels[key];
+    const useAreaComparison = isLawn || v==="maintenance";
+    size.options[index].text = useAreaComparison ? lawnSizeLabels[key] : genericSizeLabels[key];
   });
 
   const conditionOptions = {
@@ -1850,18 +1851,18 @@ function update(){
      MANUAL QUOTE REQUIRED
   ====================================== */
 
-  if(["grass","scarify","treatment"].includes(v) && s==="xxl"){
+  if(["grass","scarify","treatment","maintenance"].includes(v) && s==="xxl"){
     resultBox.className = "result blocked";
     price.textContent = "Manual Quote Required";
 
     $("break").innerHTML =
       '<div class="row"><span>Service</span><strong>'+P[v][0]+'</strong></div>'+
-      '<div class="row"><span>Lawn size</span><strong>Over 350m² / roughly 28+ parking spaces</strong></div>'+
+      '<div class="row"><span>'+(v==="maintenance" ? "Garden size" : "Lawn size")+'</span><strong>Over 350m² / roughly 28+ parking spaces</strong></div>'+
       '<div class="row"><span>Next step</span><strong>Send photos / site assessment</strong></div>';
 
     wa.classList.remove("hidden");
     $("contactFields").style.display="block";
-    wa.textContent = "✉️ Request a Lawn Quote";
+    wa.textContent = v==="maintenance" ? "✉️ Request a Maintenance Quote" : "✉️ Request a Lawn Quote";
 
     setEmail(v,s,maint,"Manual quote required");
     help();
