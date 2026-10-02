@@ -597,6 +597,8 @@ td:last-child{
     <option value="overgrown">Overgrown</option>
   </select>
 
+  <div class="help" id="conditionHelp"></div>
+
 </div>
 
 
@@ -1428,12 +1430,27 @@ function help(){
     scarify:["Routine seasonal work","Heavy thatch / moss","Very poor lawn condition"],
     treatment:["Routine treatment","Problem areas present","Significant lawn problems"],
     leaves:["Light leaf fall","Moderate leaf fall","Heavy leaf fall"],
-    pressure:["Lightly soiled","Moderate dirt / algae","Heavy buildup / staining"]
+    pressure:["Light dirt / light algae","Moderate dirt / moss / algae","Heavy buildup / staining — manual quote"]
   };
   const conditionText = conditionOptions[v] || conditionOptions.maintenance;
   condition.options[0].text = conditionText[0];
   condition.options[1].text = conditionText[1];
   condition.options[2].text = conditionText[2];
+
+  const conditionHelpText = {
+    grass:"Regular = normally mown lawn. Needs attention = noticeably long but still straightforward to mow. Very long / overgrown = dense or neglected growth that may need extra work.",
+    maintenance:"Regular = already maintained. Needs catching up = extra weeding/cutting back needed. Overgrown / first tidy = significantly neglected and may need a separate initial tidy quote.",
+    hedge:"Routine trim = current shape retained. Shaping/reduction = noticeable reduction required. Major reduction = substantial height/width reduction and may need a site visit.",
+    shrubs:"Routine pruning = normal seasonal shaping. Needs attention = more cutting back than usual. Major reduction = heavily overgrown or substantial reduction required.",
+    weeding:"Light = scattered weeds. Moderate = weeds across much of the bed. Heavy = dense established growth or beds needing significant clearance.",
+    tidy:"Generally tidy = light seasonal work. Needs attention = several areas need cutting back/clearing. Very untidy = significant overgrowth or clearance-type work.",
+    clearance:"Light = limited material to clear. Moderate = several areas or established growth. Heavy = extensive overgrowth, bulky waste or difficult access.",
+    scarify:"Routine = normal thatch removal. Heavy = noticeable moss/thatch. Very poor = extensive moss/thatch or lawn needing renovation.",
+    treatment:"Routine = general seasonal treatment. Problem areas = weeds/moss in several areas. Significant problems = widespread issues that may need a tailored treatment plan.",
+    leaves:"Light = thin covering. Moderate = substantial covering across several areas. Heavy = deep/wet leaf build-up or large volumes.",
+    pressure:"Light = everyday dirt or a light green film. Moderate = obvious algae/moss and ingrained dirt. Heavy = thick moss/weeds, oil/paint, black-spot type staining or a heavily neglected surface — this needs photos or a site quote rather than an instant price."
+  };
+  $("conditionHelp").textContent = conditionHelpText[v] || "";
 
   const wasteRelevant = !["treatment","pressure"].includes(v);
   $("wasteField").style.display = wasteRelevant ? "block" : "none";
@@ -1786,6 +1803,29 @@ function update(){
 
   }
 
+
+  /* ======================================
+     HEAVY PRESSURE WASHING
+     MANUAL QUOTE REQUIRED
+  ====================================== */
+
+  if(v==="pressure" && condition.value==="overgrown"){
+    resultBox.className = "result blocked";
+    price.textContent = "Manual Quote Required";
+
+    $("break").innerHTML =
+      '<div class="row"><span>Service</span><strong>Pressure Washing</strong></div>'+
+      '<div class="row"><span>Condition</span><strong>Heavy buildup / staining</strong></div>'+
+      '<div class="row"><span>Next step</span><strong>Send photos / site assessment</strong></div>';
+
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+    wa.textContent = "✉️ Request a Pressure Washing Quote";
+
+    setEmail(v,s,maint,"Manual quote required");
+    help();
+    return;
+  }
 
   /* ======================================
      APPROVED POSTCODE
