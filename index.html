@@ -479,14 +479,13 @@ td:last-child{
     <option value="medium">About 5–10m long</option>
     <option value="large">Over 10m long / several hedges</option>
   </select>
-
   <label style="margin-top:14px">Height &amp; access</label>
   <select id="hedgeAccess">
     <option value="easy">Low / easy to reach from the ground</option>
     <option value="medium">Around head height / step ladder needed</option>
     <option value="difficult">Tall, wide or restricted access</option>
   </select>
-  <div class="help">Routine trimming can be estimated online. Large reductions, very tall hedges or difficult roadside work may need a site visit before a final price is confirmed.</div>
+  <div class="help">Routine trimming can be estimated online. Large reductions, very tall hedges or difficult roadside work may need a site visit.</div>
 </div>
 
 <div class="field" id="shrubsField" style="display:none">
@@ -496,7 +495,6 @@ td:last-child{
     <option value="few">Several shrubs / small planted area</option>
     <option value="many">Many or established shrubs</option>
   </select>
-  <div class="help">This is for routine pruning and shaping. Major reductions or specialist pruning will be confirmed from photos or a site visit.</div>
 </div>
 
 <div class="field" id="scarifyField" style="display:none">
@@ -506,7 +504,7 @@ td:last-child{
     <option value="mow">Mow &amp; scarify</option>
     <option value="seed">Scarify &amp; overseed</option>
   </select>
-  <div class="help">Overseeding includes the additional labour; seed/material quantity will be confirmed before the job.</div>
+  <div class="help">Seed/material quantity will be confirmed before the job.</div>
 </div>
 
 <div class="field" id="treatmentField" style="display:none">
@@ -518,7 +516,6 @@ td:last-child{
     <option value="iron">Lawn iron</option>
     <option value="unsure">Not sure — please advise</option>
   </select>
-  <div class="help">The final treatment will depend on the lawn condition and product required.</div>
 </div>
 
 <div class="field" id="leafField" style="display:none">
@@ -1360,13 +1357,10 @@ function help(){
 
   $("shrubsField").style.display =
     v==="shrubs" ? "block" : "none";
-
   $("scarifyField").style.display =
     v==="scarify" ? "block" : "none";
-
   $("treatmentField").style.display =
     v==="treatment" ? "block" : "none";
-
   $("leafField").style.display =
     v==="leaves" ? "block" : "none";
 
@@ -1376,24 +1370,415 @@ function help(){
   $("sizeField").style.display =
     v==="pressure" ? "none" : "block";
 
-  if(v==="pressure"
+  if(v==="pressure"){
+    const needsSand = $("pressureSurface").value==="block";
+    $("pressureSandNote").style.display = needsSand ? "block" : "none";
+  }
+
+  const conditionOptions = {
+    grass:["Regularly cut","Long / needs attention","Very long / overgrown"],
+    maintenance:["Regularly maintained","Needs some catching up","Overgrown / first tidy needed"],
+    hedge:["Routine trim","Needs shaping / reduction","Overgrown / major reduction"],
+    shrubs:["Routine pruning","Needs attention","Overgrown / major reduction"],
+    weeding:["Light / maintained","Moderate weeds","Heavily overgrown"],
+    tidy:["Generally tidy","Needs attention","Very untidy / overgrown"],
+    clearance:["Light clearance","Moderate clearance","Heavy / overgrown clearance"],
+    scarify:["Routine seasonal work","Heavy thatch / moss","Very poor lawn condition"],
+    treatment:["Routine treatment","Problem areas present","Significant lawn problems"],
+    leaves:["Light leaf fall","Moderate leaf fall","Heavy leaf fall"],
+    pressure:["Lightly soiled","Moderate dirt / algae","Heavy buildup / staining"]
+  };
+  const conditionText = conditionOptions[v] || conditionOptions.maintenance;
+  condition.options[0].text = conditionText[0];
+  condition.options[1].text = conditionText[1];
+  condition.options[2].text = conditionText[2];
+
+  const wasteRelevant = !["treatment","pressure"].includes(v);
+  $("wasteField").style.display = wasteRelevant ? "block" : "none";
+  if(!wasteRelevant) $("waste").value = "no";
+
+
+  const off =
+
+    (
+      v==="grass" ||
+      v==="maintenance" ||
+      v==="hedge" ||
+      v==="pressure"
+    )
+
+    ?
+
+    1
+
+    :
+
+    0;
+
+
+  $("conditionLabel").textContent =
+
+    (3+off)+
+    ". What condition is it currently in?";
+
+
+  $("postcodeLabel").textContent =
+
+    (4+off)+
+    ". Your postcode";
+
+
+  $("wasteLabel").textContent =
+
+    (5+off)+
+    ". Green waste";
+
+}
+
+
+/* ==========================================
+   PRICE UPDATE
+========================================== */
+
+function update(){
+
+  const v =
+    service.value;
+
+
+  const s =
+    v==="pressure" ? $("pressureArea").value : size.value;
+
+
+  const i =
+    sizes[s][1];
+
+
+  const base =
+    P[v][i];
+
+
+  const conditionExtra =
+
+    Math.ceil(
+
+      (
+        base *
+        (
+          mult[condition.value]-1
+        )
+      )
+
+      /5
+
+    )*5;
+
+
+  const wasteExtra =
+
+    $("waste").value==="yes"
+
+    ?
+
+    waste[s]
+
+    :
+
+    0;
+
+
+  const maint =
+    maintenanceDetails();
+
+  const pressureSandExtra =
+    v==="pressure" && $("pressureSurface").value==="block"
+    ? ({s:20,m:30,l:45,xl:65,xxl:90}[s] || 0)
+    : 0;
+
+  const hedgeExtra =
+    v==="hedge"
+    ? (($("hedgeSize").value==="medium" ? 10 : $("hedgeSize").value==="large" ? 25 : 0) +
+       ($("hedgeAccess").value==="medium" ? 10 : $("hedgeAccess").value==="difficult" ? 25 : 0))
+    : 0;
+
+  const shrubExtra =
+    v==="shrubs" ? ($("shrubAmount").value==="few" ? 10 : $("shrubAmount").value==="many" ? 25 : 0) : 0;
+
+  const scarifyExtra =
+    v==="scarify" ? ($("scarifyType").value==="mow" ? 10 : $("scarifyType").value==="seed" ? 20 : 0) : 0;
+
+  let total =
+
+    Math.ceil(
+
+      (
+        base +
+        conditionExtra +
+        wasteExtra +
+        maint.areaExtra +
+        maint.workExtra +
+        pressureSandExtra +
+        hedgeExtra +
+        shrubExtra +
+        scarifyExtra +
+        tc
+      )
+
+      /5
+
+    )*5;
+
+  if(v==="maintenance" && condition.value==="normal" && $("waste").value==="no" && tc===0){
+    total = Math.min(60, Math.max(30, total));
+  }
+
+  const freq = $("frequency") ? $("frequency").value : "fortnightly";
+  const freqNames = {
+    weekly:"Weekly",
+    fortnightly:"Fortnightly",
+    fourweekly:"Every 4 weeks",
+    monthly:"Monthly"
+  };
+  const monthlyFactors = {
+    weekly:52/12,
+    fortnightly:26/12,
+    fourweekly:13/12,
+    monthly:1
+  };
+  const monthlyCost = v==="maintenance"
+    ? Math.round(total * monthlyFactors[freq])
+    : 0;
+
+
+  const resultBox =
+    $("resultBox");
+
+
+  const price =
+    $("price");
+
+
+  /* ======================================
+     POSTCODE HAS NOT BEEN CHECKED
+     NO PRICES ARE SHOWN
+  ====================================== */
+
+  if(!postcodeChecked){
+
+    resultBox.className =
+      "result waiting";
+
+
+    price.textContent =
+      "Check your postcode";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Not checked</strong>'+
+      '</div>';
+
+
+    wa.classList.add("hidden");
+    $("contactFields").style.display="none";
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     SELECTED AREA
+     STILL NO PRICES
+  ====================================== */
+
+  if(areaStatus==="maybe"){
+
+    resultBox.className =
+      "result blocked";
+
+
+    price.textContent =
+      "Area Check Required";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Please confirm</strong>'+
+      '</div>';
+
+
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+
+
+    wa.textContent =
+      "✉️ Ask About My Area by Email";
+
+
+    setEmail(
+      v,
+      s,
+      maint,
+      "Area check required"
+    );
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     OUTSIDE AREA
+     NO PRICES
+  ====================================== */
+
+  if(areaStatus==="no"){
+
+    resultBox.className =
+      "result blocked";
+
+
+    price.textContent =
+      "Outside Regular Area";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Outside regular rounds</strong>'+
+      '</div>';
+
+
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+
+
+    wa.textContent =
+      "✉️ Email About a One-Off Job";
+
+
+    setEmail(
+      v,
+      s,
+      maint,
+      "Outside regular service area"
+    );
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     COVERED BUT ROUTE NOT READY
+  ====================================== */
+
+  if(
+    areaStatus==="yes" &&
+    !routeOK
+  ){
+
+    resultBox.className =
+      "result waiting";
+
+
+    price.textContent =
+      "Calculating...";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Covered</strong>'+
+      '</div>';
+
+
+    wa.classList.add("hidden");
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     APPROVED POSTCODE
+     NOW SHOW ALL £ PRICES
+  ====================================== */
+
+  resultBox.className =
+    "result";
+
+
+  price.textContent =
+    "£"+total;
+
+  $("break").innerHTML =
+    '<div class="row">'+
+    '<span>Service</span>'+
+    '<strong>'+P[v][0]+'</strong>'+
+    '</div>'+
+    '<div class="row">'+
+    '<span>Service area</span>'+
+    '<strong>'+(detectedArea || "Covered")+'</strong>'+
+    '</div>'+
+    '<div class="row">'+
+    '<span>Approx. travel distance</span>'+
+    '<strong>'+tm+' miles</strong>'+
+    '</div>'+
+    (v==="maintenance"
+      ? '<div class="row"><span>Visit frequency</span><strong>'+freqNames[freq]+'</strong></div>'+
+        '<div class="row"><span>Approx. average per month</span><strong>£'+monthlyCost+'</strong></div>'
+      : '')+
+    (v==="pressure"
       ? '<div class="row"><span>Surface</span><strong>'+$("pressureSurface").options[$("pressureSurface").selectedIndex].text+'</strong></div>'+
         '<div class="row"><span>Area</span><strong>'+$("pressureArea").options[$("pressureArea").selectedIndex].text+'</strong></div>'+
         ($("pressureSurface").value==="block"
           ? '<div class="row"><span>Return visit &amp; kiln-dried sand</span><strong>Included</strong></div>'
           : '')
-      : '')+
-    (v==="hedge"
-      ? '<div class="row"><span>Hedge</span><strong>'+$("hedgeSize").options[$("hedgeSize").selectedIndex].text+'</strong></div>'
-      : '')+
-    (v==="shrubs"
-      ? '<div class="row"><span>Shrub work</span><strong>'+$("shrubAmount").options[$("shrubAmount").selectedIndex].text+'</strong></div>'
-      : '')+
-    (v==="scarify"
-      ? '<div class="row"><span>Lawn work</span><strong>'+$("scarifyType").options[$("scarifyType").selectedIndex].text+'</strong></div>'
-      : '')+
-    (v==="treatment"
-      ? '<div class="row"><span>Treatment</span><strong>'+$("treatmentType").options[$("treatmentType").selectedIndex].text+'</strong></div>'
       : '');
 
 
