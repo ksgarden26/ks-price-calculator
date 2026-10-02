@@ -442,6 +442,27 @@ td:last-child{
     Regular maintenance includes lawn cutting &amp; edging, border care, routine hedge/shrub trimming and a general tidy-up. The visit price is kept between £30 and £60 for a regularly maintained garden.
   </div>
 
+  <label style="margin-top:14px">Would you like any treatments used if needed?</label>
+  <div class="checks">
+    <label>
+      <input type="checkbox"
+             class="maintTreatment"
+             value="Weedkiller"
+             data-extra="5">
+      Weedkiller (+£5 if used)
+    </label>
+    <label>
+      <input type="checkbox"
+             class="maintTreatment"
+             value="Fertiliser / lawn feed"
+             data-extra="5">
+      Fertiliser / lawn feed (+£5 if used)
+    </label>
+  </div>
+  <div class="help">
+    These are optional. They will only be used where suitable and agreed, and the extra charge only applies if the product is actually used.
+  </div>
+
   <label style="margin-top:14px">How often would you like a visit?</label>
   <select id="frequency">
     <option value="weekly">Weekly</option>
@@ -1184,7 +1205,9 @@ function maintenanceDetails(){
 
       areaExtra:0,
       workExtra:0,
-      description:""
+      treatmentExtra:0,
+      description:"",
+      treatments:"None"
 
     };
 
@@ -1222,6 +1245,15 @@ function maintenanceDetails(){
 
     );
 
+  const treatments =
+    [...document.querySelectorAll(".maintTreatment:checked")];
+
+  const treatmentExtra =
+    treatments.reduce(
+      (total,item) => total + Number(item.dataset.extra || 0),
+      0
+    );
+
 
   const areaName =
 
@@ -1245,6 +1277,13 @@ function maintenanceDetails(){
     areaExtra,
 
     workExtra,
+
+    treatmentExtra,
+
+    treatments:
+      treatments.length
+      ? treatments.map(item=>item.value).join(", ")
+      : "None",
 
     description:
 
@@ -1517,6 +1556,7 @@ function update(){
         wasteExtra +
         maint.areaExtra +
         maint.workExtra +
+        maint.treatmentExtra +
         pressureSandExtra +
         hedgeExtra +
         shrubExtra +
@@ -1771,7 +1811,10 @@ function update(){
     '</div>'+
     (v==="maintenance"
       ? '<div class="row"><span>Visit frequency</span><strong>'+freqNames[freq]+'</strong></div>'+
-        '<div class="row"><span>Approx. average per month</span><strong>£'+monthlyCost+'</strong></div>'
+        '<div class="row"><span>Approx. average per month</span><strong>£'+monthlyCost+'</strong></div>'+
+        (maint.treatments!=="None"
+          ? '<div class="row"><span>Optional treatments</span><strong>'+maint.treatments+'</strong></div>'
+          : '')
       : '')+
     (v==="pressure"
       ? '<div class="row"><span>Surface</span><strong>'+$("pressureSurface").options[$("pressureSurface").selectedIndex].text+'</strong></div>'+
@@ -1858,6 +1901,7 @@ function setEmail(v,s,maint,result){
     const monthlyCost = visitPrice ? Math.round(visitPrice * monthlyFactors[freq]) : "";
     maintenanceText =
       "\nMaintenance requested: "+(maint.description || "Not specified")+
+      "\nOptional treatments: "+(maint.treatments || "None")+
       "\nFrequency: "+freqNames[freq]+
       (monthlyCost ? "\nApprox. average monthly cost: £"+monthlyCost : "");
   }
@@ -2372,7 +2416,8 @@ function resetQuoteSubmission(){
   $("pressureType"),
   $("pressureSurface"),
   $("pressureArea"),
-  ...document.querySelectorAll(".maintWork")
+  ...document.querySelectorAll(".maintWork"),
+  ...document.querySelectorAll(".maintTreatment")
 ].filter(Boolean).forEach(element => {
   element.addEventListener("change",()=>{
     resetQuoteSubmission();
@@ -2550,7 +2595,8 @@ $("resetBtn").addEventListener("click",()=>{
   $("waste").value="no";
   $("lawns").value="one";
   $("maintArea").value="front";
-  document.querySelectorAll(".maintWork").forEach((el,i)=>{ el.checked=(i===0); });
+  document.querySelectorAll(".maintWork").forEach(el=>{ el.checked=true; });
+  document.querySelectorAll(".maintTreatment").forEach(el=>{ el.checked=false; });
   $("frequency").value="fortnightly";
   $("hedgeSize").value="small";
   $("hedgeAccess").value="easy";
