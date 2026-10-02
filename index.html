@@ -413,7 +413,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="Weeding"
-             data-extra="10">
+             data-extra="0">
       Weeding &amp; border tidy
     </label>
 
@@ -421,7 +421,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="Shrub pruning"
-             data-extra="15">
+             data-extra="0">
       Shrub pruning &amp; shaping
     </label>
 
@@ -429,7 +429,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="General tidy"
-             data-extra="10">
+             data-extra="0">
       General tidy-up
     </label>
 
@@ -437,8 +437,7 @@ td:last-child{
 
   <div class="help">
     Choose the closest garden size based on the overall
-    amount of work. Front and back gardens and additional
-    maintenance tasks are taken into account in your estimate.
+    amount of work. Routine mowing, edging, weeding, light shrub pruning and general tidying are included in the regular-maintenance visit price.
   </div>
 
 </div>
@@ -644,17 +643,17 @@ const P = {
 
   grass:[
     "Grass Cutting & Edging",
-    30,40,55,75,100
+    25,35,45,60,80
   ],
 
   maintenance:[
     "Regular Garden Maintenance",
-    30,60,90,120,180
+    30,45,60,80,110
   ],
 
   hedge:[
     "Hedge Trimming",
-    40,60,90,130,190
+    30,45,65,90,130
   ],
 
   shrubs:[
@@ -664,37 +663,37 @@ const P = {
 
   weeding:[
     "Weeding & Border Tidy",
-    30,50,75,110,160
+    30,40,60,85,120
   ],
 
   tidy:[
     "Garden Tidy-Up",
-    60,100,150,225,300
+    50,80,120,175,240
   ],
 
   clearance:[
     "Garden Clearance",
-    120,180,275,400,550
+    100,150,225,325,450
   ],
 
   scarify:[
     "Lawn Scarifying",
-    50,75,110,160,220
+    45,65,90,130,180
   ],
 
   treatment:[
     "Lawn Treatment",
-    30,40,55,75,100
+    25,35,45,60,80
   ],
 
   leaves:[
     "Leaf Clearance",
-    40,60,90,130,180
+    35,50,70,100,140
   ],
 
   pressure:[
     "Pressure Washing",
-    60,90,130,180,250
+    50,75,110,150,210
   ]
 
 };
@@ -714,8 +713,8 @@ const sizes = {
 const mult = {
 
   normal:1,
-  needs:1.25,
-  overgrown:1.5
+  needs:1.15,
+  overgrown:1.3
 
 };
 
@@ -731,11 +730,11 @@ const cn = {
 
 const waste = {
 
-  s:20,
-  m:35,
-  l:55,
-  xl:80,
-  xxl:110
+  s:10,
+  m:15,
+  l:25,
+  xl:40,
+  xxl:60
 
 };
 
@@ -1119,7 +1118,7 @@ function maintenanceDetails(){
 
   const areaExtra =
     area==="both"
-    ?15
+    ?10
     :0;
 
 
@@ -1990,19 +1989,19 @@ async()=>{
 
     tc =
 
-      tm<=5
+      tm<=7
       ?
       0
 
       :
 
-      tm<=10
+      tm<=12
       ?
       5
 
       :
 
-      tm<=15
+      tm<=16
       ?
       10
 
@@ -2198,190 +2197,3 @@ function buildCRMLead(){
     guidePrice:Number((guideText.match(/[0-9]+(?:\.[0-9]+)?/)||[""])[0]) || "",
     status:"New Enquiry",
     source:"Website",
-    details:$("details").value.trim(),
-    travelMiles:routeOK ? tm : "",
-    waste:$("waste").value==="yes" ? "Please remove green waste" : "No / green bin available",
-    size:sizes[size.value][0],
-    condition:cn[condition.value],
-    area:detectedArea || "",
-    website:""
-  };
-}
-
-function sendLeadToCRM(){
-  if(wa.dataset.crmSent==="1") return;
-  try{
-    const payload=JSON.stringify(buildCRMLead());
-    const endpoint="https://script.google.com/macros/s/AKfycbwW8E1QVRoCPLFqN2S7zUKpFKoFJWqUneAJuwFyd-0nzwcAK4NFJm94W85aHrUGelOdiw/exec";
-    let sent=false;
-
-    if(navigator.sendBeacon){
-      sent=navigator.sendBeacon(
-        endpoint,
-        new Blob([payload],{type:"text/plain;charset=UTF-8"})
-      );
-    }
-
-    if(!sent){
-      fetch(endpoint,{
-        method:"POST",
-        mode:"no-cors",
-        headers:{"Content-Type":"text/plain;charset=UTF-8"},
-        body:payload
-      }).catch(()=>{});
-    }
-
-    wa.dataset.crmSent="1";
-  }catch(err){
-    console.warn("CRM submission skipped",err);
-  }
-}
-
-wa.addEventListener("click",function(){
-  const name=$("custName").value.trim();
-  const address=$("custAddress").value.trim();
-  const phone=$("custPhone").value.trim();
-  const email=$("custEmail").value.trim();
-
-  if(!name || !address || !phone){
-    alert("Please enter your full name, garden address and phone number before requesting a quote.");
-    (!name ? $("custName") : !address ? $("custAddress") : $("custPhone")).focus();
-    return;
-  }
-
-  if(name.trim().split(/\s+/).length < 2){
-    alert("Please enter both your first name and surname.");
-    $("custName").focus();
-    return;
-  }
-
-  if(email){
-    $("custEmail").value=email.toLowerCase();
-    const emailOK=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-    if(!emailOK){
-      alert("Please check the email address you entered.");
-      $("custEmail").focus();
-      return;
-    }
-  }
-
-  update();
-  sendLeadToCRM();
-  $("quoteSuccess").style.display="block";
-  wa.textContent="✅ Details Received";
-  wa.disabled=true;
-  $("openEmailBtn").scrollIntoView({behavior:"smooth",block:"center"});
-});
-
-$("openEmailBtn").addEventListener("click",function(){
-  const subject=wa.dataset.subject || "Website quote request";
-  const body=(wa.dataset.body || "")+
-    "\n\nPlease attach 2–4 clear garden photos before sending this email.";
-  const to="info@ksgardenservices.co.uk";
-
-  let chooser=$("emailChooser");
-  if(!chooser){
-    chooser=document.createElement("div");
-    chooser.id="emailChooser";
-    chooser.style.cssText="margin-top:12px;padding:14px;border:1px solid #d8e2d9;border-radius:10px;background:#fff;text-align:left";
-    chooser.innerHTML=
-      '<strong style="display:block;margin-bottom:9px;color:#173d25">How would you like to send your email?</strong>'+
-      '<div style="display:grid;gap:8px">'+
-      '<button type="button" class="travelbtn" id="gmailChoice">Gmail</button>'+
-      '<button type="button" class="travelbtn" id="outlookChoice">Outlook / Hotmail</button>'+
-      '<button type="button" class="travelbtn" id="yahooChoice">Yahoo Mail</button>'+
-      '<button type="button" class="travelbtn" id="defaultChoice">Default Email App</button>'+
-      '<button type="button" class="resetbtn" id="copyChoice">Copy Email Details</button>'+
-      '</div>';
-    $("quoteSuccess").appendChild(chooser);
-
-    const openTop=url=>{
-      const w=window.open(url,"_blank");
-      if(!w){
-        try{ window.top.location.href=url; }
-        catch(err){ window.location.href=url; }
-      }
-    };
-
-    $("gmailChoice").onclick=()=>openTop(
-      "https://mail.google.com/mail/?view=cm&fs=1"+
-      "&to="+encodeURIComponent(to)+
-      "&su="+encodeURIComponent(subject)+
-      "&body="+encodeURIComponent(body)
-    );
-
-    $("outlookChoice").onclick=()=>openTop(
-      "https://outlook.live.com/mail/0/deeplink/compose?to="+encodeURIComponent(to)+
-      "&subject="+encodeURIComponent(subject)+
-      "&body="+encodeURIComponent(body)
-    );
-
-    $("yahooChoice").onclick=()=>openTop(
-      "https://compose.mail.yahoo.com/?to="+encodeURIComponent(to)+
-      "&subject="+encodeURIComponent(subject)+
-      "&body="+encodeURIComponent(body)
-    );
-
-    $("defaultChoice").onclick=()=>{
-      const mailto="mailto:"+to+
-        "?subject="+encodeURIComponent(subject)+
-        "&body="+encodeURIComponent(body);
-      try{ window.top.location.href=mailto; }
-      catch(err){ window.location.href=mailto; }
-    };
-
-    $("copyChoice").onclick=async()=>{
-      const text="To: "+to+"\nSubject: "+subject+"\n\n"+body;
-      try{
-        await navigator.clipboard.writeText(text);
-        $("copyChoice").textContent="✅ Copied — paste into your email";
-      }catch(err){
-        alert(text);
-      }
-    };
-  }else{
-    chooser.style.display = chooser.style.display==="none" ? "block" : "none";
-  }
-});
-
-$("resetBtn").addEventListener("click",()=>{
-  service.value="grass";
-  size.value="s";
-  condition.value="normal";
-  $("waste").value="no";
-  $("lawns").value="one";
-  $("maintArea").value="front";
-  document.querySelectorAll(".maintWork").forEach((el,i)=>{ el.checked=(i===0); });
-  $("hedgeSize").value="small";
-  $("pressureType").value="patio";
-  post.value="";
-  $("custName").value="";
-  $("custAddress").value="";
-  $("custPhone").value="";
-  $("custEmail").value="";
-  $("details").value="";
-  resetQuoteSubmission();
-  wa.textContent="✉️ Request This Quote";
-  postcodeChecked=false;
-  areaStatus="unchecked";
-  areaMessage="";
-  detectedArea="";
-  pc="";
-  tm=0;
-  tc=0;
-  routeOK=false;
-  $("travel").style.display="none";
-  $("travel").className="travel";
-  hideLoader();
-  update();
-  window.scrollTo({top:0,behavior:"smooth"});
-});
-
-/* START */
-
-update();
-
-</script>
-
-</body>
-</html>
