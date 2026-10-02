@@ -369,7 +369,7 @@ td:last-child{
 </div>
 
 
-<div class="field">
+<div class="field" id="sizeField">
   <label>2. Approximate size</label>
 
   <select id="size">
@@ -483,14 +483,36 @@ td:last-child{
 </div>
 
 <div class="field" id="pressureField" style="display:none">
-  <label>3. What are you having pressure washed?</label>
+  <label>2. What are you having pressure washed?</label>
   <select id="pressureType">
     <option value="patio">Patio</option>
     <option value="driveway">Driveway</option>
     <option value="paths">Paths / paved areas</option>
     <option value="mixed">A mixture of areas</option>
   </select>
-  <div class="help">Choose the approximate size above based on the total area being cleaned.</div>
+
+  <label style="margin-top:14px">What type of surface is it?</label>
+  <select id="pressureSurface">
+    <option value="block">Block paving</option>
+    <option value="slabs">Concrete paving / slabs</option>
+    <option value="stone">Natural stone</option>
+    <option value="porcelain">Porcelain paving</option>
+    <option value="concrete">Concrete</option>
+    <option value="other">Other / not sure</option>
+  </select>
+
+  <label style="margin-top:14px">Approximate area</label>
+  <select id="pressureArea">
+    <option value="s">Up to 20m²</option>
+    <option value="m">21–40m²</option>
+    <option value="l">41–70m²</option>
+    <option value="xl">71–100m²</option>
+    <option value="xxl">Over 100m²</option>
+  </select>
+
+  <div class="help" id="pressureSandNote">
+    Block paving normally needs kiln-dried sand brushed back into the joints after the surface has fully dried. This requires a follow-up visit and is included in the estimate shown.
+  </div>
 </div>
 
 <div class="field">
@@ -1210,7 +1232,9 @@ function maintenanceDetails(){
 function help(){
 
   const s =
-    size.value;
+    v==="pressure"
+    ? $("pressureArea").value
+    : size.value;
 
 
   const n =
@@ -1289,6 +1313,14 @@ function help(){
 
   $("pressureField").style.display =
     v==="pressure" ? "block" : "none";
+
+  $("sizeField").style.display =
+    v==="pressure" ? "none" : "block";
+
+  if(v==="pressure"){
+    const needsSand = $("pressureSurface").value==="block";
+    $("pressureSandNote").style.display = needsSand ? "block" : "none";
+  }
 
   const wasteRelevant = !["treatment","pressure"].includes(v);
   $("wasteField").style.display = wasteRelevant ? "block" : "none";
@@ -1387,6 +1419,11 @@ function update(){
   const maint =
     maintenanceDetails();
 
+  const pressureSandExtra =
+    v==="pressure" && $("pressureSurface").value==="block"
+    ? ({s:20,m:30,l:45,xl:65,xxl:90}[s] || 0)
+    : 0;
+
 
   let total =
 
@@ -1398,6 +1435,7 @@ function update(){
         wasteExtra +
         maint.areaExtra +
         maint.workExtra +
+        pressureSandExtra +
         tc
       )
 
@@ -1649,6 +1687,13 @@ function update(){
     (v==="maintenance"
       ? '<div class="row"><span>Visit frequency</span><strong>'+freqNames[freq]+'</strong></div>'+
         '<div class="row"><span>Approx. average per month</span><strong>£'+monthlyCost+'</strong></div>'
+      : '')+
+    (v==="pressure"
+      ? '<div class="row"><span>Surface</span><strong>'+$("pressureSurface").options[$("pressureSurface").selectedIndex].text+'</strong></div>'+
+        '<div class="row"><span>Area</span><strong>'+$("pressureArea").options[$("pressureArea").selectedIndex].text+'</strong></div>'+
+        ($("pressureSurface").value==="block"
+          ? '<div class="row"><span>Return visit &amp; kiln-dried sand</span><strong>Included</strong></div>'
+          : '')
       : '');
 
 
@@ -1696,7 +1741,13 @@ function setEmail(v,s,maint,result){
     serviceDetailText = "\nHedge details: "+$("hedgeSize").options[$("hedgeSize").selectedIndex].text;
   }
   if(v==="pressure"){
-    serviceDetailText = "\nPressure washing area: "+$("pressureType").options[$("pressureType").selectedIndex].text;
+    serviceDetailText =
+      "\nPressure washing area: "+$("pressureType").options[$("pressureType").selectedIndex].text+
+      "\nSurface type: "+$("pressureSurface").options[$("pressureSurface").selectedIndex].text+
+      "\nApprox. area: "+$("pressureArea").options[$("pressureArea").selectedIndex].text+
+      ($("pressureSurface").value==="block"
+        ? "\nFollow-up visit: Kiln-dried sand to be brushed into the joints once the paving is dry"
+        : "");
   }
 
   if(v==="maintenance"){
@@ -2215,6 +2266,8 @@ function resetQuoteSubmission(){
   $("frequency"),
   $("hedgeSize"),
   $("pressureType"),
+  $("pressureSurface"),
+  $("pressureArea"),
   ...document.querySelectorAll(".maintWork")
 ].filter(Boolean).forEach(element => {
   element.addEventListener("change",()=>{
