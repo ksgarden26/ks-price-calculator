@@ -1,11 +1,11 @@
 :root{
-  --green:#2f5f43;
-  --green-2:#3a6b4d;
-  --deep:#1f2421;
-  --ink:#202522;
-  --muted:#707771;
-  --pale:#f6f6f3;
-  --cream:#f8f7f3;
+  --green:#245b36;
+  --green-2:#2f6f45;
+  --deep:#173d25;
+  --ink:#28312b;
+  --muted:#667168;
+  --pale:#f3f7f3;
+  --cream:#fafbf9;
   --line:#e6e7e3;
   --white:#fff;
   --max:1180px;
@@ -28,12 +28,12 @@ a{color:inherit}
 .wrap{width:min(var(--max),calc(100% - 36px));margin:auto}
 
 .topbar{
-  background:#242624;
+  background:#173d25;
   color:#fff;
   text-align:center;
   padding:8px 12px;
   font-size:12px;
-  font-weight:600;
+  font-weight:500;
   letter-spacing:.04em;
 }
 header{
@@ -56,7 +56,7 @@ header{
   align-items:center;
   gap:12px;
   text-decoration:none;
-  font-weight:800;
+  font-weight:650;
   color:var(--deep);
   font-size:16px;
   letter-spacing:-.02em;
@@ -65,7 +65,7 @@ header{
 .links{display:flex;gap:22px;align-items:center}
 .links a{
   text-decoration:none;
-  font-weight:700;
+  font-weight:500;
   font-size:13px;
   color:#344037;
 }
@@ -76,19 +76,19 @@ header{
   align-items:center;
   justify-content:center;
   gap:8px;
-  background:#242824;
+  background:#245b36;
   color:#fff!important;
   text-decoration:none;
   padding:13px 18px;
   border-radius:10px;
-  font-weight:800;
-  border:1px solid #242824;
+  font-weight:650;
+  border:1px solid #245b36;
   cursor:pointer;
   box-shadow:none;
   transition:.18s ease;
 }
-.btn:hover{background:#111411;border-color:#111411;transform:translateY(-1px)}
-.btn.outline{background:#fff;color:#242824!important;border-color:#cfd3cf}
+.btn:hover{background:#173d25;border-color:#173d25;transform:translateY(-1px)}
+.btn.outline{background:#fff;color:#245b36!important;border-color:#cfd3cf}
 .btn.secondary{
   background:#fff;
   color:var(--deep)!important;
@@ -100,7 +100,7 @@ header{
   border:1px solid var(--line);
   border-radius:9px;
   padding:10px 12px;
-  font-weight:800;
+  font-weight:650;
   color:var(--deep);
 }
 
@@ -130,7 +130,7 @@ header{
 .eyebrow{
   font-size:11px;
   letter-spacing:.18em;
-  font-weight:800;
+  font-weight:650;
   color:#59645c;
   text-transform:uppercase;
   margin:0 0 14px;
@@ -166,7 +166,7 @@ header{
   border-radius:12px;
   padding:12px 15px;
   box-shadow:0 10px 26px rgba(0,0,0,.10);
-  font-weight:800;
+  font-weight:650;
   color:var(--deep);
   font-size:13px;
   backdrop-filter:blur(8px);
@@ -182,8 +182,8 @@ header{
 }
 .trustrow span:before{
   content:"✓";
-  color:#52675a;
-  font-weight:900;
+  color:#4c6653;
+  font-weight:500;
   margin-right:7px;
 }
 
@@ -242,7 +242,7 @@ h3{font-weight:800}
   font-size:14px;
 }
 .textlink{
-  font-weight:800;
+  font-weight:650;
   color:#33433a;
   text-decoration:none;
   font-size:13px;
@@ -268,7 +268,7 @@ h3{font-weight:800}
   place-items:center;
   background:#f0f1ee;
   color:var(--deep);
-  font-weight:900;
+  font-weight:500;
   margin-bottom:14px;
   font-size:13px;
 }
@@ -289,13 +289,13 @@ h3{font-weight:800}
   border:1px solid var(--line);
   border-radius:10px;
   padding:13px 14px;
-  font-weight:800;
+  font-weight:650;
   color:var(--deep);
   font-size:14px;
 }
 .quote-box{
   border-radius:16px;
-  background:#292c29;
+  background:#1f4c2f;
   color:#fff;
   padding:28px;
 }
@@ -331,11 +331,11 @@ h3{font-weight:800}
 }
 .testimonial cite{
   font-style:normal;
-  font-weight:800;
-  color:#52675a;
+  font-weight:650;
+  color:#4c6653;
 }
 .cta{
-  background:#292c29;
+  background:#1f4c2f;
   color:#fff;
   border-radius:16px;
   padding:34px;
@@ -382,7 +382,7 @@ h3{font-weight:800}
   border-radius:10px;
 }
 .form{display:grid;gap:14px;max-width:780px}
-.form label{font-weight:800;color:var(--deep)}
+.form label{font-weight:650;color:var(--deep)}
 .form input,.form textarea,.form select{
   width:100%;
   padding:13px 14px;
@@ -393,7 +393,7 @@ h3{font-weight:800}
   outline:none;
 }
 .form input:focus,.form textarea:focus,.form select:focus{
-  border-color:#52675a;
+  border-color:#4c6653;
   box-shadow:0 0 0 3px rgba(36,91,54,.08);
 }
 .notice{
@@ -403,7 +403,7 @@ h3{font-weight:800}
   border-radius:8px;
 }
 footer{
-  background:#202220;
+  background:#173d25;
   color:#d9e3db;
   padding:42px 0;
 }
