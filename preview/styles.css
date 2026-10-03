@@ -332,7 +332,7 @@ h3{font-weight:800}
 .testimonial cite{
   font-style:normal;
   font-weight:800;
-  color:var(--green);
+  color:#52675a;
 }
 .cta{
   background:#292c29;
@@ -393,7 +393,7 @@ h3{font-weight:800}
   outline:none;
 }
 .form input:focus,.form textarea:focus,.form select:focus{
-  border-color:var(--green);
+  border-color:#52675a;
   box-shadow:0 0 0 3px rgba(36,91,54,.08);
 }
 .notice{
