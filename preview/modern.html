@@ -1,0 +1,539 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KS Garden Services | Garden Maintenance in Newton-le-Willows</title><meta name="description" content="Friendly, reliable garden maintenance, lawn care, hedge cutting, seasonal garden work and pressure washing across Newton-le-Willows and surrounding areas."><style>:root{
+  --green:#2f5f43;
+  --green-2:#3a6b4d;
+  --deep:#1f2421;
+  --ink:#202522;
+  --muted:#707771;
+  --pale:#f6f6f3;
+  --cream:#f8f7f3;
+  --line:#e6e7e3;
+  --white:#fff;
+  --max:1180px;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Avenir Next","Helvetica Neue",Arial,sans-serif;
+  color:var(--ink);
+  background:#fff;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block}
+button,input,textarea,select{font:inherit}
+a{color:inherit}
+.wrap{width:min(var(--max),calc(100% - 36px));margin:auto}
+
+.topbar{
+  background:#242624;
+  color:#fff;
+  text-align:center;
+  padding:8px 12px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.04em;
+}
+header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(255,255,255,.94);
+  border-bottom:1px solid rgba(226,232,226,.95);
+  backdrop-filter:blur(14px);
+}
+.nav{
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  font-weight:800;
+  color:var(--deep);
+  font-size:16px;
+  letter-spacing:-.02em;
+}
+.brand img{width:52px;height:52px;object-fit:contain}
+.links{display:flex;gap:22px;align-items:center}
+.links a{
+  text-decoration:none;
+  font-weight:700;
+  font-size:13px;
+  color:#344037;
+}
+.links a:hover{color:var(--green)}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  background:#242824;
+  color:#fff!important;
+  text-decoration:none;
+  padding:13px 18px;
+  border-radius:10px;
+  font-weight:800;
+  border:1px solid #242824;
+  cursor:pointer;
+  box-shadow:none;
+  transition:.18s ease;
+}
+.btn:hover{background:#111411;border-color:#111411;transform:translateY(-1px)}
+.btn.outline{background:#fff;color:#242824!important;border-color:#cfd3cf}
+.btn.secondary{
+  background:#fff;
+  color:var(--deep)!important;
+  border-color:var(--line);
+}
+.menuBtn{
+  display:none;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:10px 12px;
+  font-weight:800;
+  color:var(--deep);
+}
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(180deg,#fafaf8 0%,#fff 100%);
+  padding:76px 0 70px;
+}
+.hero:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 82% 12%,rgba(47,95,67,.055),transparent 27%),
+    radial-gradient(circle at 8% 90%,rgba(47,95,67,.035),transparent 24%);
+  pointer-events:none;
+}
+.hero-grid{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:1.02fr .98fr;
+  gap:56px;
+  align-items:center;
+}
+.eyebrow{
+  font-size:11px;
+  letter-spacing:.18em;
+  font-weight:800;
+  color:#59645c;
+  text-transform:uppercase;
+  margin:0 0 14px;
+}
+.hero h1{
+  font-family:"Avenir Next","Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(48px,6.2vw,78px);
+  line-height:.98;
+  letter-spacing:-.045em;
+  color:var(--deep);
+  margin:0 0 20px;
+}
+.hero .lead{
+  font-size:19px;
+  line-height:1.65;
+  max-width:700px;
+  color:#4f5b52;
+}
+.hero-media{position:relative}
+.hero-media img{
+  width:100%;
+  height:520px;
+  object-fit:cover;
+  border-radius:18px;
+  box-shadow:0 18px 48px rgba(16,43,26,.13);
+}
+.hero-badge{
+  position:absolute;
+  left:18px;
+  bottom:18px;
+  background:rgba(255,255,255,.94);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 15px;
+  box-shadow:0 10px 26px rgba(0,0,0,.10);
+  font-weight:800;
+  color:var(--deep);
+  font-size:13px;
+  backdrop-filter:blur(8px);
+}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.trustrow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px 22px;
+  margin-top:28px;
+  color:#59645c;
+  font-size:13px;
+}
+.trustrow span:before{
+  content:"✓";
+  color:#52675a;
+  font-weight:900;
+  margin-right:7px;
+}
+
+.section{padding:68px 0}
+.section.alt{background:var(--cream)}
+.section.green{background:var(--deep);color:#edf4ee}
+.section.green h2,.section.green h3{color:#fff}
+h1,h2,h3{letter-spacing:-.025em}
+h2{
+  font-family:"Avenir Next","Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(34px,4.2vw,50px);
+  line-height:1.06;
+  color:var(--deep);
+  margin:0 0 14px;
+}
+h3{font-weight:800}
+.lead{
+  font-size:17px;
+  color:#566159;
+  max-width:760px;
+}
+.section.green .lead{color:#cfdad1}
+
+.service-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin-top:32px;
+}
+.service-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:none;
+  transition:.18s ease;
+}
+.service-card:hover{
+  transform:translateY(-2px);
+  border-color:#cfd9d1;
+}
+.service-card img{
+  width:100%;
+  height:210px;
+  object-fit:cover;
+}
+.service-card .body{padding:20px}
+.service-card h3{
+  color:var(--deep);
+  font-size:19px;
+  margin:0 0 8px;
+}
+.service-card p{
+  color:#5b665e;
+  margin:0 0 14px;
+  font-size:14px;
+}
+.textlink{
+  font-weight:800;
+  color:#33433a;
+  text-decoration:none;
+  font-size:13px;
+}
+
+.steps{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin-top:30px;
+}
+.step{
+  background:#fff;
+  border-radius:14px;
+  padding:22px;
+  border:1px solid var(--line);
+}
+.num{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#f0f1ee;
+  color:var(--deep);
+  font-weight:900;
+  margin-bottom:14px;
+  font-size:13px;
+}
+.area-grid{
+  display:grid;
+  grid-template-columns:1.08fr .92fr;
+  gap:32px;
+  align-items:start;
+  margin-top:26px;
+}
+.area-list{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.pill{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:13px 14px;
+  font-weight:800;
+  color:var(--deep);
+  font-size:14px;
+}
+.quote-box{
+  border-radius:16px;
+  background:#292c29;
+  color:#fff;
+  padding:28px;
+}
+.quote-box h3{
+  font-family:"Avenir Next","Helvetica Neue",Arial,sans-serif;
+  font-size:28px;
+  margin:0 0 10px;
+}
+.quote-box p{color:#d4ded6}
+.quote-box .btn{
+  background:#fff;
+  color:var(--deep)!important;
+  border-color:#fff;
+}
+
+.testimonial{
+  max-width:840px;
+  margin:0 auto;
+  text-align:center;
+  padding:4px;
+}
+.stars{
+  letter-spacing:3px;
+  color:#d8b76b;
+  font-size:17px;
+}
+.testimonial blockquote{
+  font-family:"Avenir Next","Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(24px,3.2vw,34px);
+  line-height:1.32;
+  color:var(--deep);
+  margin:18px 0;
+}
+.testimonial cite{
+  font-style:normal;
+  font-weight:800;
+  color:#52675a;
+}
+.cta{
+  background:#292c29;
+  color:#fff;
+  border-radius:16px;
+  padding:34px;
+}
+.cta h2{color:#fff}
+.cta p{color:#d5dfd7;max-width:720px}
+
+.pagehead{
+  padding:50px 0 32px;
+  background:#fafaf8;
+  border-bottom:1px solid var(--line);
+}
+.pagehead h1{
+  font-family:"Avenir Next","Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(40px,5vw,58px);
+  line-height:1;
+  color:var(--deep);
+  margin:0 0 12px;
+}
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:28px;
+}
+.card{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:22px;
+  background:#fff;
+  box-shadow:none;
+}
+.card h3{margin:0 0 8px;color:var(--deep)}
+.checks{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-top:22px;
+}
+.check{
+  background:#fff;
+  border:1px solid var(--line);
+  padding:14px 15px;
+  border-radius:10px;
+}
+.form{display:grid;gap:14px;max-width:780px}
+.form label{font-weight:800;color:var(--deep)}
+.form input,.form textarea,.form select{
+  width:100%;
+  padding:13px 14px;
+  border:1px solid #cbd5cd;
+  border-radius:9px;
+  background:#fff;
+  margin-top:6px;
+  outline:none;
+}
+.form input:focus,.form textarea:focus,.form select:focus{
+  border-color:#52675a;
+  box-shadow:0 0 0 3px rgba(36,91,54,.08);
+}
+.notice{
+  padding:14px;
+  border-left:3px solid #7c8a80;
+  background:#f6f6f3;
+  border-radius:8px;
+}
+footer{
+  background:#202220;
+  color:#d9e3db;
+  padding:42px 0;
+}
+.footgrid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  gap:28px;
+}
+.footlinks{display:grid;gap:7px}
+.footlinks a{color:#fff;text-decoration:none;font-size:14px}
+.footer-actions{margin-top:14px}
+.footer-actions button{
+  background:none;
+  border:0;
+  color:white;
+  text-decoration:underline;
+  padding:0;
+  cursor:pointer;
+}
+.small{font-size:12px;color:var(--muted)}
+
+.cookie{
+  position:fixed;
+  left:16px;
+  right:16px;
+  bottom:16px;
+  max-width:820px;
+  margin:auto;
+  background:#fff;
+  border:1px solid var(--line);
+  box-shadow:0 18px 60px rgba(0,0,0,.18);
+  border-radius:14px;
+  padding:20px;
+  z-index:100;
+  display:none;
+}
+.cookie.show{display:block}
+.cookie h3{margin:0 0 6px;color:var(--deep)}
+.cookie-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin-top:14px;
+}
+.cookie .btn{width:100%}
+.modal{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:110;
+  padding:18px;
+}
+.modal.show{display:flex}
+.modal-card{
+  max-width:680px;
+  width:100%;
+  max-height:88vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:16px;
+  padding:24px;
+}
+.pref{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+}
+.switch{min-width:46px}
+.status{
+  display:none;
+  margin-top:14px;
+  padding:12px;
+  border-radius:10px;
+  background:#edf7ef;
+  border:1px solid #b8d8bf;
+  color:var(--deep);
+}
+.status.show{display:block}
+
+@media(max-width:940px){
+  .menuBtn{display:block}
+  .links{
+    position:absolute;
+    left:0;
+    right:0;
+    top:76px;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    display:none;
+    flex-direction:column;
+    align-items:flex-start;
+    padding:18px 22px;
+  }
+  .links.open{display:flex}
+  .nav>.btn{display:none}
+  .hero-grid,.area-grid{grid-template-columns:1fr}
+  .hero-media img{height:420px}
+  .service-grid,.steps,.grid3,.checks,.footgrid{grid-template-columns:1fr 1fr}
+  .section{padding:54px 0}
+}
+@media(max-width:640px){
+  .wrap{width:min(var(--max),calc(100% - 22px))}
+  .hero{padding:46px 0 52px}
+  .hero h1{font-size:48px}
+  .hero .lead{font-size:17px}
+  .hero-media img{height:330px;border-radius:14px}
+  .hero-badge{left:12px;bottom:12px;font-size:12px}
+  .service-grid,.steps,.grid3,.checks,.footgrid,.area-list,.cookie-actions{grid-template-columns:1fr}
+  .section{padding:46px 0}
+  .cta{padding:24px}
+  .brand span{display:none}
+}
+</style></head><body><div class="topbar">2027 bookings now open • Newton-le-Willows & nearby</div><header><div class="wrap nav"><a class="brand" href="index.html"><img src="../KS%20Garden%20Services%20Logo.png" alt="KS Garden Services logo"><span>KS Garden Services</span></a><button class="menuBtn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mainNav">Menu</button><nav class="links" id="mainNav"><a href="services.html">Services</a><a href="../index.html">Prices</a><a href="areas.html">Areas</a><a href="reviews.html">Reviews</a><a href="about.html">About</a><a href="news.html">News</a><a href="contact.html">Contact</a></nav><a class="btn" href="../index.html">Get a price</a></div></header><main>
+<section class="hero"><div class="wrap hero-grid"><div><p class="eyebrow">Local garden maintenance</p><h1>A cleaner, smarter way to look after your garden.</h1><p class="lead">Friendly, reliable garden maintenance with a strong focus on attention to detail — from regular lawn and border care to hedges, seasonal tidy-ups and pressure washing.</p><div class="actions"><a class="btn" href="../index.html">Get an instant guide price</a><a class="btn outline" href="contact.html">Send an enquiry</a></div><div class="trustrow"><span>Local sole trader</span><span>Clear guide pricing</span><span>Regular & one-off work</span></div></div><div class="hero-media"><img src="../homepage.jpg" alt="Well maintained garden by KS Garden Services"><div class="hero-badge">🌿 Keeping Gardens Looking Their Best.</div></div></div></section>
+<section class="section"><div class="wrap"><p class="eyebrow">What I can help with</p><h2>Garden care that fits around you.</h2><p class="lead">Whether you want regular visits or help getting a garden back under control, you can see a guide price before getting in touch.</p><div class="service-grid">
+<article class="service-card"><img src="../Regular%20Garden%20Maintenance" alt="Regular garden maintenance"><div class="body"><h3>Regular maintenance</h3><p>Lawn cutting, edging, border care, routine pruning and a tidy finish on each visit.</p><a class="textlink" href="../index.html">Check a guide price →</a></div></article>
+<article class="service-card"><img src="../Lawn%20Mowing%20%26%20Edging" alt="Lawn mowing and edging"><div class="body"><h3>Lawn mowing & edging</h3><p>Neat, consistent cuts with properly finished edges for front and back lawns.</p><a class="textlink" href="services.html">View services →</a></div></article>
+<article class="service-card"><img src="../Hedge%20%26%20Shrub%20Cutting" alt="Hedge and shrub trimming"><div class="body"><h3>Hedges & shrubs</h3><p>Routine trimming, shaping and seasonal pruning with larger reductions quoted separately.</p><a class="textlink" href="services.html">View services →</a></div></article>
+<article class="service-card"><img src="../Lawn%20Care%20%26%20Renovation" alt="Lawn care and renovation"><div class="body"><h3>Lawn care</h3><p>Scarifying, overseeding and suitable treatments to help improve lawn condition.</p><a class="textlink" href="../index.html">Get a guide price →</a></div></article>
+<article class="service-card"><img src="../Autumn%20Garden%20Leaf%20Clearing.png" alt="Autumn leaf clearance"><div class="body"><h3>Seasonal tidy-ups</h3><p>Leaves, borders, overgrowth and general garden tidy-ups when the seasons change.</p><a class="textlink" href="contact.html">Ask about a tidy-up →</a></div></article>
+<article class="service-card"><img src="../Pressure%20washing.jpg" alt="Pressure washing"><div class="body"><h3>Pressure washing</h3><p>Patios, paving, paths and suitable hard surfaces cleaned carefully and professionally.</p><a class="textlink" href="../index.html">Check a guide price →</a></div></article>
+</div></div></section>
+<section class="section alt"><div class="wrap"><p class="eyebrow">Simple from the start</p><h2>From enquiry to a cared-for garden.</h2><div class="steps"><div class="step"><div class="num">1</div><h3>Check a guide price</h3><p>Choose the service, size and condition, then enter your postcode to get a realistic starting estimate.</p></div><div class="step"><div class="num">2</div><h3>Send the details</h3><p>Tell me what you need and include a few clear garden photos where helpful.</p></div><div class="step"><div class="num">3</div><h3>I confirm the job</h3><p>I’ll confirm the price and what’s included before any work begins.</p></div></div></div></section>
+<section class="section"><div class="wrap"><div class="area-grid"><div><p class="eyebrow">Local coverage</p><h2>Based in Newton-le-Willows.</h2><p class="lead">Serving selected nearby areas with travel built into the online price guide where applicable.</p><div class="area-list"><div class="pill">Newton-le-Willows</div><div class="pill">Warrington</div><div class="pill">Great Sankey</div><div class="pill">Ashton-in-Makerfield</div><div class="pill">St Helens</div><div class="pill">Culcheth</div></div></div><div class="quote-box"><h3>Not sure if I cover you?</h3><p>Enter your postcode and the price guide will check the normal service area before showing an estimate.</p><a class="btn" href="../index.html">Check my postcode</a></div></div></div></section>
+<section class="section alt"><div class="wrap testimonial"><div class="stars">★★★★★</div><blockquote>Friendly, reliable garden care with a focus on the little details that make the whole garden look better.</blockquote><cite>KS Garden Services</cite><div class="actions" style="justify-content:center"><a class="btn outline" href="reviews.html">Read customer reviews</a></div></div></section>
+<section class="section green"><div class="wrap"><p class="eyebrow" style="color:#a9c8b0">About KS Garden Services</p><h2>A personal service, not a faceless company.</h2><p class="lead">I’m Karl, the person behind KS Garden Services. I built the business around doing work I genuinely enjoy, looking after gardens properly and building long-term relationships with local customers.</p><div class="actions"><a class="btn" href="about.html">Meet Karl</a><a class="btn secondary" href="contact.html">Contact KS Garden Services</a></div></div></section>
+<section class="section"><div class="wrap cta"><h2>Ready to get your garden sorted?</h2><p>Start with the online guide price, or send an enquiry if the job needs a closer look.</p><div class="actions"><a class="btn" href="../index.html">Get a guide price</a><a class="btn secondary" href="contact.html">Send an enquiry</a></div></div></section>
+</main><footer><div class="wrap footgrid"><div><a class="brand" href="index.html" style="color:#fff"><img src="../KS%20Garden%20Services%20Logo.png" alt="KS Garden Services logo"><span>KS Garden Services</span></a><p>Keeping Gardens Looking Their Best.</p><a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a><div class="footer-actions"><button type="button" data-cookie-settings>Cookie settings</button></div></div><div class="footlinks"><strong>Explore</strong><a href="services.html">Services</a><a href="../index.html">Prices</a><a href="areas.html">Areas</a><a href="reviews.html">Reviews</a></div><div class="footlinks"><strong>Information</strong><a href="about.html">About</a><a href="news.html">Garden news</a><a href="privacy.html">Privacy</a><a href="cookies.html">Cookies</a><a href="contact.html">Contact</a></div></div><div class="wrap"><p class="small" style="color:#b9c8bd">© 2026 KS Garden Services. All rights reserved.</p></div></footer><div class="cookie" id="ks-cookie" role="dialog" aria-label="Cookie choices"><h3>Your cookie choices</h3><p>We use essential storage to remember your choices and keep the site working. Analytics and marketing cookies stay off unless you choose to allow them.</p><div class="cookie-actions"><button class="btn" data-cookie-action="accept">Accept all</button><button class="btn outline" data-cookie-action="reject">Essential only</button><button class="btn secondary" data-cookie-action="manage">Manage choices</button></div><p class="small"><a href="cookies.html">Read our cookie information</a></p></div><div class="modal" id="ks-cookie-modal" role="dialog" aria-modal="true" aria-label="Manage cookie choices"><div class="modal-card"><h2>Cookie settings</h2><p>Choose which optional categories you want to allow. Essential storage is always on because it is needed to remember your choices.</p><div class="pref"><div><strong>Essential</strong><br><span class="small">Site preferences and cookie-consent choice.</span></div><input class="switch" type="checkbox" checked disabled></div><div class="pref"><div><strong>Analytics</strong><br><span class="small">Anonymous usage measurement if analytics is added.</span></div><input class="switch" id="prefAnalytics" type="checkbox"></div><div class="pref"><div><strong>Marketing</strong><br><span class="small">Advertising or Meta Pixel-style tracking if added.</span></div><input class="switch" id="prefMarketing" type="checkbox"></div><div class="actions"><button class="btn" data-cookie-action="save">Save choices</button><button class="btn outline" data-cookie-action="close">Cancel</button></div></div></div></body></html>
