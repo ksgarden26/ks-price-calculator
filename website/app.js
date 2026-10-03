@@ -1,0 +1,1 @@
+(function(){const key="ks_cookie_choice";const box=document.getElementById("ks-cookie");if(box&&!localStorage.getItem(key))box.classList.add("show");document.querySelectorAll("[data-cookie]").forEach(b=>b.addEventListener("click",()=>{localStorage.setItem(key,b.dataset.cookie);box&&box.classList.remove("show")}));})();
