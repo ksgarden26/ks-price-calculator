@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap');
 
 :root{
   --green:#2f5f43;
@@ -17,7 +17,7 @@
 html{scroll-behavior:smooth}
 body{
   margin:0;
-  font-family:"Manrope",Arial,sans-serif;
+  font-family:"DM Sans",Arial,sans-serif;
   color:var(--ink);
   background:#fff;
   line-height:1.55;
@@ -142,10 +142,10 @@ header{
   margin:0 0 14px;
 }
 .hero h1{
-  font-family:"Playfair Display",Georgia,serif;
+  font-family:"Sora","DM Sans",Arial,sans-serif;
   font-size:clamp(48px,6.2vw,78px);
   line-height:.98;
-  letter-spacing:-.035em;
+  letter-spacing:-.045em;
   color:var(--deep);
   margin:0 0 20px;
 }
@@ -199,7 +199,7 @@ header{
 .section.green h2,.section.green h3{color:#fff}
 h1,h2,h3{letter-spacing:-.025em}
 h2{
-  font-family:"Playfair Display",Georgia,serif;
+  font-family:"Sora","DM Sans",Arial,sans-serif;
   font-size:clamp(34px,4.2vw,50px);
   line-height:1.06;
   color:var(--deep);
@@ -306,7 +306,7 @@ h3{font-weight:800}
   padding:28px;
 }
 .quote-box h3{
-  font-family:"Playfair Display",Georgia,serif;
+  font-family:"Sora","DM Sans",Arial,sans-serif;
   font-size:28px;
   margin:0 0 10px;
 }
@@ -329,7 +329,7 @@ h3{font-weight:800}
   font-size:17px;
 }
 .testimonial blockquote{
-  font-family:"Playfair Display",Georgia,serif;
+  font-family:"Sora","DM Sans",Arial,sans-serif;
   font-size:clamp(24px,3.2vw,34px);
   line-height:1.32;
   color:var(--deep);
@@ -355,7 +355,7 @@ h3{font-weight:800}
   border-bottom:1px solid var(--line);
 }
 .pagehead h1{
-  font-family:"Playfair Display",Georgia,serif;
+  font-family:"Sora","DM Sans",Arial,sans-serif;
   font-size:clamp(40px,5vw,58px);
   line-height:1;
   color:var(--deep);
