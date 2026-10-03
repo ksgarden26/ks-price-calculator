@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
 
 :root{
-  --green:#245b36;
-  --green-2:#2f6f45;
-  --deep:#102b1a;
-  --ink:#172019;
-  --muted:#677169;
-  --pale:#f4f7f3;
-  --cream:#fafaf7;
-  --line:#e2e8e2;
+  --green:#2f5f43;
+  --green-2:#3a6b4d;
+  --deep:#1f2421;
+  --ink:#202522;
+  --muted:#707771;
+  --pale:#f6f6f3;
+  --cream:#f8f7f3;
+  --line:#e6e7e3;
   --white:#fff;
   --max:1180px;
   --radius:16px;
@@ -30,7 +30,7 @@ a{color:inherit}
 .wrap{width:min(var(--max),calc(100% - 36px));margin:auto}
 
 .topbar{
-  background:var(--deep);
+  background:#252a27;
   color:#fff;
   text-align:center;
   padding:8px 12px;
@@ -113,7 +113,7 @@ header{
 .hero{
   position:relative;
   overflow:hidden;
-  background:linear-gradient(180deg,#f7f9f6 0%,#fff 100%);
+  background:linear-gradient(180deg,#fafaf8 0%,#fff 100%);
   padding:76px 0 70px;
 }
 .hero:before{
@@ -121,8 +121,8 @@ header{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 82% 12%,rgba(36,91,54,.10),transparent 27%),
-    radial-gradient(circle at 8% 90%,rgba(36,91,54,.06),transparent 24%);
+    radial-gradient(circle at 82% 12%,rgba(47,95,67,.055),transparent 27%),
+    radial-gradient(circle at 8% 90%,rgba(47,95,67,.035),transparent 24%);
   pointer-events:none;
 }
 .hero-grid{
@@ -272,7 +272,7 @@ h3{font-weight:800}
   border-radius:50%;
   display:grid;
   place-items:center;
-  background:#eef4ee;
+  background:#f0f1ee;
   color:var(--deep);
   font-weight:900;
   margin-bottom:14px;
@@ -301,7 +301,7 @@ h3{font-weight:800}
 }
 .quote-box{
   border-radius:16px;
-  background:var(--deep);
+  background:#262b28;
   color:#fff;
   padding:28px;
 }
@@ -341,7 +341,7 @@ h3{font-weight:800}
   color:var(--green);
 }
 .cta{
-  background:var(--deep);
+  background:#262b28;
   color:#fff;
   border-radius:16px;
   padding:34px;
@@ -351,7 +351,7 @@ h3{font-weight:800}
 
 .pagehead{
   padding:50px 0 32px;
-  background:#f7f9f6;
+  background:#fafaf8;
   border-bottom:1px solid var(--line);
 }
 .pagehead h1{
@@ -404,12 +404,12 @@ h3{font-weight:800}
 }
 .notice{
   padding:14px;
-  border-left:3px solid var(--green);
-  background:#f2f6f2;
+  border-left:3px solid #7c8a80;
+  background:#f6f6f3;
   border-radius:8px;
 }
 footer{
-  background:#0f2a19;
+  background:#202421;
   color:#d9e3db;
   padding:42px 0;
 }
