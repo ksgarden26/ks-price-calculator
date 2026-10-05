@@ -352,6 +352,22 @@ td:last-child{
  .ks-site-cta{display:none}
  .ks-site-brand span{display:none}
 }
+
+.ks-site-topbar{
+  overflow:hidden;
+  white-space:nowrap;
+  text-align:left;
+  padding:8px 0;
+  text-indent:100%;
+  animation:ksSiteIntakeScroll 18s linear infinite;
+}
+@keyframes ksSiteIntakeScroll{
+  from{text-indent:100%}
+  to{text-indent:-75%}
+}
+@media (prefers-reduced-motion:reduce){
+  .ks-site-topbar{animation:none;text-indent:0;text-align:center}
+}
 </style>
 </head>
 
