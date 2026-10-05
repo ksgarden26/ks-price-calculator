@@ -1,9 +1,8 @@
-/prices /prices.html 200
-/services /services.html 200
-/areas /areas.html 200
-/reviews /reviews.html 200
-/about /about.html 200
-/news /news.html 200
-/contact /contact.html 200
-/privacy /privacy.html 200
-/cookies /cookies.html 200
+/about /about-me/ 301
+/about/ /about-me/ 301
+/news /garden-new-advice/ 301
+/news/ /garden-new-advice/ 301
+/privacy /privacy-policy/ 301
+/privacy/ /privacy-policy/ 301
+/garden-service-prices /prices/ 301
+/maintenance-plans /plans/ 301
