@@ -4,3 +4,5 @@ html,body{max-width:100%;overflow-x:clip}
 /* Standalone pages do not depend on the former builder's scroll observer. */
 html{box-sizing:border-box}body{margin:0}*,*::before,*::after{box-sizing:inherit}
 .anim-ready .site-section,.anim-ready .site-section-item-input,.anim-ready .list-group-item{opacity:1;transform:none}
+.section-customcode-layout1 div,.section-customcode-layout1 textarea{width:100%}
+.section-customcode-layout1 textarea{height:200px}
