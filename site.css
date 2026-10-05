@@ -435,7 +435,7 @@ footer{
   display:inline-flex;
   width:max-content;
   min-width:200%;
-  animation:ksTicker 22s linear infinite;
+  animation:ksTicker 30s linear infinite;
   will-change:transform;
 }
 .topbar-track span{
@@ -457,7 +457,7 @@ footer{
   text-align:left;
   padding:8px 0;
   text-indent:100%;
-  animation:ksIntakeScroll 18s linear infinite;
+  animation:ksIntakeScroll 30s linear infinite;
 }
 @keyframes ksIntakeScroll{
   from{text-indent:100%}
