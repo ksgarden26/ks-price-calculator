@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>KS Quoting App</title>
+<style>
+:root{--g:#2d4433;--g2:#496b57;--bg:#f4f7f4;--card:#fff;--ink:#223029;--muted:#6a766e;--line:#dfe6e1;--soft:#eef4ef;--warn:#fff6df}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.app{max-width:980px;margin:auto;padding:18px 14px 80px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:50px;height:50px;object-fit:contain}
+h1{font-size:27px;margin:0;color:var(--g)}
+.sub{font-size:12px;color:var(--muted);margin-top:3px}
+.back{color:var(--g);text-decoration:none;font-weight:700;font-size:14px}
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:16px;padding-bottom:2px}
+.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;color:#536158;border-radius:999px;padding:10px 14px;font-weight:700}
+.tab.active{background:var(--g);color:#fff;border-color:var(--g)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 6px 22px rgba(29,55,38,.04)}
+.card h2{font-size:20px;margin:0 0 14px;color:var(--g)}
+.grid2,.grid3{display:grid;gap:12px}.grid2{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:repeat(3,1fr)}
+label{display:block;font-size:12px;font-weight:800;color:#59675e;margin:0 0 6px}
+input,select,textarea{width:100%;border:1px solid #ccd7cf;background:#fff;border-radius:11px;padding:12px;font:inherit;color:var(--ink)}
+textarea{min-height:90px;resize:vertical}
+button{font:inherit}
+.primary,.secondary,.danger{border-radius:999px;padding:11px 16px;font-weight:800;cursor:pointer}
+.primary{border:1px solid var(--g);background:var(--g);color:#fff}
+.secondary{border:1px solid #cfd8d2;background:#fff;color:var(--g)}
+.danger{border:1px solid #e8cccc;background:#fff;color:#8a3333}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.area-row{display:grid;grid-template-columns:1.2fr .8fr .8fr .8fr auto;gap:8px;align-items:end;margin-bottom:10px}
+.area-total{font-size:30px;font-weight:900;color:var(--g);margin:4px 0}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.pill{display:inline-flex;padding:6px 10px;border-radius:999px;background:var(--soft);font-size:12px;font-weight:800;color:#45604f}
+.price-big{font-size:38px;font-weight:900;color:var(--g);line-height:1}
+.pricebox{background:var(--soft);border-radius:16px;padding:18px}
+.breakdown{margin-top:12px;font-size:14px;color:#546158;line-height:1.7}
+.quoteout{white-space:pre-wrap;background:#f9fbf9;border:1px solid var(--line);border-radius:14px;padding:16px;min-height:180px;font-size:14px;line-height:1.55}
+.note{background:var(--warn);padding:13px;border-radius:12px;font-size:13px;color:#6c5b2d}
+.sticky{position:sticky;bottom:10px;display:flex;gap:8px;background:rgba(244,247,244,.93);padding:8px;border-radius:999px;backdrop-filter:blur(12px);box-shadow:0 8px 25px rgba(0,0,0,.08);z-index:20}
+.sticky button{flex:1}
+.history-item{border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:9px;background:#fff}
+.history-item strong{color:var(--g)}
+@media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}.area-row{grid-template-columns:1fr 1fr}.area-row .area-name{grid-column:1/-1}.area-row .remove{grid-column:1/-1}.top{align-items:flex-start}.price-big{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand"><img class="logo" src="/KS%20Garden%20Services%20Logo.png" alt=""><div><h1>KS Quoting App</h1><div class="sub">On-site quote builder & area calculator</div></div></div>
+    <a class="back" href="/admin/">Admin</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="quote">Quote</button>
+    <button class="tab" data-tab="area">Area calculator</button>
+    <button class="tab" data-tab="summary">Customer quote</button>
+    <button class="tab" data-tab="history">Saved quotes</button>
+  </div>
+
+  <section class="panel active" id="quote">
+    <div class="card">
+      <h2>Customer</h2>
+      <div class="grid2">
+        <div><label>Name</label><input id="name" placeholder="Customer name"></div>
+        <div><label>Phone</label><input id="phone" type="tel" placeholder="Phone number"></div>
+        <div><label>Address</label><input id="address" placeholder="House / street"></div>
+        <div><label>Postcode</label><input id="postcode" placeholder="WA12..."></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Work</h2>
+      <div class="grid2">
+        <div><label>Service</label>
+          <select id="service">
+            <option value="maintenance">Regular Garden Maintenance</option>
+            <option value="grass">Grass Cutting & Edging</option>
+            <option value="hedge">Hedge Trimming</option>
+            <option value="shrubs">Shrub Pruning & Shaping</option>
+            <option value="weeding">Weeding & Border Tidy</option>
+            <option value="tidy">Garden Tidy-Up</option>
+            <option value="clearance">Garden Clearance</option>
+            <option value="scarify">Lawn Scarifying</option>
+            <option value="treatment">Lawn Treatment</option>
+            <option value="leaves">Leaf Clearance</option>
+            <option value="pressure">Pressure Washing</option>
+            <option value="custom">Custom / mixed job</option>
+          </select>
+        </div>
+        <div><label>Condition</label>
+          <select id="condition"><option value="normal">Regularly maintained</option><option value="needs">Needs attention</option><option value="overgrown">Overgrown</option></select>
+        </div>
+        <div><label>Visit frequency</label>
+          <select id="frequency"><option>One-off</option><option>Weekly</option><option selected>Fortnightly</option><option>Every 4 weeks</option><option>Monthly</option></select>
+        </div>
+        <div><label>Green waste</label>
+          <select id="waste"><option value="0">Green bin / no removal</option><option value="10">Small removal +£10</option><option value="15">Medium removal +£15</option><option value="25">Large removal +£25</option><option value="40">XL removal +£40</option><option value="60">XXL removal +£60</option></select>
+        </div>
+      </div>
+      <div style="margin-top:12px"><label>Work required</label><textarea id="work" placeholder="e.g. Mow front and rear lawns, edge paths, weed borders, reduce two shrubs..."></textarea></div>
+    </div>
+
+    <div class="card">
+      <h2>Area-linked estimate</h2>
+      <div class="row"><span class="pill" id="areaBadge">0.0 m² measured</span><button class="secondary" type="button" data-goto="area">Open area calculator</button></div>
+      <div class="muted" style="margin-top:10px">The app uses the measured area to choose a sensible size band for lawn/pressure-washing work. You can always override the final quote.</div>
+    </div>
+
+    <div class="card">
+      <h2>Price</h2>
+      <div class="grid3">
+        <div><label>Size band</label><select id="size"><option value="1">Small</option><option value="2">Medium</option><option value="3">Large</option><option value="4">XL</option><option value="5">XXL</option></select></div>
+        <div><label>Extra work / materials £</label><input id="extras" type="number" step="1" min="0" value="0"></div>
+        <div><label>Travel / internal cost £</label><input id="travel" type="number" step="1" min="0" value="0"></div>
+      </div>
+      <div class="pricebox" style="margin-top:14px">
+        <div class="muted">Suggested quote</div>
+        <div class="price-big" id="suggested">£0</div>
+        <div class="breakdown" id="breakdown"></div>
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div><label>Final quote £</label><input id="finalPrice" type="number" min="0" step="1"></div>
+        <div><label>Deposit / first payment £ (optional)</label><input id="deposit" type="number" min="0" step="1" value="0"></div>
+      </div>
+      <div style="margin-top:12px"><label>Internal notes</label><textarea id="internal" placeholder="Access, tools, estimated duration, disposal, materials, reminders..."></textarea></div>
+    </div>
+  </section>
+
+  <section class="panel" id="area">
+    <div class="card">
+      <h2>Area calculator</h2>
+      <p class="muted">Split an awkward garden, lawn, drive or patio into simple shapes. Add as many sections as you need and the app will total them.</p>
+      <div id="areas"></div>
+      <div class="row"><button class="secondary" id="addArea" type="button">+ Add section</button><button class="danger" id="clearAreas" type="button">Clear areas</button></div>
+      <div style="margin-top:20px"><div class="muted">TOTAL AREA</div><div class="area-total" id="areaTotal">0.0 m²</div><div class="muted" id="areaHint"></div></div>
+    </div>
+    <div class="note"><strong>How to measure:</strong> rectangle = length × width; triangle = base × height ÷ 2; circle = π × radius². For irregular spaces, split them into several rectangles/triangles and add them together.</div>
+  </section>
+
+  <section class="panel" id="summary">
+    <div class="card">
+      <h2>Customer-facing quote</h2>
+      <div class="quoteout" id="quoteText"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="primary" id="copyQuote" type="button">Copy quote</button>
+        <button class="secondary" id="shareQuote" type="button">Share</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="history">
+    <div class="card"><h2>Saved quotes</h2><div id="historyList" class="muted">No saved quotes yet.</div></div>
+  </section>
+
+  <div class="sticky">
+    <button class="secondary" id="newQuote" type="button">New</button>
+    <button class="primary" id="saveQuote" type="button">Save quote</button>
+    <button class="secondary" type="button" data-goto="summary">View quote</button>
+  </div>
+</div>
+
+<script>
+const PRICE={
+ grass:["Grass Cutting & Edging",25,35,45,60,80],
+ maintenance:["Regular Garden Maintenance",30,35,45,55,60],
+ hedge:["Hedge Trimming",35,50,75,110,160],
+ shrubs:["Shrub Pruning & Shaping",30,45,65,90,130],
+ weeding:["Weeding & Border Tidy",30,40,60,85,120],
+ tidy:["Garden Tidy-Up",50,80,120,175,240],
+ clearance:["Garden Clearance",100,150,225,325,450],
+ scarify:["Lawn Scarifying",45,65,90,130,180],
+ treatment:["Lawn Treatment",25,35,45,60,80],
+ leaves:["Leaf Clearance",35,50,70,100,140],
+ pressure:["Pressure Washing",50,75,110,150,210],
+ custom:["Custom / mixed job",0,0,0,0,0]
+};
+const MULT={normal:1,needs:1.15,overgrown:1.30};
+const $=id=>document.getElementById(id);
+let areaCounter=0,totalArea=0;
+const fields=["name","phone","address","postcode","service","condition","frequency","waste","work","size","extras","travel","finalPrice","deposit","internal"];
+
+function money(n){return "£"+Math.round(Number(n)||0)}
+function recalc(){
+ const s=$("service").value, band=Number($("size").value), cond=$("condition").value;
+ const base=(PRICE[s]?.[band]||0);
+ const conditionPrice=base*MULT[cond];
+ const waste=Number($("waste").value)||0, extras=Number($("extras").value)||0;
+ const suggested=Math.ceil((conditionPrice+waste+extras)/5)*5;
+ $("suggested").textContent=money(suggested);
+ $("breakdown").textContent="Base "+money(base)+" • condition "+Math.round((MULT[cond]-1)*100)+"% • waste "+money(waste)+" • extras "+money(extras)+(Number($("travel").value)?" • internal travel "+money($("travel").value):"");
+ if(!$("finalPrice").dataset.edited) $("finalPrice").value=suggested;
+ buildQuote();
+ saveDraft();
+}
+function bandFromArea(){
+ if(!totalArea) return;
+ const s=$("service").value;
+ let band=1;
+ if(s==="pressure"){
+   band= totalArea<=20?1:totalArea<=40?2:totalArea<=70?3:totalArea<=100?4:5;
+ }else{
+   band= totalArea<=50?1:totalArea<=100?2:totalArea<=200?3:totalArea<=350?4:5;
+ }
+ $("size").value=String(band);
+ recalc();
+}
+function addArea(data={}){
+ const id=++areaCounter;
+ const row=document.createElement("div");row.className="area-row";row.dataset.id=id;
+ row.innerHTML='<div class="area-name"><label>Section</label><input class="aname" placeholder="Rear lawn" value="'+(data.name||"")+'"></div>'+
+ '<div><label>Shape</label><select class="ashape"><option value="rect">Rectangle</option><option value="tri">Triangle</option><option value="circle">Circle</option></select></div>'+
+ '<div><label class="alabel">Length (m)</label><input class="a1" type="number" min="0" step=".01" value="'+(data.a||"")+'"></div>'+
+ '<div><label class="blabel">Width (m)</label><input class="a2" type="number" min="0" step=".01" value="'+(data.b||"")+'"></div>'+
+ '<button class="danger remove" type="button">Remove</button>';
+ $("areas").appendChild(row);
+ row.querySelector(".ashape").value=data.shape||"rect";
+ const updateLabels=()=>{
+   const sh=row.querySelector(".ashape").value;
+   row.querySelector(".alabel").textContent=sh==="circle"?"Radius (m)":sh==="tri"?"Base (m)":"Length (m)";
+   row.querySelector(".blabel").textContent=sh==="tri"?"Height (m)":"Width (m)";
+   row.querySelector(".a2").closest("div").style.display=sh==="circle"?"none":"block";
+   calcAreas();
+ };
+ row.querySelectorAll("input,select").forEach(el=>el.addEventListener("input",()=>{updateLabels();saveDraft()}));
+ row.querySelector(".remove").onclick=()=>{row.remove();calcAreas();saveDraft()};
+ updateLabels();
+}
+function calcAreas(){
+ totalArea=0;
+ [...document.querySelectorAll(".area-row")].forEach(row=>{
+   const sh=row.querySelector(".ashape").value,a=Number(row.querySelector(".a1").value)||0,b=Number(row.querySelector(".a2").value)||0;
+   totalArea += sh==="circle"?Math.PI*a*a:sh==="tri"?(a*b/2):(a*b);
+ });
+ $("areaTotal").textContent=totalArea.toFixed(1)+" m²";
+ $("areaBadge").textContent=totalArea.toFixed(1)+" m² measured";
+ $("areaHint").textContent= totalArea ? (totalArea<=20?"Very small area":totalArea<=50?"Small area":totalArea<=100?"Medium area":totalArea<=200?"Large area":totalArea<=350?"XL area":"XXL / manual assessment") : "";
+ bandFromArea();
+ buildQuote();
+}
+function getAreas(){
+ return [...document.querySelectorAll(".area-row")].map(row=>({
+   name:row.querySelector(".aname").value,shape:row.querySelector(".ashape").value,
+   a:row.querySelector(".a1").value,b:row.querySelector(".a2").value
+ }));
+}
+function buildQuote(){
+ const service=PRICE[$("service").value]?.[0]||"Garden work";
+ const price=Number($("finalPrice").value)||0;
+ const deposit=Number($("deposit").value)||0;
+ const name=$("name").value.trim();
+ const work=$("work").value.trim();
+ let t="KS Garden Services\nKeeping Gardens Looking Their Best.\n\n";
+ if(name)t+="Hi "+name+",\n\n";
+ t+="Thank you for asking me to quote for your garden work.\n\n";
+ t+="Work: "+service+"\n";
+ if(work)t+=work+"\n";
+ if(totalArea)t+="Measured area: approximately "+totalArea.toFixed(1)+"m²\n";
+ t+="Visit: "+$("frequency").value+"\n\n";
+ t+="Quoted price: "+money(price);
+ if($("frequency").value!=="One-off")t+=" per visit";
+ t+="\n";
+ if(deposit)t+="Deposit / first payment: "+money(deposit)+"\n";
+ t+="\nThe price is based on the work discussed and the condition seen at the time of quotation. Any additional work would be agreed before being carried out.\n\nKarl\nKS Garden Services";
+ $("quoteText").textContent=t;
+}
+function saveDraft(){
+ const d={};fields.forEach(id=>d[id]=$(id).value);d.areas=getAreas();
+ localStorage.setItem("ksQuoteDraft",JSON.stringify(d));
+}
+function loadDraft(){
+ try{
+  const d=JSON.parse(localStorage.getItem("ksQuoteDraft")||"null"); if(!d)return;
+  fields.forEach(id=>{if(d[id]!=null)$(id).value=d[id]});
+  $("areas").innerHTML="";areaCounter=0;(d.areas?.length?d.areas:[{}]).forEach(addArea);calcAreas();recalc();
+ }catch(e){}
+}
+function resetQuote(){
+ fields.forEach(id=>{if(["extras","travel","deposit"].includes(id))$(id).value=0;else if(["name","phone","address","postcode","work","internal","finalPrice"].includes(id))$(id).value=""});
+ $("service").value="maintenance";$("condition").value="normal";$("frequency").value="Fortnightly";$("waste").value="0";$("size").value="1";$("finalPrice").dataset.edited="";
+ $("areas").innerHTML="";areaCounter=0;addArea();calcAreas();recalc();
+}
+function saveQuote(){
+ const quote={id:Date.now(),saved:new Date().toLocaleString("en-GB"),data:{},areas:getAreas(),area:totalArea,quote:$("quoteText").textContent};
+ fields.forEach(id=>quote.data[id]=$(id).value);
+ const arr=JSON.parse(localStorage.getItem("ksSavedQuotes")||"[]");arr.unshift(quote);localStorage.setItem("ksSavedQuotes",JSON.stringify(arr.slice(0,50)));renderHistory();
+ alert("Quote saved on this device.");
+}
+function renderHistory(){
+ const arr=JSON.parse(localStorage.getItem("ksSavedQuotes")||"[]");
+ if(!arr.length){$("historyList").textContent="No saved quotes yet.";return}
+ $("historyList").innerHTML=arr.map(q=>'<div class="history-item"><strong>'+(q.data.name||"Unnamed customer")+'</strong><div>'+q.saved+' • '+(PRICE[q.data.service]?.[0]||"Garden work")+' • '+money(q.data.finalPrice)+'</div><div style="margin-top:8px"><button class="secondary loadSaved" data-id="'+q.id+'">Load</button></div></div>').join("");
+ document.querySelectorAll(".loadSaved").forEach(b=>b.onclick=()=>loadSaved(Number(b.dataset.id)));
+}
+function loadSaved(id){
+ const arr=JSON.parse(localStorage.getItem("ksSavedQuotes")||"[]"),q=arr.find(x=>x.id===id);if(!q)return;
+ fields.forEach(k=>{if(q.data[k]!=null)$(k).value=q.data[k]});
+ $("areas").innerHTML="";areaCounter=0;(q.areas?.length?q.areas:[{}]).forEach(addArea);calcAreas();$("finalPrice").dataset.edited="1";buildQuote();showTab("quote");
+}
+function showTab(id){
+ document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));
+ document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===id));
+ if(id==="summary")buildQuote();if(id==="history")renderHistory();scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>showTab(b.dataset.goto));
+$("addArea").onclick=()=>addArea();
+$("clearAreas").onclick=()=>{$("areas").innerHTML="";areaCounter=0;addArea();calcAreas()};
+fields.forEach(id=>$(id).addEventListener("input",()=>{if(id==="finalPrice")$(id).dataset.edited="1";recalc()}));
+$("service").addEventListener("change",()=>{bandFromArea();recalc()});
+$("finalPrice").addEventListener("input",buildQuote);$("deposit").addEventListener("input",buildQuote);
+$("copyQuote").onclick=async()=>{await navigator.clipboard.writeText($("quoteText").textContent);$("copyQuote").textContent="Copied ✓";setTimeout(()=>$("copyQuote").textContent="Copy quote",1400)};
+$("shareQuote").onclick=async()=>{const text=$("quoteText").textContent;if(navigator.share)await navigator.share({title:"KS Garden Services Quote",text});else{await navigator.clipboard.writeText(text);alert("Quote copied.")}};
+$("saveQuote").onclick=saveQuote;$("newQuote").onclick=()=>{if(confirm("Start a new quote?"))resetQuote()};
+addArea();loadDraft();recalc();renderHistory();
+</script>
+</body>
+</html>
