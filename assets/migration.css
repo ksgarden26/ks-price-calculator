@@ -1,3 +1,6 @@
 html,body{max-width:100%;overflow-x:clip}
 .nav2-link:focus-within .nav2-dropdown,.nav2-link.dropdown-open .nav2-dropdown{opacity:1!important;pointer-events:auto!important;transform:none!important}
 @media(max-width:1179px){.user-website .site-nav-v2 .nav2-inner{display:flex;min-height:76px}.user-website .site-nav-v2 .nav2-menu{display:flex}.user-website .site-nav-v2 .nav2-burger,.user-website .site-nav-v2 .nav2-closer{display:block}.user-website .site-nav-v2 .nav2-links{display:flex;flex-direction:column;align-items:stretch;gap:0}.user-website .site-nav-v2 .nav2-link{padding:14px 0;border-bottom:1px solid #eee;flex-wrap:wrap}.user-website .site-nav-v2 .nav2-dropdown{position:static;opacity:1;pointer-events:auto;transform:none;box-shadow:none;width:100%;padding:0 0 0 14px}.user-website .site-nav-v2 .nav2-phone{margin-top:12px}.user-website .site-nav-v2 .nav2-mobile-phone{display:inline-flex}}
+/* Standalone pages do not depend on the former builder's scroll observer. */
+html{box-sizing:border-box}body{margin:0}*,*::before,*::after{box-sizing:inherit}
+.anim-ready .site-section,.anim-ready .site-section-item-input,.anim-ready .list-group-item{opacity:1;transform:none}
