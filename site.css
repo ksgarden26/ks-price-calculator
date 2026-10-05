@@ -424,3 +424,28 @@ footer{
   .image-strip img{height:190px}
   .feature-split img{height:300px}
 }
+
+/* Scrolling intake banner */
+.topbar{
+  overflow:hidden;
+  white-space:nowrap;
+  padding:0;
+}
+.topbar-track{
+  display:inline-flex;
+  width:max-content;
+  min-width:200%;
+  animation:ksTicker 22s linear infinite;
+  will-change:transform;
+}
+.topbar-track span{
+  display:inline-block;
+  padding:8px 34px;
+}
+@keyframes ksTicker{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+@media (prefers-reduced-motion:reduce){
+  .topbar-track{animation:none}
+}
