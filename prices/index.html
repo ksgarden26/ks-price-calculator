@@ -331,10 +331,47 @@ td:last-child{
     font-size:23px;
   }
 }
+
+.ks-site-topbar{background:#f3f5f2;color:#4d5d53;text-align:center;padding:8px 12px;font-size:12px;font-weight:500;letter-spacing:.055em;border-bottom:1px solid #e6e9e5}
+.ks-site-header{position:sticky;top:0;z-index:9000;background:rgba(255,255,255,.96);border-bottom:1px solid #e6e9e5;backdrop-filter:blur(12px)}
+.ks-site-nav{max-width:1180px;margin:auto;min-height:78px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.ks-site-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#25302a;font-weight:600}
+.ks-site-brand img{width:50px;height:50px;object-fit:contain}
+.ks-site-links{display:flex;align-items:center;gap:24px}
+.ks-site-links a{text-decoration:none;color:#4d5951;font-size:14px;font-weight:450}
+.ks-site-links a:hover{color:#365443}
+.ks-site-cta{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:#365443;color:#fff!important;border-radius:999px;padding:11px 18px;font-weight:550;font-size:14px}
+.ks-site-menu{display:none;background:#fff;border:1px solid #e6e9e5;border-radius:999px;padding:10px 14px;font-weight:500}
+.ks-site-footer{background:#26302a;color:#dbe2dd;margin-top:42px;padding:34px 20px}
+.ks-site-footer-inner{max-width:1180px;margin:auto;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+.ks-site-footer a{color:#fff}
+@media(max-width:850px){
+ .ks-site-menu{display:block}
+ .ks-site-links{display:none;position:absolute;left:0;right:0;top:78px;background:#fff;padding:18px 22px;border-bottom:1px solid #e6e9e5;flex-direction:column;align-items:flex-start}
+ .ks-site-links.open{display:flex}
+ .ks-site-cta{display:none}
+ .ks-site-brand span{display:none}
+}
 </style>
 </head>
 
-<body>
+<body><div class="ks-site-topbar">2027 bookings now open • Newton-le-Willows & nearby</div>
+<header class="ks-site-header">
+  <div class="ks-site-nav">
+    <a class="ks-site-brand" href="/"><img src="/KS%20Garden%20Services%20Logo.png" alt="KS Garden Services logo"><span>KS Garden Services</span></a>
+    <button class="ks-site-menu" id="ksSiteMenu" type="button" aria-expanded="false">Menu</button>
+    <nav class="ks-site-links" id="ksSiteLinks">
+      <a href="/services/">Services</a>
+      <a href="/prices/">Prices</a>
+      <a href="/areas/">Areas</a>
+      <a href="/reviews/">Reviews</a>
+      <a href="/about/">About</a>
+      <a href="/news/">News</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+    <a class="ks-site-cta" href="/contact/">Contact</a>
+  </div>
+</header>
 
 <main class="wrap">
 
@@ -2717,5 +2754,10 @@ update();
 
 </script>
 
-</body>
+<footer class="ks-site-footer"><div class="ks-site-footer-inner"><div><strong>KS Garden Services</strong><br><span style="font-size:13px;opacity:.8">Keeping Gardens Looking Their Best.</span></div><div><a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a></div></div></footer><script>
+(function(){
+ const b=document.getElementById('ksSiteMenu'),n=document.getElementById('ksSiteLinks');
+ if(b&&n)b.addEventListener('click',function(){const o=n.classList.toggle('open');b.setAttribute('aria-expanded',String(o));});
+})();
+</script></body>
 </html>
