@@ -449,3 +449,20 @@ footer{
 @media (prefers-reduced-motion:reduce){
   .topbar-track{animation:none}
 }
+
+/* Scrolling 2027 intake banner */
+.topbar{
+  overflow:hidden;
+  white-space:nowrap;
+  text-align:left;
+  padding:8px 0;
+  text-indent:100%;
+  animation:ksIntakeScroll 18s linear infinite;
+}
+@keyframes ksIntakeScroll{
+  from{text-indent:100%}
+  to{text-indent:-75%}
+}
+@media (prefers-reduced-motion:reduce){
+  .topbar{animation:none;text-indent:0;text-align:center}
+}
