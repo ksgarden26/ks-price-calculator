@@ -1,0 +1,2721 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>KS Garden Services Price Guide</title>
+
+<style>
+:root{
+  --g:#245b36;
+  --d:#173d25;
+  --l:#f3f7f3;
+  --b:#d8e2d9;
+  --amber:#8a6400;
+  --amberbg:#fff8df;
+  --red:#9d2929;
+  --redbg:#fff0f0;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:#222;
+  background:#fff;
+}
+
+.wrap{
+  max-width:850px;
+  margin:auto;
+  padding:22px 12px;
+}
+
+.head{text-align:center;margin-bottom:22px}
+
+.head h1{
+  color:var(--g);
+  font-size:30px;
+  margin:0 0 8px;
+}
+
+.head p{
+  color:#555;
+  line-height:1.5;
+  margin:auto;
+  max-width:650px;
+}
+
+.card{
+  border:1px solid var(--b);
+  border-radius:16px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 4px 16px #0000000d;
+}
+
+.field{margin-bottom:18px}
+
+.field label{
+  display:block;
+  font-weight:700;
+  color:var(--d);
+  margin-bottom:7px;
+}
+
+.field select,
+.field input,
+.field textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #bbb;
+  border-radius:9px;
+  background:#fff;
+  font-size:16px;
+}
+
+.help{
+  background:var(--l);
+  border-left:4px solid var(--g);
+  padding:11px 13px;
+  border-radius:6px;
+  margin-top:9px;
+  font-size:13px;
+  line-height:1.45;
+}
+
+.checks{
+  display:grid;
+  gap:9px;
+}
+
+.checks label{
+  font-weight:400;
+  margin:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.checks input{width:auto}
+
+.travelbtn{
+  width:100%;
+  margin-top:9px;
+  padding:13px;
+  border:0;
+  border-radius:9px;
+  background:var(--g);
+  color:#fff;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.travelbtn:disabled{
+  opacity:.65;
+  cursor:wait;
+}
+
+.travel{
+  display:none;
+  padding:12px;
+  border-radius:9px;
+  margin-top:9px;
+  line-height:1.5;
+}
+
+.travel.yes{
+  background:#edf7ef;
+  border:1px solid #b8d8bf;
+}
+
+.travel.maybe{
+  background:var(--amberbg);
+  border:1px solid #ead794;
+  color:#654b00;
+}
+
+.travel.no{
+  background:var(--redbg);
+  border:1px solid #e2bcbc;
+  color:#7d2020;
+}
+
+.result{
+  background:var(--l);
+  border:2px solid var(--g);
+  border-radius:14px;
+  text-align:center;
+  padding:20px;
+}
+
+.result.waiting{
+  border-color:#cbd6cc;
+}
+
+.result.blocked{
+  border-color:#d0d0d0;
+  background:#f7f7f7;
+}
+
+.price{
+  font-size:40px;
+  font-weight:800;
+  color:var(--g);
+  margin:8px 5px;
+}
+
+.result.waiting .price,
+.result.blocked .price{
+  color:#666;
+  font-size:26px;
+}
+
+.break{
+  background:#fff;
+  border-radius:10px;
+  padding:12px;
+  margin:14px auto;
+  text-align:left;
+  max-width:540px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:6px 0;
+  border-bottom:1px solid #eee;
+}
+
+.row:last-child{border:0}
+
+.row strong{text-align:right}
+
+.note{
+  font-size:12px;
+  color:#666;
+  line-height:1.45;
+}
+
+.wa{
+  display:block;
+  background:var(--g);
+  color:#fff!important;
+  text-decoration:none;
+  padding:15px;
+  border-radius:10px;
+  font-weight:700;
+  margin-top:16px;
+}
+
+.wa.hidden{display:none}
+
+.resetbtn{
+  width:100%;
+  margin-top:10px;
+  padding:13px;
+  border:1px solid var(--g);
+  border-radius:10px;
+  background:#fff;
+  color:var(--g);
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.loaderOverlay{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.94);
+  z-index:9999;
+  text-align:center;
+  padding:24px;
+}
+.loaderOverlay.show{display:flex}
+.loaderCard{max-width:320px}
+.loaderLogo{
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  margin:0 auto 16px;
+  display:block;
+  animation:ksSpin 2.8s linear infinite;
+}
+.loaderFallback{
+  width:92px;height:92px;border-radius:50%;margin:0 auto 16px;
+  display:none;align-items:center;justify-content:center;
+  background:var(--g);color:#fff;font-size:28px;font-weight:800;
+  animation:ksSpin 2.8s linear infinite;
+}
+@keyframes ksSpin{to{transform:rotate(360deg)}}
+.loaderScene{position:relative;width:240px;height:76px;margin:14px auto 8px;overflow:hidden}
+.grassStrip{position:absolute;left:0;right:0;bottom:8px;height:4px;background:var(--g);border-radius:4px}
+.mowerGuy{position:absolute;left:-62px;bottom:12px;font-size:30px;white-space:nowrap;animation:mowAcross 3.8s ease-in-out infinite}
+.plantGrow{position:absolute;right:18px;bottom:12px;font-size:32px;transform-origin:bottom center;animation:plantGrow 2.4s ease-in-out infinite}
+.clipping{position:absolute;bottom:17px;font-size:13px;opacity:0;animation:clipFly 3.8s linear infinite}
+.clipping.c1{animation-delay:.6s}.clipping.c2{animation-delay:1.1s}.clipping.c3{animation-delay:1.6s}
+@keyframes mowAcross{0%{left:-62px}45%,60%{left:118px}100%{left:245px}}
+@keyframes plantGrow{0%,100%{transform:scale(.65) rotate(-3deg);opacity:.65}50%{transform:scale(1.08) rotate(3deg);opacity:1}}
+@keyframes clipFly{0%,25%{opacity:0;transform:translate(70px,0) rotate(0)}35%{opacity:1}60%{opacity:0;transform:translate(120px,-18px) rotate(100deg)}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.loaderLogo,.loaderFallback,.mowerGuy,.plantGrow,.clipping{animation:none}}
+
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+.sz{
+  background:var(--l);
+  padding:12px 7px;
+  border-radius:9px;
+  text-align:center;
+  font-size:12px;
+}
+
+.sz strong{
+  display:block;
+  color:var(--g);
+  font-size:18px;
+  margin-bottom:5px;
+}
+
+.title{
+  text-align:center;
+  color:var(--g);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+td{
+  padding:9px;
+  border-bottom:1px solid #eee;
+}
+
+td:last-child{
+  text-align:right;
+  font-weight:700;
+}
+
+.tiny{
+  text-align:center;
+  font-size:10px;
+  color:#888;
+  margin-top:12px;
+}
+
+@media(max-width:650px){
+  .wrap{padding:14px 8px}
+  .card{padding:16px}
+  .head h1{font-size:25px}
+  .grid{grid-template-columns:1fr}
+  .sz{text-align:left}
+  .sz strong{
+    display:inline-block;
+    width:50px;
+  }
+  .price{font-size:35px}
+  .result.waiting .price,
+  .result.blocked .price{
+    font-size:23px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="wrap">
+
+<div class="head">
+  <h1>🌿 Garden Service Price Guide</h1>
+  <p>
+    Choose your service, approximate size and condition,
+    then enter your postcode to check coverage and receive
+    your instant estimate.
+  </p>
+</div>
+
+
+<section class="card">
+
+<div class="field">
+  <label>1. What service do you need?</label>
+
+  <select id="service">
+    <option value="grass">Grass Cutting &amp; Edging</option>
+    <option value="maintenance">Regular Garden Maintenance</option>
+    <option value="hedge">Hedge Trimming</option>
+    <option value="shrubs">Shrub Pruning &amp; Shaping</option>
+    <option value="weeding">Weeding &amp; Border Tidy</option>
+    <option value="tidy">Garden Tidy-Up</option>
+    <option value="clearance">Garden Clearance</option>
+    <option value="scarify">Lawn Scarifying</option>
+    <option value="treatment">Lawn Treatment</option>
+    <option value="leaves">Leaf Clearance</option>
+    <option value="pressure">Pressure Washing</option>
+  </select>
+</div>
+
+
+<div class="field" id="sizeField">
+  <label>2. Approximate size</label>
+
+  <select id="size">
+    <option value="s">Small</option>
+    <option value="m">Medium</option>
+    <option value="l">Large</option>
+    <option value="xl">XL</option>
+    <option value="xxl">XXL</option>
+  </select>
+
+  <div class="help" id="help"></div>
+</div>
+
+
+<div class="field" id="maintenanceField" style="display:none">
+
+  <label>3. Which parts of the garden need maintaining?</label>
+
+  <select id="maintArea">
+    <option value="front">Front garden only</option>
+    <option value="back">Back garden only</option>
+    <option value="both">Front &amp; back gardens</option>
+  </select>
+
+  <label style="margin-top:14px">
+    What needs doing on a typical visit?
+  </label>
+
+  <div class="checks">
+
+    <label>
+      <input type="checkbox"
+             class="maintWork"
+             value="Lawn cutting"
+             data-extra="0"
+             checked>
+      Lawn cutting &amp; edging
+    </label>
+
+    <label>
+      <input type="checkbox"
+             class="maintWork"
+             value="Borders"
+             data-extra="10"
+             checked>
+      Border weeding &amp; tidying
+    </label>
+
+    <label>
+      <input type="checkbox"
+             class="maintWork"
+             value="Routine hedge and shrub trimming"
+             data-extra="20"
+             checked>
+      Routine hedge &amp; shrub trimming
+    </label>
+
+    <label>
+      <input type="checkbox"
+             class="maintWork"
+             value="General tidy"
+             data-extra="10"
+             checked>
+      General tidy-up &amp; blow down
+    </label>
+
+  </div>
+
+  <div class="help">
+    The garden size gives the starting visit price. Extra routine work such as border care, hedge/shrub trimming and a general tidy-up is then allowed for in the estimate, so a fuller maintenance visit can cost more than a lawn-only visit.
+  </div>
+
+  <label style="margin-top:14px">Would you like any treatments used if needed?</label>
+  <div class="checks">
+    <label>
+      <input type="checkbox"
+             class="maintTreatment"
+             value="Weedkiller"
+             data-extra="5">
+      Weedkiller (+£5 if used)
+    </label>
+    <label>
+      <input type="checkbox"
+             class="maintTreatment"
+             value="Fertiliser / lawn feed"
+             data-extra="5">
+      Fertiliser / lawn feed (+£5 if used)
+    </label>
+  </div>
+  <div class="help">
+    These are optional. They will only be used where suitable and agreed, and the extra charge only applies if the product is actually used.
+  </div>
+
+  <label style="margin-top:14px">How often would you like a visit?</label>
+  <select id="frequency">
+    <option value="weekly">Weekly</option>
+    <option value="fortnightly" selected>Fortnightly</option>
+    <option value="fourweekly">Every 4 weeks</option>
+    <option value="monthly">Monthly</option>
+  </select>
+  <div class="help">We’ll also show an approximate average monthly cost so you can budget more easily.</div>
+
+</div>
+
+
+<div class="field" id="lawnsField">
+
+  <label>3. How many lawn areas need cutting?</label>
+
+  <select id="lawns">
+    <option value="one">One lawn</option>
+    <option value="two">Front &amp; back lawns</option>
+    <option value="three">Three or more separate lawn areas</option>
+  </select>
+
+  <div class="help">
+    Add the front and back lawns together when choosing
+    the approximate size above.
+  </div>
+
+</div>
+
+
+<div class="field" id="hedgeField" style="display:none">
+  <label>3. Tell me about the hedge</label>
+  <select id="hedgeSize">
+    <option value="small">Up to 5m long</option>
+    <option value="medium">About 5–10m long</option>
+    <option value="large">Over 10m long / several hedges</option>
+  </select>
+  <label style="margin-top:14px">Height &amp; access</label>
+  <select id="hedgeAccess">
+    <option value="easy">Low / easy to reach from the ground</option>
+    <option value="medium">Around head height / step ladder needed</option>
+    <option value="difficult">Tall, wide or restricted access</option>
+  </select>
+  <div class="help">Routine trimming can be estimated online. Large reductions, very tall hedges or difficult roadside work may need a site visit.</div>
+</div>
+
+<div class="field" id="shrubsField" style="display:none">
+  <label>3. How much shrub work is required?</label>
+  <select id="shrubAmount">
+    <option value="one">One or two small shrubs</option>
+    <option value="few">Several shrubs / small planted area</option>
+    <option value="many">Many or established shrubs</option>
+  </select>
+</div>
+
+<div class="field" id="scarifyField" style="display:none">
+  <label>3. What would you like included?</label>
+  <select id="scarifyType">
+    <option value="scarify">Scarifying only</option>
+    <option value="mow">Mow &amp; scarify</option>
+    <option value="seed">Scarify &amp; overseed</option>
+  </select>
+  <div class="help">Seed/material quantity will be confirmed before the job.</div>
+</div>
+
+<div class="field" id="treatmentField" style="display:none">
+  <label>3. What lawn treatment are you looking for?</label>
+  <select id="treatmentType">
+    <option value="feed">Lawn feed</option>
+    <option value="weed">Selective weed treatment</option>
+    <option value="moss">Moss treatment</option>
+    <option value="iron">Lawn iron</option>
+    <option value="unsure">Not sure — please advise</option>
+  </select>
+</div>
+
+<div class="field" id="leafField" style="display:none">
+  <label>3. Where are most of the leaves?</label>
+  <select id="leafArea">
+    <option value="lawn">Mainly lawns</option>
+    <option value="borders">Mainly borders</option>
+    <option value="hard">Paths / drive / patio</option>
+    <option value="mixed">Mixed throughout the garden</option>
+  </select>
+</div>
+
+<div class="field" id="pressureField" style="display:none">
+  <label>2. What are you having pressure washed?</label>
+  <select id="pressureType">
+    <option value="patio">Patio</option>
+    <option value="driveway">Driveway</option>
+    <option value="paths">Paths / paved areas</option>
+    <option value="mixed">A mixture of areas</option>
+  </select>
+
+  <label style="margin-top:14px">What type of surface is it?</label>
+  <select id="pressureSurface">
+    <option value="block">Block paving</option>
+    <option value="slabs">Concrete paving / slabs</option>
+    <option value="stone">Natural stone</option>
+    <option value="porcelain">Porcelain paving</option>
+    <option value="concrete">Concrete</option>
+    <option value="other">Other / not sure</option>
+  </select>
+
+  <label style="margin-top:14px">Approximate area</label>
+  <select id="pressureArea">
+    <option value="s">Up to 20m² — roughly 2 car parking spaces</option>
+    <option value="m">21–40m² — roughly 2–4 car parking spaces</option>
+    <option value="l">41–70m² — roughly 4–6 car parking spaces</option>
+    <option value="xl">71–100m² — roughly 6–9 car parking spaces</option>
+    <option value="xxl">Over 100m² — roughly 9+ car parking spaces</option>
+  </select>
+  <div class="help">
+    Not sure of the square metres? Use the parking-space comparison as a rough visual guide — it does not need to be exact.
+  </div>
+
+  <div class="help" id="pressureSandNote">
+    Block paving normally needs kiln-dried sand brushed back into the joints after the surface has fully dried. This requires a follow-up visit and is included in the estimate shown.
+  </div>
+</div>
+
+<div class="field">
+
+  <label id="conditionLabel">
+    4. What condition is it currently in?
+  </label>
+
+  <select id="condition">
+    <option value="normal">Regularly Maintained</option>
+    <option value="needs">Needs Attention</option>
+    <option value="overgrown">Overgrown</option>
+  </select>
+
+  <div class="help" id="conditionHelp"></div>
+
+</div>
+
+
+<div class="field">
+
+  <label id="postcodeLabel">
+    5. Your postcode
+  </label>
+
+  <input
+    id="postcode"
+    maxlength="8"
+    autocomplete="postal-code"
+    placeholder="e.g. WA12 0AT">
+
+  <small>
+    Your postcode is used to check whether KS Garden Services
+    covers your area and provide the correct estimate.
+  </small>
+
+  <button
+    class="travelbtn"
+    id="travelbtn"
+    type="button">
+    📍 Check Postcode &amp; Get Price
+  </button>
+
+  <div class="travel" id="travel"></div>
+
+</div>
+
+
+<div class="field" id="wasteField">
+
+  <label id="wasteLabel">
+    6. Green waste
+  </label>
+
+  <select id="waste">
+    <option value="no">
+      Use my green bin / removal not required
+    </option>
+
+    <option value="yes">
+      Please remove green waste
+    </option>
+  </select>
+
+</div>
+
+
+<div class="field" id="contactFields" style="display:none">
+  <label>Full name *</label>
+  <input id="custName" autocomplete="name" placeholder="First name and surname">
+  <label style="margin-top:14px">Garden address *</label>
+  <input id="custAddress" autocomplete="street-address" placeholder="House number and street">
+  <label style="margin-top:14px">Phone number *</label>
+  <input id="custPhone" type="tel" autocomplete="tel" placeholder="Your phone number">
+  <label style="margin-top:14px">Email address</label>
+  <input id="custEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="Your email address">
+  <label style="margin-top:14px">Anything else I should know?</label>
+  <textarea id="details" rows="5" placeholder="For example: access, parking, slopes, pets, specific areas you would like working on, or anything else that may help with your quote." style="resize:vertical;font-family:Arial,sans-serif"></textarea>
+  <div class="help">Your name, garden address and phone number are required to request a quote. You can add garden photos in your email app before sending.</div>
+</div>
+
+<div class="result waiting" id="resultBox">
+
+  <small>
+    <b>YOUR ESTIMATED PRICE</b>
+  </small>
+
+  <div class="price" id="price">
+    Check your postcode
+  </div>
+
+  <div class="break" id="break"></div>
+
+  <p class="note" id="resultNote">
+    Enter and check your postcode above to see your estimate. Your final price will always be confirmed before work begins.
+  </p>
+
+  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button><div id="quoteSuccess" style="display:none;margin-top:12px;padding:15px;border-radius:10px;background:#edf7ef;border:1px solid #b8d8bf;color:#173d25;line-height:1.5">
+    <strong>✅ Details received</strong><br>
+    Next, please attach 2–4 clear photos of the garden or area you would like quoted. Wide shots are best, plus any close-ups of problem areas or access.
+    <button id="openEmailBtn" type="button" class="travelbtn" style="margin-top:12px">📷 Open Email &amp; Add Photos</button>
+  </div>
+  <button class="resetbtn" id="resetBtn" type="button">↻ Start Again</button>
+
+  <p class="note">
+    Choose how you would like to open your email, with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
+    You can attach garden photos before sending.
+    If your email app does not open, <a href="https://ksgardenservices.co.uk/contact" target="_top">use our enquiry form</a>
+    or email <a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a>.
+  </p>
+
+</div>
+
+</section>
+
+
+<section class="card note">
+
+<b>About our guide prices</b>
+
+<p>
+Every garden is different. Garden size, access, slopes,
+obstacles, growth, hedge height, waste volume and the
+amount of work required can affect the final price.
+Where suitable and agreed, we can use your own green
+waste bin. Removal of green waste is chargeable.
+</p>
+
+<b>
+Your final price will always be agreed before work begins.
+</b>
+
+
+</section>
+
+</main>
+
+<div class="loaderOverlay" id="loaderOverlay" aria-hidden="true">
+  <div class="loaderCard">
+    <img class="loaderLogo" id="loaderLogo" src="KS%20Garden%20Services%20Logo.png" alt="KS Garden Services"
+      onerror="this.style.display='none';document.getElementById('loaderFallback').style.display='flex'">
+    <div class="loaderFallback" id="loaderFallback">KS</div>
+    <strong>Preparing your estimate…</strong>
+    <div class="loaderScene" aria-hidden="true">
+      <div class="grassStrip"></div>
+      <div class="mowerGuy">🧑‍🌾 🏡</div>
+      <div class="plantGrow">🌱</div>
+      <span class="clipping c1">🌿</span>
+      <span class="clipping c2">·</span>
+      <span class="clipping c3">🌿</span>
+    </div>
+    <div class="note" style="margin-top:8px">Checking your area and calculating your price.</div>
+  </div>
+</div>
+
+<script>
+
+/* ==========================================
+   PRICES
+========================================== */
+
+const P = {
+
+  grass:[
+    "Grass Cutting & Edging",
+    25,35,45,60,80
+  ],
+
+  maintenance:[
+    "Regular Garden Maintenance",
+    30,35,45,55,60
+  ],
+
+  hedge:[
+    "Hedge Trimming",
+    35,50,75,110,160
+  ],
+
+  shrubs:[
+    "Shrub Pruning & Shaping",
+    30,45,65,90,130
+  ],
+
+  weeding:[
+    "Weeding & Border Tidy",
+    30,40,60,85,120
+  ],
+
+  tidy:[
+    "Garden Tidy-Up",
+    50,80,120,175,240
+  ],
+
+  clearance:[
+    "Garden Clearance",
+    100,150,225,325,450
+  ],
+
+  scarify:[
+    "Lawn Scarifying",
+    45,65,90,130,180
+  ],
+
+  treatment:[
+    "Lawn Treatment",
+    25,35,45,60,80
+  ],
+
+  leaves:[
+    "Leaf Clearance",
+    35,50,70,100,140
+  ],
+
+  pressure:[
+    "Pressure Washing",
+    50,75,110,150,210
+  ]
+
+};
+
+
+const sizes = {
+
+  s:["Small",1],
+  m:["Medium",2],
+  l:["Large",3],
+  xl:["XL",4],
+  xxl:["XXL",5]
+
+};
+
+
+const mult = {
+
+  normal:1,
+  needs:1.15,
+  overgrown:1.3
+
+};
+
+
+const cn = {
+
+  normal:"Regularly Maintained",
+  needs:"Needs Attention",
+  overgrown:"Overgrown"
+
+};
+
+
+const waste = {
+
+  s:10,
+  m:15,
+  l:25,
+  xl:40,
+  xxl:60
+
+};
+
+
+const lawn = {
+
+  s:"up to 50m² (roughly up to 4 car parking spaces)",
+
+  m:"51–100m² (roughly 4–8 car parking spaces)",
+
+  l:"101–200m² (roughly 8–16 car parking spaces)",
+
+  xl:"201–350m² (roughly 16–28 car parking spaces)",
+
+  xxl:"over 350m² (roughly 28+ car parking spaces — manual quote)"
+
+};
+
+
+const helps = {
+
+  grass:"lawn",
+  scarify:"lawn",
+  treatment:"lawn",
+  hedge:"hedge",
+  maintenance:"garden",
+  shrubs:"shrub work",
+  weeding:"border/weeding job",
+  tidy:"garden tidy-up",
+  clearance:"garden clearance",
+  leaves:"leaf-clearance job",
+  pressure:"patio/paved area"
+
+};
+
+
+/* ==========================================
+   STATE
+========================================== */
+
+let postcodeChecked = false;
+
+let areaStatus = "unchecked";
+
+let areaMessage = "";
+
+let detectedArea = "";
+
+let pc = "";
+
+let tm = 0;
+
+let tc = 0;
+
+let routeOK = false;
+
+
+/* ==========================================
+   ELEMENTS
+========================================== */
+
+const $ = id =>
+document.getElementById(id);
+
+
+const service =
+$("service");
+
+const size =
+$("size");
+
+const condition =
+$("condition");
+
+const post =
+$("postcode");
+
+const wa =
+$("wa");
+
+
+/* ==========================================
+   LOCATION TEXT
+========================================== */
+
+function locationText(data){
+
+  return [
+
+    data.postcode,
+    data.parish,
+    data.admin_ward,
+    data.admin_district,
+    data.region,
+    data.nuts,
+    data.pfa
+
+  ]
+  .filter(Boolean)
+  .join(" ")
+  .toLowerCase();
+
+}
+
+
+/* ==========================================
+   SERVICE AREA
+========================================== */
+
+function serviceArea(data){
+
+  const postcode =
+
+    String(data.postcode || "")
+    .toUpperCase()
+    .replace(/\s+/g,"");
+
+
+  const location =
+    locationText(data);
+
+
+  /* NEWTON-LE-WILLOWS */
+
+  if(postcode.startsWith("WA12")){
+
+    return {
+
+      status:"yes",
+
+      area:"Newton-le-Willows",
+
+      message:
+      "Great news — this postcode is within our core Newton-le-Willows service area."
+
+    };
+
+  }
+
+
+  /* ASHTON / BRYN */
+
+  if(postcode.startsWith("WN4")){
+
+    return {
+
+      status:"yes",
+
+      area:"Ashton-in-Makerfield / Bryn",
+
+      message:
+      "Great news — this postcode is within our Ashton-in-Makerfield / Bryn service area."
+
+    };
+
+  }
+
+
+  /* GREAT SANKEY */
+
+  if(
+    postcode.startsWith("WA5") &&
+    (
+      location.includes("great sankey") ||
+      location.includes("sankey")
+    )
+  ){
+
+    return {
+
+      status:"yes",
+
+      area:"Great Sankey",
+
+      message:
+      "Great news — this postcode is within our Great Sankey service area."
+
+    };
+
+  }
+
+
+  if(postcode.startsWith("WA5")){
+
+    return {
+
+      status:"maybe",
+
+      area:"Selected WA5 area",
+
+      message:
+      "We cover Great Sankey and selected nearby WA5 locations. Please contact Karl so we can confirm this exact address."
+
+    };
+
+  }
+
+
+  /* SELECTED WARRINGTON */
+
+  const targetPlaces = {
+
+    "orford":"Orford",
+
+    "fearnhead":"Fearnhead",
+
+    "padgate":"Padgate",
+
+    "woolston":"Woolston",
+
+    "winwick":"Winwick",
+
+    "birchwood":"Birchwood",
+
+    "croft":"Croft",
+
+    "culcheth":"Culcheth"
+
+  };
+
+
+  const foundPlace =
+
+    Object.keys(targetPlaces).find(
+
+      place =>
+      location.includes(place)
+
+    );
+
+
+  if(
+    (
+      postcode.startsWith("WA1") ||
+      postcode.startsWith("WA2") ||
+      postcode.startsWith("WA3")
+    )
+    &&
+    foundPlace
+  ){
+
+    return {
+
+      status:"yes",
+
+      area:targetPlaces[foundPlace],
+
+      message:
+      "Great news — this postcode appears to be within our "+
+      targetPlaces[foundPlace]+
+      " service area."
+
+    };
+
+  }
+
+
+  if(
+    postcode.startsWith("WA1") ||
+    postcode.startsWith("WA2") ||
+    postcode.startsWith("WA3")
+  ){
+
+    return {
+
+      status:"maybe",
+
+      area:"Selected Warrington area",
+
+      message:
+      "We cover selected parts of this Warrington postcode area. Please contact Karl so we can confirm your exact address and round availability."
+
+    };
+
+  }
+
+
+  /* HAYDOCK */
+
+  if(
+    (
+      postcode.startsWith("WA9") ||
+      postcode.startsWith("WA11")
+    )
+    &&
+    location.includes("haydock")
+  ){
+
+    return {
+
+      status:"yes",
+
+      area:"Haydock",
+
+      message:
+      "Great news — this postcode appears to be within our Haydock service area."
+
+    };
+
+  }
+
+
+  if(
+    postcode.startsWith("WA9") ||
+    postcode.startsWith("WA11")
+  ){
+
+    return {
+
+      status:"maybe",
+
+      area:"Selected St Helens area",
+
+      message:
+      "We cover Haydock and selected east St Helens locations. Please contact Karl so we can confirm your exact address."
+
+    };
+
+  }
+
+
+  /* NEARBY */
+
+  if(
+    postcode.startsWith("WA10") ||
+    postcode.startsWith("WN5")
+  ){
+
+    return {
+
+      status:"no",
+
+      area:"Outside regular rounds",
+
+      message:
+      "This postcode is outside our normal regular-maintenance rounds. Larger one-off jobs may still be considered."
+
+    };
+
+  }
+
+
+  /* EVERYTHING ELSE */
+
+  return {
+
+    status:"no",
+
+    area:"Outside regular rounds",
+
+    message:
+    "This postcode is outside our normal regular-maintenance service area. Larger one-off jobs may still be considered."
+
+  };
+
+}
+
+
+/* ==========================================
+   MAINTENANCE DETAILS
+========================================== */
+
+function maintenanceDetails(){
+
+  if(service.value !== "maintenance"){
+
+    return {
+
+      areaExtra:0,
+      workExtra:0,
+      treatmentExtra:0,
+      description:"",
+      treatments:"None"
+
+    };
+
+  }
+
+
+  const area =
+    $("maintArea").value;
+
+
+  const areaExtra = 0;
+
+
+  const selected =
+
+    [
+      ...document.querySelectorAll(
+        ".maintWork:checked"
+      )
+    ];
+
+
+  const workExtra =
+
+    selected.reduce(
+
+      (total,item) =>
+
+      total +
+      Number(
+        item.dataset.extra || 0
+      ),
+
+      0
+
+    );
+
+  const treatments =
+    [...document.querySelectorAll(".maintTreatment:checked")];
+
+  const treatmentExtra =
+    treatments.reduce(
+      (total,item) => total + Number(item.dataset.extra || 0),
+      0
+    );
+
+
+  const areaName =
+
+    area==="front"
+    ?
+    "Front garden only"
+
+    :
+
+    area==="back"
+    ?
+    "Back garden only"
+
+    :
+
+    "Front & back gardens";
+
+
+  return {
+
+    areaExtra,
+
+    workExtra,
+
+    treatmentExtra,
+
+    treatments:
+      treatments.length
+      ? treatments.map(item=>item.value).join(", ")
+      : "None",
+
+    description:
+
+      areaName+
+
+      (
+        selected.length
+
+        ?
+
+        " — "+
+        selected
+        .map(item=>item.value)
+        .join(", ")
+
+        :
+
+        ""
+
+      )
+
+  };
+
+}
+
+
+/* ==========================================
+   HELP TEXT
+========================================== */
+
+function help(){
+
+  const v =
+    service.value;
+
+  const s =
+    v==="pressure"
+    ? $("pressureArea").value
+    : size.value;
+
+  const n =
+    sizes[s][0];
+
+
+  const isLawn =
+
+    [
+      "grass",
+      "scarify",
+      "treatment"
+    ]
+    .includes(v);
+
+
+  $("help").textContent =
+
+    "📏 Size guide: "+
+
+    (
+      isLawn
+
+      ?
+
+      n+
+      " – "+
+      lawn[s]+
+      ". "+
+
+      (
+        v==="grass"
+
+        ?
+
+        "If you have front and back lawns, use their combined total area. "
+
+        :
+
+        ""
+
+      )
+
+      +
+
+      "It does not need to be exact — choose the closest match."
+
+      :
+
+      n+
+      " "+
+      helps[v]+
+      " – choose the closest match; final size/workload is confirmed when quoted."
+
+    );
+
+
+  $("lawnsField").style.display =
+
+    v==="grass"
+    ?
+    "block"
+    :
+    "none";
+
+
+  $("maintenanceField").style.display =
+    v==="maintenance" ? "block" : "none";
+
+  $("hedgeField").style.display =
+    v==="hedge" ? "block" : "none";
+
+  $("shrubsField").style.display =
+    v==="shrubs" ? "block" : "none";
+  $("scarifyField").style.display =
+    v==="scarify" ? "block" : "none";
+  $("treatmentField").style.display =
+    v==="treatment" ? "block" : "none";
+  $("leafField").style.display =
+    v==="leaves" ? "block" : "none";
+
+  $("pressureField").style.display =
+    v==="pressure" ? "block" : "none";
+
+  $("sizeField").style.display =
+    v==="pressure" ? "none" : "block";
+
+  if(v==="pressure"){
+    const needsSand = $("pressureSurface").value==="block";
+    $("pressureSandNote").style.display = needsSand ? "block" : "none";
+  }
+
+  const genericSizeLabels = {
+    s:"Small",
+    m:"Medium",
+    l:"Large",
+    xl:"XL",
+    xxl:"XXL"
+  };
+  const lawnSizeLabels = {
+    s:"Small — up to 50m² / about 4 parking spaces",
+    m:"Medium — 51–100m² / about 4–8 spaces",
+    l:"Large — 101–200m² / about 8–16 spaces",
+    xl:"XL — 201–350m² / about 16–28 spaces",
+    xxl:"Over 350m² / 28+ spaces — manual quote"
+  };
+  ["s","m","l","xl","xxl"].forEach((key,index)=>{
+    const useAreaComparison = isLawn || v==="maintenance";
+    size.options[index].text = useAreaComparison ? lawnSizeLabels[key] : genericSizeLabels[key];
+  });
+
+  const conditionOptions = {
+    grass:["Regularly cut","Long / needs attention","Very long / overgrown"],
+    maintenance:["Regularly maintained","Needs some catching up","Overgrown / first tidy needed"],
+    hedge:["Routine trim","Needs shaping / reduction","Overgrown / major reduction"],
+    shrubs:["Routine pruning","Needs attention","Overgrown / major reduction"],
+    weeding:["Light / maintained","Moderate weeds","Heavily overgrown"],
+    tidy:["Generally tidy","Needs attention","Very untidy / overgrown"],
+    clearance:["Light clearance","Moderate clearance","Heavy / overgrown clearance"],
+    scarify:["Routine seasonal work","Heavy thatch / moss","Very poor lawn condition"],
+    treatment:["Routine treatment","Problem areas present","Significant lawn problems"],
+    leaves:["Light leaf fall","Moderate leaf fall","Heavy leaf fall"],
+    pressure:["Light dirt / light algae","Moderate dirt / moss / algae","Heavy buildup / staining — manual quote"]
+  };
+  const conditionText = conditionOptions[v] || conditionOptions.maintenance;
+  condition.options[0].text = conditionText[0];
+  condition.options[1].text = conditionText[1];
+  condition.options[2].text = conditionText[2];
+
+  const conditionHelpText = {
+    grass:"Regular = normally mown lawn. Needs attention = noticeably long but still straightforward to mow. Very long / overgrown = dense or neglected growth that may need extra work.",
+    maintenance:"Regular = already maintained. Needs catching up = extra weeding/cutting back needed. Overgrown / first tidy = significantly neglected and may need a separate initial tidy quote.",
+    hedge:"Routine trim = current shape retained. Shaping/reduction = noticeable reduction required. Major reduction = substantial height/width reduction and may need a site visit.",
+    shrubs:"Routine pruning = normal seasonal shaping. Needs attention = more cutting back than usual. Major reduction = heavily overgrown or substantial reduction required.",
+    weeding:"Light = scattered weeds. Moderate = weeds across much of the bed. Heavy = dense established growth or beds needing significant clearance.",
+    tidy:"Generally tidy = light seasonal work. Needs attention = several areas need cutting back/clearing. Very untidy = significant overgrowth or clearance-type work.",
+    clearance:"Light = limited material to clear. Moderate = several areas or established growth. Heavy = extensive overgrowth, bulky waste or difficult access.",
+    scarify:"Routine = normal thatch removal. Heavy = noticeable moss/thatch. Very poor = extensive moss/thatch or lawn needing renovation.",
+    treatment:"Routine = general seasonal treatment. Problem areas = weeds/moss in several areas. Significant problems = widespread issues that may need a tailored treatment plan.",
+    leaves:"Light = thin covering. Moderate = substantial covering across several areas. Heavy = deep/wet leaf build-up or large volumes.",
+    pressure:"Light = everyday dirt or a light green film. Moderate = obvious algae/moss and ingrained dirt. Heavy = thick moss/weeds, oil/paint, black-spot type staining or a heavily neglected surface — this needs photos or a site quote rather than an instant price."
+  };
+  $("conditionHelp").textContent = conditionHelpText[v] || "";
+
+  const wasteRelevant = !["treatment","pressure"].includes(v);
+  $("wasteField").style.display = wasteRelevant ? "block" : "none";
+  if(!wasteRelevant) $("waste").value = "no";
+
+
+  const off =
+
+    (
+      v==="grass" ||
+      v==="maintenance" ||
+      v==="hedge" ||
+      v==="pressure"
+    )
+
+    ?
+
+    1
+
+    :
+
+    0;
+
+
+  $("conditionLabel").textContent =
+
+    (3+off)+
+    ". What condition is it currently in?";
+
+
+  $("postcodeLabel").textContent =
+
+    (4+off)+
+    ". Your postcode";
+
+
+  $("wasteLabel").textContent =
+
+    (5+off)+
+    ". Green waste";
+
+}
+
+
+/* ==========================================
+   PRICE UPDATE
+========================================== */
+
+function update(){
+
+  const v =
+    service.value;
+
+
+  const s =
+    v==="pressure" ? $("pressureArea").value : size.value;
+
+
+  const i =
+    sizes[s][1];
+
+
+  const base =
+    P[v][i];
+
+
+  const conditionExtra =
+
+    Math.ceil(
+
+      (
+        base *
+        (
+          mult[condition.value]-1
+        )
+      )
+
+      /5
+
+    )*5;
+
+
+  const wasteExtra =
+
+    $("waste").value==="yes"
+
+    ?
+
+    waste[s]
+
+    :
+
+    0;
+
+
+  const maint =
+    maintenanceDetails();
+
+  const pressureSandExtra =
+    v==="pressure" && $("pressureSurface").value==="block"
+    ? ({s:20,m:30,l:45,xl:65,xxl:90}[s] || 0)
+    : 0;
+
+  const hedgeExtra =
+    v==="hedge"
+    ? (($("hedgeSize").value==="medium" ? 10 : $("hedgeSize").value==="large" ? 25 : 0) +
+       ($("hedgeAccess").value==="medium" ? 10 : $("hedgeAccess").value==="difficult" ? 25 : 0))
+    : 0;
+
+  const shrubExtra =
+    v==="shrubs" ? ($("shrubAmount").value==="few" ? 10 : $("shrubAmount").value==="many" ? 25 : 0) : 0;
+
+  const scarifyExtra =
+    v==="scarify" ? ($("scarifyType").value==="mow" ? 10 : $("scarifyType").value==="seed" ? 20 : 0) : 0;
+
+  let total =
+
+    Math.ceil(
+
+      (
+        base +
+        conditionExtra +
+        wasteExtra +
+        maint.areaExtra +
+        maint.workExtra +
+        maint.treatmentExtra +
+        pressureSandExtra +
+        hedgeExtra +
+        shrubExtra +
+        scarifyExtra +
+        tc
+      )
+
+      /5
+
+    )*5;
+
+  const freq = $("frequency") ? $("frequency").value : "fortnightly";
+  const freqNames = {
+    weekly:"Weekly",
+    fortnightly:"Fortnightly",
+    fourweekly:"Every 4 weeks",
+    monthly:"Monthly"
+  };
+  const monthlyFactors = {
+    weekly:52/12,
+    fortnightly:26/12,
+    fourweekly:13/12,
+    monthly:1
+  };
+  const monthlyCost = v==="maintenance"
+    ? Math.round(total * monthlyFactors[freq])
+    : 0;
+
+
+  const resultBox =
+    $("resultBox");
+
+
+  const price =
+    $("price");
+
+
+  /* ======================================
+     POSTCODE HAS NOT BEEN CHECKED
+     NO PRICES ARE SHOWN
+  ====================================== */
+
+  if(!postcodeChecked){
+
+    resultBox.className =
+      "result waiting";
+
+
+    price.textContent =
+      "Check your postcode";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Not checked</strong>'+
+      '</div>';
+
+
+    wa.classList.add("hidden");
+    $("contactFields").style.display="none";
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     SELECTED AREA
+     STILL NO PRICES
+  ====================================== */
+
+  if(areaStatus==="maybe"){
+
+    resultBox.className =
+      "result blocked";
+
+
+    price.textContent =
+      "Area Check Required";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Please confirm</strong>'+
+      '</div>';
+
+
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+
+
+    wa.textContent =
+      "✉️ Ask About My Area by Email";
+
+
+    setEmail(
+      v,
+      s,
+      maint,
+      "Area check required"
+    );
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     OUTSIDE AREA
+     NO PRICES
+  ====================================== */
+
+  if(areaStatus==="no"){
+
+    resultBox.className =
+      "result blocked";
+
+
+    price.textContent =
+      "Outside Regular Area";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service</span>'+
+      '<strong>'+
+      P[v][0]+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Outside regular rounds</strong>'+
+      '</div>';
+
+
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+
+
+    wa.textContent =
+      "✉️ Email About a One-Off Job";
+
+
+    setEmail(
+      v,
+      s,
+      maint,
+      "Outside regular service area"
+    );
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     COVERED BUT ROUTE NOT READY
+  ====================================== */
+
+  if(
+    areaStatus==="yes" &&
+    !routeOK
+  ){
+
+    resultBox.className =
+      "result waiting";
+
+
+    price.textContent =
+      "Calculating...";
+
+
+    $("break").innerHTML =
+
+      '<div class="row">'+
+      '<span>Service area</span>'+
+      '<strong>Covered</strong>'+
+      '</div>';
+
+
+    wa.classList.add("hidden");
+
+
+    help();
+
+
+    return;
+
+  }
+
+
+  /* ======================================
+     HEAVY PRESSURE WASHING
+     MANUAL QUOTE REQUIRED
+  ====================================== */
+
+  if(v==="pressure" && condition.value==="overgrown"){
+    resultBox.className = "result blocked";
+    price.textContent = "Manual Quote Required";
+
+    $("break").innerHTML =
+      '<div class="row"><span>Service</span><strong>Pressure Washing</strong></div>'+
+      '<div class="row"><span>Condition</span><strong>Heavy buildup / staining</strong></div>'+
+      '<div class="row"><span>Next step</span><strong>Send photos / site assessment</strong></div>';
+
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+    wa.textContent = "✉️ Request a Pressure Washing Quote";
+
+    setEmail(v,s,maint,"Manual quote required");
+    help();
+    return;
+  }
+
+  /* ======================================
+     VERY LARGE LAWN
+     MANUAL QUOTE REQUIRED
+  ====================================== */
+
+  if(["grass","scarify","treatment","maintenance"].includes(v) && s==="xxl"){
+    resultBox.className = "result blocked";
+    price.textContent = "Manual Quote Required";
+
+    $("break").innerHTML =
+      '<div class="row"><span>Service</span><strong>'+P[v][0]+'</strong></div>'+
+      '<div class="row"><span>'+(v==="maintenance" ? "Garden size" : "Lawn size")+'</span><strong>Over 350m² / roughly 28+ parking spaces</strong></div>'+
+      '<div class="row"><span>Next step</span><strong>Send photos / site assessment</strong></div>';
+
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+    wa.textContent = v==="maintenance" ? "✉️ Request a Maintenance Quote" : "✉️ Request a Lawn Quote";
+
+    setEmail(v,s,maint,"Manual quote required");
+    help();
+    return;
+  }
+
+  /* ======================================
+     APPROVED POSTCODE
+     NOW SHOW ALL £ PRICES
+  ====================================== */
+
+  resultBox.className =
+    "result";
+
+
+  price.textContent =
+    "£"+total;
+
+  $("break").innerHTML =
+    '<div class="row">'+
+    '<span>Service</span>'+
+    '<strong>'+P[v][0]+'</strong>'+
+    '</div>'+
+    '<div class="row">'+
+    '<span>Service area</span>'+
+    '<strong>'+(detectedArea || "Covered")+'</strong>'+
+    '</div>'+
+    '<div class="row">'+
+    '<span>Approx. travel distance</span>'+
+    '<strong>'+tm+' miles</strong>'+
+    '</div>'+
+    (v==="maintenance"
+      ? '<div class="row"><span>Visit frequency</span><strong>'+freqNames[freq]+'</strong></div>'+
+        '<div class="row"><span>Approx. average per month</span><strong>£'+monthlyCost+'</strong></div>'+
+        (maint.treatments!=="None"
+          ? '<div class="row"><span>Optional treatments</span><strong>'+maint.treatments+'</strong></div>'
+          : '')
+      : '')+
+    (v==="pressure"
+      ? '<div class="row"><span>Surface</span><strong>'+$("pressureSurface").options[$("pressureSurface").selectedIndex].text+'</strong></div>'+
+        '<div class="row"><span>Area</span><strong>'+$("pressureArea").options[$("pressureArea").selectedIndex].text+'</strong></div>'+
+        ($("pressureSurface").value==="block"
+          ? '<div class="row"><span>Return visit &amp; kiln-dried sand</span><strong>Included</strong></div>'
+          : '')
+      : '');
+
+
+  wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+
+
+  wa.textContent =
+    "✉️ Request This Quote";
+
+
+  setEmail(
+
+    v,
+
+    s,
+
+    maint,
+
+    "£"+total
+
+  );
+
+
+  help();
+
+}
+
+
+/* ==========================================
+   EMAIL ENQUIRIES
+========================================== */
+
+function setEmail(v,s,maint,result){
+
+  const name = $("custName").value.trim();
+  const address = $("custAddress").value.trim();
+  const phone = $("custPhone").value.trim();
+  const email = $("custEmail").value.trim();
+  const details = $("details").value.trim();
+
+  let maintenanceText = "";
+  let serviceDetailText = "";
+  if(v==="hedge"){
+    serviceDetailText =
+      "\nHedge length: "+$("hedgeSize").options[$("hedgeSize").selectedIndex].text+
+      "\nHedge access: "+$("hedgeAccess").options[$("hedgeAccess").selectedIndex].text;
+  }
+  if(v==="shrubs"){
+    serviceDetailText = "\nShrub work: "+$("shrubAmount").options[$("shrubAmount").selectedIndex].text;
+  }
+  if(v==="scarify"){
+    serviceDetailText = "\nLawn work: "+$("scarifyType").options[$("scarifyType").selectedIndex].text;
+  }
+  if(v==="treatment"){
+    serviceDetailText = "\nTreatment requested: "+$("treatmentType").options[$("treatmentType").selectedIndex].text;
+  }
+  if(v==="leaves"){
+    serviceDetailText = "\nLeaf location: "+$("leafArea").options[$("leafArea").selectedIndex].text;
+  }
+  if(v==="pressure"){
+    serviceDetailText =
+      "\nPressure washing area: "+$("pressureType").options[$("pressureType").selectedIndex].text+
+      "\nSurface type: "+$("pressureSurface").options[$("pressureSurface").selectedIndex].text+
+      "\nApprox. area: "+$("pressureArea").options[$("pressureArea").selectedIndex].text+
+      ($("pressureSurface").value==="block"
+        ? "\nFollow-up visit: Kiln-dried sand to be brushed into the joints once the paving is dry"
+        : "");
+  }
+
+  if(v==="maintenance"){
+    const freq = $("frequency") ? $("frequency").value : "fortnightly";
+    const freqNames = {weekly:"Weekly",fortnightly:"Fortnightly",fourweekly:"Every 4 weeks",monthly:"Monthly"};
+    const monthlyFactors = {weekly:52/12,fortnightly:26/12,fourweekly:13/12,monthly:1};
+    const visitMatch = String(result).match(/[0-9]+(?:\.[0-9]+)?/);
+    const visitPrice = visitMatch ? Number(visitMatch[0]) : 0;
+    const monthlyCost = visitPrice ? Math.round(visitPrice * monthlyFactors[freq]) : "";
+    maintenanceText =
+      "\nMaintenance requested: "+(maint.description || "Not specified")+
+      "\nOptional treatments: "+(maint.treatments || "None")+
+      "\nFrequency: "+freqNames[freq]+
+      (monthlyCost ? "\nApprox. average monthly cost: £"+monthlyCost : "");
+  }
+
+  const msg =
+    "Hi Karl, I've used the price guide on the KS Garden Services website.\n\n"+
+    "Service: "+P[v][0]+"\n"+
+    "Size: "+sizes[s][0]+
+    maintenanceText+
+    serviceDetailText+
+    (v === "grass" ? "\nLawn areas: "+$("lawns").options[$("lawns").selectedIndex].text : "")+
+    "\nCondition: "+cn[condition.value]+
+    "\nGreen waste removal: "+($("waste").value==="yes" ? "Yes" : "No / green bin available")+
+    "\nPostcode: "+(pc || post.value.trim() || "Not entered")+
+    "\nArea: "+(detectedArea || "Not confirmed")+
+    "\nTravel distance: "+(routeOK ? tm+" miles" : "Not calculated")+"\n"+
+    "\nGuide result: "+result+
+    "\n\nCustomer details"+
+    "\nName: "+(name || "Not entered")+
+    "\nGarden address: "+(address || "Not entered")+
+    "\nPhone: "+(phone || "Not entered")+
+    "\nEmail: "+(email || "Not entered")+
+    "\nAdditional details: "+(details || "None provided")+
+    "\n\nCould I get a confirmed quote please?\n\nI can attach garden photos to this email.";
+
+  wa.dataset.subject = "Website quote request — "+P[v][0];
+  wa.dataset.body = msg;
+
+}
+
+/* ==========================================
+   POSTCODE LOOKUP
+========================================== */
+
+async function geo(p){
+
+  const r =
+
+    await fetch(
+
+      "https://api.postcodes.io/postcodes/"+
+      encodeURIComponent(
+        p.replace(/\s/g,"")
+      )
+
+    );
+
+
+  if(!r.ok)
+    throw new Error(
+      "Postcode lookup failed"
+    );
+
+
+  const j =
+    await r.json();
+
+
+  if(!j.result)
+    throw new Error(
+      "Postcode not found"
+    );
+
+
+  return j.result;
+
+}
+
+
+/* ==========================================
+   ROUTING
+========================================== */
+
+async function route(a,b){
+
+  const r =
+
+    await fetch(
+
+      "https://router.project-osrm.org/route/v1/driving/"+
+
+      a.longitude+
+      ","+
+      a.latitude+
+      ";"+
+      b.longitude+
+      ","+
+      b.latitude+
+      "?overview=false"
+
+    );
+
+
+  if(!r.ok)
+    throw new Error(
+      "Routing failed"
+    );
+
+
+  const j =
+    await r.json();
+
+
+  if(!j.routes?.length)
+    throw new Error(
+      "No route"
+    );
+
+
+  const distanceMetres = j.routes[0].distance;
+
+  if(
+    typeof distanceMetres !== "number" ||
+    !Number.isFinite(distanceMetres) ||
+    distanceMetres < 0
+  ){
+    throw new Error("Invalid route distance");
+  }
+
+  return distanceMetres / 1609.344;
+
+}
+
+
+function showLoader(){
+  $("loaderOverlay").classList.add("show");
+  $("loaderOverlay").setAttribute("aria-hidden","false");
+}
+function hideLoader(){
+  $("loaderOverlay").classList.remove("show");
+  $("loaderOverlay").setAttribute("aria-hidden","true");
+}
+
+/* ==========================================
+   POSTCODE BUTTON
+========================================== */
+
+$("travelbtn").onclick =
+async()=>{
+
+
+  const p =
+    post.value.trim();
+
+
+  const box =
+    $("travel");
+
+
+  box.style.display =
+    "block";
+
+
+  box.className =
+    "travel";
+
+
+  if(!p){
+
+    box.classList.add("no");
+
+
+    box.textContent =
+      "⚠️ Please enter your postcode.";
+
+
+    return;
+
+  }
+
+
+  const btn =
+    $("travelbtn");
+
+  showLoader();
+
+
+  btn.disabled =
+    true;
+
+
+  btn.textContent =
+    "Checking...";
+
+
+  box.textContent =
+    "📍 Checking your postcode and service area...";
+
+
+  try{
+
+
+    const destination =
+      await geo(p);
+
+
+    pc =
+      destination.postcode;
+
+
+    post.value =
+      pc;
+
+
+    const area =
+      serviceArea(destination);
+
+
+    postcodeChecked =
+      true;
+
+
+    areaStatus =
+      area.status;
+
+
+    areaMessage =
+      area.message;
+
+
+    detectedArea =
+      area.area;
+
+
+    routeOK =
+      false;
+
+
+    tc =
+      0;
+
+
+    tm =
+      0;
+
+
+    /* SELECTED AREA */
+
+    if(areaStatus==="maybe"){
+
+      box.classList.add("maybe");
+
+
+      box.innerHTML =
+
+        "⚠️ <strong>Selected Service Area</strong><br>"+
+
+        areaMessage;
+
+
+      update();
+
+
+      return;
+
+    }
+
+
+    /* OUTSIDE */
+
+    if(areaStatus==="no"){
+
+      box.classList.add("no");
+
+
+      box.innerHTML =
+
+        "📍 <strong>Outside Our Regular Service Area</strong><br>"+
+
+        areaMessage;
+
+
+      update();
+
+
+      return;
+
+    }
+
+
+    /* APPROVED */
+
+    box.classList.add("yes");
+
+
+    box.innerHTML =
+
+      "✅ <strong>Area covered</strong><br>"+
+
+      areaMessage+"<br><br>Calculating your estimate...";
+
+
+    update();
+
+
+    const base =
+      await geo("WA12 0AT");
+
+
+    tm =
+
+      Math.round(
+
+        (
+          await route(
+            base,
+            destination
+          )
+        )*10
+
+      )/10;
+
+
+    if(!Number.isFinite(tm) || tm < 0){
+      throw new Error("Invalid travel distance");
+    }
+
+    routeOK =
+      true;
+
+
+    tc =
+
+      tm<=7
+      ?
+      0
+
+      :
+
+      tm<=12
+      ?
+      5
+
+      :
+
+      tm<=16
+      ?
+      10
+
+      :
+
+      tm<=20
+      ?
+      15
+
+      :
+
+      20;
+
+
+    box.className =
+      "travel yes";
+
+
+    box.innerHTML =
+      "✅ <strong>We cover your area</strong><br>"+
+      areaMessage;
+
+
+    update();
+
+
+  }
+
+  catch(e){
+
+
+    postcodeChecked =
+      false;
+
+
+    areaStatus =
+      "unchecked";
+
+
+    areaMessage =
+      "";
+
+
+    detectedArea =
+      "";
+
+
+    routeOK =
+      false;
+
+
+    tc =
+      0;
+
+
+    tm =
+      0;
+
+
+    pc =
+      "";
+
+
+    box.className =
+      "travel no";
+
+
+    box.textContent =
+
+      e.message === "Invalid route distance" || e.message === "Invalid travel distance" || e.message === "Routing failed" || e.message === "No route"
+      ? "⚠️ We couldn't calculate travel. No travel charge has been added. Please try again or contact Karl."
+      : "⚠️ We couldn't check that postcode. Please check it and try again.";
+
+
+    update();
+
+
+  }
+
+  finally{
+
+    hideLoader();
+
+btn.disabled =
+      false;
+
+
+    btn.textContent =
+      "📍 Check Postcode & Get Price";
+
+
+  }
+
+};
+
+
+/* ==========================================
+   RESET WHEN POSTCODE CHANGES
+========================================== */
+
+post.oninput =
+()=>{
+
+  resetQuoteSubmission();
+
+
+  postcodeChecked =
+    false;
+
+
+  areaStatus =
+    "unchecked";
+
+
+  areaMessage =
+    "";
+
+
+  detectedArea =
+    "";
+
+
+  routeOK =
+    false;
+
+
+  tc =
+    0;
+
+
+  tm =
+    0;
+
+
+  pc =
+    "";
+
+
+  $("travel").style.display =
+    "none";
+
+
+  $("travel").className =
+    "travel";
+
+
+  update();
+
+};
+
+
+/* ==========================================
+   FORM CHANGES
+========================================== */
+
+function resetQuoteSubmission(){
+  $("quoteSuccess").style.display="none";
+  wa.disabled=false;
+  wa.dataset.crmSent="";
+}
+
+[
+  service,
+  size,
+  condition,
+  $("waste"),
+  $("lawns"),
+  $("maintArea"),
+  $("frequency"),
+  $("hedgeSize"),
+  $("hedgeAccess"),
+  $("shrubAmount"),
+  $("scarifyType"),
+  $("treatmentType"),
+  $("leafArea"),
+  $("pressureType"),
+  $("pressureSurface"),
+  $("pressureArea"),
+  ...document.querySelectorAll(".maintWork"),
+  ...document.querySelectorAll(".maintTreatment")
+].filter(Boolean).forEach(element => {
+  element.addEventListener("change",()=>{
+    resetQuoteSubmission();
+    update();
+  });
+});
+
+
+["custName","custAddress","custPhone","custEmail","details"].forEach(id=>{
+  $(id).addEventListener("input",update);
+});
+
+function buildCRMLead(){
+  const guideText=$("price").textContent || "";
+  return {
+    name:$("custName").value.trim(),
+    address:$("custAddress").value.trim(),
+    phone:$("custPhone").value.trim(),
+    email:$("custEmail").value.trim(),
+    postcode:pc || post.value.trim(),
+    service:P[service.value][0],
+    guidePrice:Number((guideText.match(/[0-9]+(?:\.[0-9]+)?/)||[""])[0]) || "",
+    status:"New Enquiry",
+    source:"Website",
+    details:$("details").value.trim(),
+    travelMiles:routeOK ? tm : "",
+    waste:$("waste").value==="yes" ? "Please remove green waste" : "No / green bin available",
+    size:sizes[service.value==="pressure" ? $("pressureArea").value : size.value][0],
+    condition:cn[condition.value],
+    area:detectedArea || "",
+    website:""
+  };
+}
+
+function sendLeadToCRM(){
+  if(wa.dataset.crmSent==="1") return;
+  try{
+    const payload=JSON.stringify(buildCRMLead());
+    const endpoint="https://script.google.com/macros/s/AKfycbwW8E1QVRoCPLFqN2S7zUKpFKoFJWqUneAJuwFyd-0nzwcAK4NFJm94W85aHrUGelOdiw/exec";
+    let sent=false;
+
+    if(navigator.sendBeacon){
+      sent=navigator.sendBeacon(
+        endpoint,
+        new Blob([payload],{type:"text/plain;charset=UTF-8"})
+      );
+    }
+
+    if(!sent){
+      fetch(endpoint,{
+        method:"POST",
+        mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=UTF-8"},
+        body:payload
+      }).catch(()=>{});
+    }
+
+    wa.dataset.crmSent="1";
+  }catch(err){
+    console.warn("CRM submission skipped",err);
+  }
+}
+
+wa.addEventListener("click",function(){
+  const name=$("custName").value.trim();
+  const address=$("custAddress").value.trim();
+  const phone=$("custPhone").value.trim();
+  const email=$("custEmail").value.trim();
+
+  if(!name || !address || !phone){
+    alert("Please enter your full name, garden address and phone number before requesting a quote.");
+    (!name ? $("custName") : !address ? $("custAddress") : $("custPhone")).focus();
+    return;
+  }
+
+  if(name.trim().split(/\s+/).length < 2){
+    alert("Please enter both your first name and surname.");
+    $("custName").focus();
+    return;
+  }
+
+  if(email){
+    $("custEmail").value=email.toLowerCase();
+    const emailOK=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    if(!emailOK){
+      alert("Please check the email address you entered.");
+      $("custEmail").focus();
+      return;
+    }
+  }
+
+  update();
+  sendLeadToCRM();
+  $("quoteSuccess").style.display="block";
+  wa.textContent="✅ Details Received";
+  wa.disabled=true;
+  $("openEmailBtn").scrollIntoView({behavior:"smooth",block:"center"});
+});
+
+$("openEmailBtn").addEventListener("click",function(){
+  const subject=wa.dataset.subject || "Website quote request";
+  const body=(wa.dataset.body || "")+
+    "\n\nPlease attach 2–4 clear garden photos before sending this email.";
+  const to="info@ksgardenservices.co.uk";
+
+  let chooser=$("emailChooser");
+  if(!chooser){
+    chooser=document.createElement("div");
+    chooser.id="emailChooser";
+    chooser.style.cssText="margin-top:12px;padding:14px;border:1px solid #d8e2d9;border-radius:10px;background:#fff;text-align:left";
+    chooser.innerHTML=
+      '<strong style="display:block;margin-bottom:9px;color:#173d25">How would you like to send your email?</strong>'+
+      '<div style="display:grid;gap:8px">'+
+      '<button type="button" class="travelbtn" id="gmailChoice">Gmail</button>'+
+      '<button type="button" class="travelbtn" id="outlookChoice">Outlook / Hotmail</button>'+
+      '<button type="button" class="travelbtn" id="yahooChoice">Yahoo Mail</button>'+
+      '<button type="button" class="travelbtn" id="defaultChoice">Default Email App</button>'+
+      '<button type="button" class="resetbtn" id="copyChoice">Copy Email Details</button>'+
+      '</div>';
+    $("quoteSuccess").appendChild(chooser);
+
+    const openTop=url=>{
+      const w=window.open(url,"_blank");
+      if(!w){
+        try{ window.top.location.href=url; }
+        catch(err){ window.location.href=url; }
+      }
+    };
+
+    $("gmailChoice").onclick=()=>openTop(
+      "https://mail.google.com/mail/?view=cm&fs=1"+
+      "&to="+encodeURIComponent(to)+
+      "&su="+encodeURIComponent(subject)+
+      "&body="+encodeURIComponent(body)
+    );
+
+    $("outlookChoice").onclick=()=>openTop(
+      "https://outlook.live.com/mail/0/deeplink/compose?to="+encodeURIComponent(to)+
+      "&subject="+encodeURIComponent(subject)+
+      "&body="+encodeURIComponent(body)
+    );
+
+    $("yahooChoice").onclick=()=>openTop(
+      "https://compose.mail.yahoo.com/?to="+encodeURIComponent(to)+
+      "&subject="+encodeURIComponent(subject)+
+      "&body="+encodeURIComponent(body)
+    );
+
+    $("defaultChoice").onclick=()=>{
+      const mailto="mailto:"+to+
+        "?subject="+encodeURIComponent(subject)+
+        "&body="+encodeURIComponent(body);
+      try{ window.top.location.href=mailto; }
+      catch(err){ window.location.href=mailto; }
+    };
+
+    $("copyChoice").onclick=async()=>{
+      const text="To: "+to+"\nSubject: "+subject+"\n\n"+body;
+      try{
+        await navigator.clipboard.writeText(text);
+        $("copyChoice").textContent="✅ Copied — paste into your email";
+      }catch(err){
+        alert(text);
+      }
+    };
+  }else{
+    chooser.style.display = chooser.style.display==="none" ? "block" : "none";
+  }
+});
+
+$("resetBtn").addEventListener("click",()=>{
+  service.value="grass";
+  size.value="s";
+  condition.value="normal";
+  $("waste").value="no";
+  $("lawns").value="one";
+  $("maintArea").value="front";
+  document.querySelectorAll(".maintWork").forEach(el=>{ el.checked=true; });
+  document.querySelectorAll(".maintTreatment").forEach(el=>{ el.checked=false; });
+  $("frequency").value="fortnightly";
+  $("hedgeSize").value="small";
+  $("hedgeAccess").value="easy";
+  $("shrubAmount").value="one";
+  $("scarifyType").value="scarify";
+  $("treatmentType").value="feed";
+  $("leafArea").value="lawn";
+  $("pressureType").value="patio";
+  $("pressureSurface").value="block";
+  $("pressureArea").value="s";
+  post.value="";
+  $("custName").value="";
+  $("custAddress").value="";
+  $("custPhone").value="";
+  $("custEmail").value="";
+  $("details").value="";
+  resetQuoteSubmission();
+  wa.textContent="✉️ Request This Quote";
+  postcodeChecked=false;
+  areaStatus="unchecked";
+  areaMessage="";
+  detectedArea="";
+  pc="";
+  tm=0;
+  tc=0;
+  routeOK=false;
+  $("travel").style.display="none";
+  $("travel").className="travel";
+  hideLoader();
+  update();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+/* START */
+
+update();
+
+</script>
+
+</body>
+</html>
