@@ -136,7 +136,7 @@ button{font:inherit}
       <h2>Area calculator</h2>
       <p class="muted">Split an awkward garden, lawn, drive or patio into simple shapes. Add as many sections as you need and the app will total them.</p>
       <div id="areas"></div>
-      <div class="row"><button class="secondary" id="addArea" type="button">+ Add section</button><button class="danger" id="clearAreas" type="button">Clear areas</button></div>
+      <div class="row"><button class="secondary" id="addArea" type="button">+ Add section</button><button class="secondary" id="cameraMeasure" type="button">📷 Measure with Camera (Beta)</button><button class="danger" id="clearAreas" type="button">Clear areas</button></div>
       <div style="margin-top:20px"><div class="muted">TOTAL AREA</div><div class="area-total" id="areaTotal">0.0 m²</div><div class="muted" id="areaHint"></div></div>
     </div>
     <div class="note"><strong>How to measure:</strong> rectangle = length × width; triangle = base × height ÷ 2; circle = π × radius². For irregular spaces, split them into several rectangles/triangles and add them together.</div>
@@ -162,6 +162,50 @@ button{font:inherit}
     <button class="primary" id="saveQuote" type="button">Save quote</button>
     <button class="secondary" type="button" data-goto="summary">View quote</button>
   </div>
+
+<div id="cameraModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(12,20,15,.88);padding:14px;overflow:auto">
+  <div style="max-width:760px;margin:0 auto;background:#fff;border-radius:18px;padding:16px">
+    <div class="row" style="justify-content:space-between">
+      <div><strong style="font-size:20px;color:#2d4433">Camera Area Measure</strong><div class="muted">Beta — best for a clear, fairly flat area.</div></div>
+      <button class="secondary" id="closeCamera" type="button">Close</button>
+    </div>
+    <div class="note" style="margin:14px 0">
+      For best results, stand where you can see the whole area, keep the phone steady, and use a known straight distance in the same part of the ground as the area you are measuring.
+    </div>
+
+    <video id="cameraVideo" autoplay playsinline style="width:100%;max-height:55vh;object-fit:contain;background:#111;border-radius:14px"></video>
+    <canvas id="cameraCanvas" style="display:none;width:100%;border-radius:14px;background:#111;touch-action:none"></canvas>
+
+    <div id="cameraControls" style="margin-top:14px">
+      <button class="primary" id="captureCamera" type="button">Capture photo</button>
+    </div>
+
+    <div id="calibrationControls" style="display:none;margin-top:14px">
+      <p class="muted"><strong>Step 1:</strong> Enter a real-world distance you know, then tap its two endpoints on the photo.</p>
+      <div class="grid2">
+        <div><label>Known distance (metres)</label><input id="knownDistance" type="number" step=".01" min=".1" placeholder="e.g. 5"></div>
+        <div><label>Status</label><div id="calibrationStatus" class="pill">Tap 2 reference points</div></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="secondary" id="resetCameraPoints" type="button">Reset points</button>
+        <button class="secondary" id="startPolygon" type="button" disabled>Next: mark area</button>
+      </div>
+    </div>
+
+    <div id="polygonControls" style="display:none;margin-top:14px">
+      <p class="muted"><strong>Step 2:</strong> Tap each corner of the lawn, patio or drive in order around the edge. Use at least 3 points.</p>
+      <div class="row">
+        <button class="secondary" id="undoPoint" type="button">Undo last point</button>
+        <button class="primary" id="finishPolygon" type="button">Calculate area</button>
+      </div>
+      <div style="margin-top:12px">
+        <div class="muted">Estimated area</div>
+        <div class="area-total" id="cameraAreaResult">0.0 m²</div>
+      </div>
+      <button class="primary" id="useCameraArea" type="button" disabled>Use this area in quote</button>
+    </div>
+  </div>
+</div>
 </div>
 
 <script>
@@ -317,6 +361,107 @@ $("copyQuote").onclick=async()=>{await navigator.clipboard.writeText($("quoteTex
 $("shareQuote").onclick=async()=>{const text=$("quoteText").textContent;if(navigator.share)await navigator.share({title:"KS Garden Services Quote",text});else{await navigator.clipboard.writeText(text);alert("Quote copied.")}};
 $("saveQuote").onclick=saveQuote;$("newQuote").onclick=()=>{if(confirm("Start a new quote?"))resetQuote()};
 addArea();loadDraft();recalc();renderHistory();
+
+let cameraStream=null,cameraImage=null,calibrationPts=[],polygonPts=[],cameraScale=null,cameraEstimatedArea=0,cameraMode="calibrate";
+
+function showCameraModal(){
+  $("cameraModal").style.display="block";
+  $("cameraVideo").style.display="block";
+  $("cameraCanvas").style.display="none";
+  $("cameraControls").style.display="block";
+  $("calibrationControls").style.display="none";
+  $("polygonControls").style.display="none";
+  calibrationPts=[];polygonPts=[];cameraScale=null;cameraEstimatedArea=0;cameraMode="calibrate";
+  $("cameraAreaResult").textContent="0.0 m²";
+  $("useCameraArea").disabled=true;
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false})
+    .then(s=>{cameraStream=s;$("cameraVideo").srcObject=s})
+    .catch(()=>alert("Camera access was not available. Please allow camera permission in Safari and try again."));
+}
+function stopCamera(){
+  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}
+  $("cameraModal").style.display="none";
+}
+function captureCamera(){
+  const v=$("cameraVideo"),cv=$("cameraCanvas"),ctx=cv.getContext("2d");
+  if(!v.videoWidth){alert("Camera is still loading.");return}
+  cv.width=v.videoWidth;cv.height=v.videoHeight;ctx.drawImage(v,0,0,cv.width,cv.height);
+  cameraImage=ctx.getImageData(0,0,cv.width,cv.height);
+  $("cameraVideo").style.display="none";cv.style.display="block";
+  $("cameraControls").style.display="none";$("calibrationControls").style.display="block";
+  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}
+  drawCamera();
+}
+function canvasPoint(ev){
+  const cv=$("cameraCanvas"),r=cv.getBoundingClientRect();
+  const clientX=ev.touches?ev.touches[0].clientX:ev.clientX;
+  const clientY=ev.touches?ev.touches[0].clientY:ev.clientY;
+  return {x:(clientX-r.left)*cv.width/r.width,y:(clientY-r.top)*cv.height/r.height};
+}
+function drawCamera(){
+  const cv=$("cameraCanvas"),ctx=cv.getContext("2d");
+  if(cameraImage)ctx.putImageData(cameraImage,0,0);
+  ctx.lineWidth=Math.max(3,cv.width/250);
+  if(calibrationPts.length){
+    ctx.strokeStyle="#ffd54a";ctx.fillStyle="#ffd54a";
+    calibrationPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,8,0,Math.PI*2);ctx.fill()});
+    if(calibrationPts.length===2){ctx.beginPath();ctx.moveTo(calibrationPts[0].x,calibrationPts[0].y);ctx.lineTo(calibrationPts[1].x,calibrationPts[1].y);ctx.stroke()}
+  }
+  if(polygonPts.length){
+    ctx.strokeStyle="#62d48b";ctx.fillStyle="#62d48b";ctx.beginPath();
+    polygonPts.forEach((p,i)=>{if(i===0)ctx.moveTo(p.x,p.y);else ctx.lineTo(p.x,p.y)});
+    if(polygonPts.length>2)ctx.closePath();ctx.stroke();
+    polygonPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,8,0,Math.PI*2);ctx.fill()});
+  }
+}
+function cameraCanvasTap(ev){
+  ev.preventDefault();const p=canvasPoint(ev);
+  if(cameraMode==="calibrate"){
+    if(calibrationPts.length<2)calibrationPts.push(p);
+    if(calibrationPts.length===2){
+      const real=Number($("knownDistance").value);
+      if(!real||real<=0){alert("Enter the known real-world distance first.");calibrationPts=[];drawCamera();return}
+      const px=Math.hypot(calibrationPts[1].x-calibrationPts[0].x,calibrationPts[1].y-calibrationPts[0].y);
+      cameraScale=real/px;
+      $("calibrationStatus").textContent="Calibrated ✓";
+      $("startPolygon").disabled=false;
+    }
+  }else{
+    polygonPts.push(p);calcCameraPolygon();
+  }
+  drawCamera();
+}
+function calcCameraPolygon(){
+  if(!cameraScale||polygonPts.length<3){cameraEstimatedArea=0;$("cameraAreaResult").textContent="0.0 m²";return}
+  let s=0;for(let i=0;i<polygonPts.length;i++){const a=polygonPts[i],b=polygonPts[(i+1)%polygonPts.length];s+=a.x*b.y-b.x*a.y}
+  const pixelArea=Math.abs(s)/2;
+  cameraEstimatedArea=pixelArea*cameraScale*cameraScale;
+  $("cameraAreaResult").textContent=cameraEstimatedArea.toFixed(1)+" m²";
+  $("useCameraArea").disabled=false;
+}
+function resetCameraMeasure(){
+  calibrationPts=[];polygonPts=[];cameraScale=null;cameraEstimatedArea=0;cameraMode="calibrate";
+  $("calibrationStatus").textContent="Tap 2 reference points";$("startPolygon").disabled=true;
+  $("polygonControls").style.display="none";$("calibrationControls").style.display="block";
+  drawCamera();
+}
+$("cameraMeasure").onclick=showCameraModal;
+$("closeCamera").onclick=stopCamera;
+$("captureCamera").onclick=captureCamera;
+$("cameraCanvas").addEventListener("click",cameraCanvasTap);
+$("cameraCanvas").addEventListener("touchstart",cameraCanvasTap,{passive:false});
+$("resetCameraPoints").onclick=resetCameraMeasure;
+$("startPolygon").onclick=()=>{cameraMode="polygon";polygonPts=[];$("polygonControls").style.display="block";$("calibrationControls").style.display="none";drawCamera()};
+$("undoPoint").onclick=()=>{polygonPts.pop();calcCameraPolygon();drawCamera()};
+$("finishPolygon").onclick=()=>{calcCameraPolygon();if(polygonPts.length<3)alert("Tap at least 3 corners around the area.")};
+$("useCameraArea").onclick=()=>{
+  if(!cameraEstimatedArea)return;
+  $("areas").innerHTML="";areaCounter=0;
+  const side=Math.sqrt(cameraEstimatedArea);
+  addArea({name:"Camera measured area",shape:"rect",a:side.toFixed(3),b:side.toFixed(3)});
+  calcAreas();stopCamera();showTab("quote");
+};
+
 </script>
 </body>
 </html>
