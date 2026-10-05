@@ -6,3 +6,5 @@ html{box-sizing:border-box}body{margin:0}*,*::before,*::after{box-sizing:inherit
 .anim-ready .site-section,.anim-ready .site-section-item-input,.anim-ready .list-group-item{opacity:1;transform:none}
 .section-customcode-layout1 div,.section-customcode-layout1 textarea{width:100%}
 .section-customcode-layout1 textarea{height:200px}
+#ks2027-banner .ks2027-track{width:max-content}
+#ks2027-banner .ks2027-half,#ks2027-banner .ks2027-message{width:auto}
