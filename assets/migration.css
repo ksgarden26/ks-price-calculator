@@ -8,3 +8,102 @@ html{box-sizing:border-box}body{margin:0}*,*::before,*::after{box-sizing:inherit
 .section-customcode-layout1 textarea{height:200px}
 #ks2027-banner .ks2027-track{width:max-content}
 #ks2027-banner .ks2027-half,#ks2027-banner .ks2027-message{width:auto}
+
+
+/* 2027 enquiry popup replaces the scrolling banner */
+#ks2027-banner{display:none!important}
+
+.ks-intake-popup{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:22px;
+  background:rgba(15,25,19,.28);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .22s ease,visibility .22s ease;
+}
+.ks-intake-popup.is-open{opacity:1;visibility:visible}
+.ks-intake-card{
+  position:relative;
+  width:min(520px,100%);
+  padding:30px 28px 26px;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 24px 70px rgba(18,35,25,.24);
+  transform:translateY(18px);
+  transition:transform .22s ease;
+  text-align:left;
+  color:#1f2b24;
+}
+.ks-intake-popup.is-open .ks-intake-card{transform:translateY(0)}
+.ks-intake-kicker{
+  margin:0 0 8px;
+  color:#55715f;
+  font:700 12px/1.3 Arial,sans-serif;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.ks-intake-card h2{
+  margin:0 42px 10px 0;
+  color:#223329;
+  font:700 28px/1.15 Arial,sans-serif;
+}
+.ks-intake-card p{
+  margin:0 0 20px;
+  color:#5a665f;
+  font:400 15px/1.55 Arial,sans-serif;
+}
+.ks-intake-actions{display:flex;gap:10px;flex-wrap:wrap}
+.ks-intake-primary,
+.ks-intake-secondary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:46px;
+  padding:11px 18px;
+  border-radius:999px;
+  font:700 14px/1 Arial,sans-serif;
+  text-decoration:none!important;
+  cursor:pointer;
+}
+.ks-intake-primary{
+  border:1px solid #2d4433;
+  background:#2d4433;
+  color:#fff!important;
+}
+.ks-intake-secondary{
+  border:1px solid #d7ddd9;
+  background:#fff;
+  color:#33423a!important;
+}
+.ks-intake-close{
+  position:absolute;
+  top:15px;
+  right:15px;
+  width:36px;
+  height:36px;
+  border:0;
+  border-radius:50%;
+  background:#f2f4f2;
+  color:#33423a;
+  font-size:22px;
+  line-height:1;
+  cursor:pointer;
+}
+@media (min-width:700px){
+  .ks-intake-popup{align-items:center}
+}
+@media (max-width:520px){
+  .ks-intake-popup{padding:14px}
+  .ks-intake-card{padding:26px 20px 20px;border-radius:16px}
+  .ks-intake-card h2{font-size:24px}
+  .ks-intake-actions{display:grid}
+  .ks-intake-primary,.ks-intake-secondary{width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  .ks-intake-popup,.ks-intake-card{transition:none}
+}
