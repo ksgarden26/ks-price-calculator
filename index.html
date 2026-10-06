@@ -3,7 +3,58 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><meta content="telephone=no" name="format-detection"/><meta content="1717177-20261005-125438" data-hid="app-version" name="app-version"/><meta content="Reliable garden maintenance in Newton-le-Willows, including lawn mowing, hedge cutting, border care, seasonal tidy-ups and lawn treatments." data-hid="description" name="description"/><meta content="https://firebasestorage.googleapis.com/v0/b/websitesforfree-73cd4.appspot.com/o/JcTCdgnwMehjDmlTCUZR2QnxEEN2%2FAK42dCIXckNNo2wSkfvJ%2F8210059718094-idctgfc16qsmd4pgqvdp-Copy-of-KS-Garden-Maintenance-Ltd_1200x10000.webp?alt=media&amp;token=471d59e8-067d-4a39-ba70-bcb431d999d0" data-hid="og:image" property="og:image"/><meta content="KS Garden Services " data-hid="og:title" property="og:title"/><title>KS Garden Services - Home</title><link href="/assets/original/6da394e679e33f83f264.jpeg" rel="icon" type="image/x-icon"/><link data-hid="canonical" href="https://ksgardenservices.co.uk" rel="canonical"/><script data-hid="ld-localbusiness" type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://ksgardenservices.co.uk/#business","name":"KS Garden Services ","url":"https://ksgardenservices.co.uk","telephone":"07715 559 170","email":"info@ksgardenservices.co.uk","image":"https://firebasestorage.googleapis.com/v0/b/websitesforfree-73cd4.appspot.com/o/JcTCdgnwMehjDmlTCUZR2QnxEEN2%2FAK42dCIXckNNo2wSkfvJ%2F8210059718094-idctgfc16qsmd4pgqvdp-Copy-of-KS-Garden-Maintenance-Ltd_1200x10000.webp?alt=media&token=471d59e8-067d-4a39-ba70-bcb431d999d0"}</script><link href="/assets/layout-85af74637cb5.css" rel="stylesheet"/>
-<link href="/assets/migration.css" rel="stylesheet"/><script defer="True" src="/assets/navigation.js"></script></head>
+<link href="/assets/migration.css" rel="stylesheet"/><script defer="True" src="/assets/navigation.js"></script>
+<style>
+/* KS seasonal homepage effect — subtle autumn leaves */
+.ksh-hero-bg{position:relative;overflow:hidden}
+.ksh-hero-overlay{position:relative;z-index:2}
+.ks-autumn-leaves{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  overflow:hidden;
+  pointer-events:none;
+}
+.ks-autumn-leaves span{
+  position:absolute;
+  left:var(--x);
+  top:-12%;
+  display:block;
+  font-size:clamp(18px,2.2vw,30px);
+  opacity:0;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.12));
+  transform:scale(var(--s));
+  animation:ksLeafFall var(--t) linear var(--d) infinite;
+  will-change:transform,opacity;
+}
+@keyframes ksLeafFall{
+  0%{
+    transform:translate3d(0,-12vh,0) rotate(0deg) scale(var(--s));
+    opacity:0;
+  }
+  8%{opacity:.72}
+  30%{
+    transform:translate3d(28px,28vh,0) rotate(95deg) scale(var(--s));
+  }
+  58%{
+    transform:translate3d(-24px,61vh,0) rotate(210deg) scale(var(--s));
+    opacity:.62;
+  }
+  88%{opacity:.5}
+  100%{
+    transform:translate3d(22px,112vh,0) rotate(390deg) scale(var(--s));
+    opacity:0;
+  }
+}
+@media (max-width:600px){
+  .ks-autumn-leaves span{font-size:19px}
+  .ks-autumn-leaves span:nth-child(even){display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .ks-autumn-leaves{display:none}
+}
+</style>
+</head>
 <body>
 <div id="__nuxt"><div id="__layout"><div class="page-slug"><div class="site-wrapper"><div> <div><div class="user-website is-desktop tutorial-step-none anim-ready"><style scoped="scoped">
       
@@ -401,6 +452,17 @@
 </div>
 </div></div></div></div></div></div></div> </div><div class="site-section js-animate" data-section-id="section-1790886837893-ivzt994vv"> <div class="preview-container"><div class="page-section section-customcode" style="background:#fff;"><div class="container"><div class="section-customcode-layout1"><div><div><section class="ksh-home">
 <div class="ksh-hero-bg">
+<div class="ks-autumn-leaves" aria-hidden="true">
+  <span style="--x:6%;--d:0s;--t:13s;--s:.85">🍂</span>
+  <span style="--x:15%;--d:3s;--t:16s;--s:1.05">🍁</span>
+  <span style="--x:27%;--d:6s;--t:14s;--s:.72">🍂</span>
+  <span style="--x:39%;--d:1.5s;--t:18s;--s:1.12">🍁</span>
+  <span style="--x:52%;--d:8s;--t:15s;--s:.82">🍂</span>
+  <span style="--x:64%;--d:4.5s;--t:17s;--s:.95">🍁</span>
+  <span style="--x:76%;--d:10s;--t:14.5s;--s:.7">🍂</span>
+  <span style="--x:87%;--d:2.5s;--t:19s;--s:1.08">🍁</span>
+  <span style="--x:95%;--d:7s;--t:16.5s;--s:.8">🍂</span>
+</div>
 <div class="ksh-hero-overlay">
 <div class="ksh-hero-copy">
 <div class="ksh-eyebrow ksh-eyebrow-white">
