@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en-GB">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Before-and-after photos and real garden work from KS Garden Services in Newton-le-Willows, Warrington and nearby areas."><title>Gallery | KS Garden Services</title><link rel="stylesheet" href="styles.css">
+<style>.ks-gallery-head{padding:65px 0 38px}.ks-gallery-head h1{font-size:clamp(2rem,4.6vw,3.3rem);margin:4px 0 12px}.ks-gallery-head p{max-width:660px;line-height:1.7;color:#536359}.ks-gallery-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}.ks-gallery-filters button{background:#fff;border:1px solid #d4e2d6;color:#214b35;padding:10px 15px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer}.ks-gallery-filters button[aria-pressed="true"]{background:#254d37;color:#fff}.ks-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:19px;margin:0 0 65px}.ks-photo{margin:0;border:1px solid #e3e8e2;border-radius:15px;overflow:hidden;background:#fff;box-shadow:0 10px 28px #152c160a}.ks-photo button{border:0;padding:0;width:100%;cursor:zoom-in;background:#e6eae5}.ks-photo img{display:block;aspect-ratio:4/3;width:100%;object-fit:cover}.ks-photo figcaption{padding:15px 17px}.ks-photo .cat{font-size:11px;color:#3c7750;text-transform:uppercase;letter-spacing:.08em;font-weight:800}.ks-photo strong{display:block;margin:5px 0;font-size:16px}.ks-photo p{font-size:13px;color:#5b665d;line-height:1.5;margin:0}.ks-gallery-empty{padding:45px 25px;background:#f5f8f4;border-radius:15px;text-align:center;margin-bottom:50px}.ks-zoom{border:0;border-radius:14px;background:#161916;color:#fff;max-width:min(95vw,1000px);max-height:92dvh;padding:12px}.ks-zoom::backdrop{background:#000c}.ks-zoom img{max-width:100%;max-height:75dvh;display:block;object-fit:contain;margin:auto}.ks-zoom p{font-size:13px;text-align:center}.ks-zoom button{float:right;background:#fff;border:0;border-radius:6px;padding:6px 10px;margin-bottom:8px;cursor:pointer}@media(max-width:800px){.ks-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:530px){.ks-photo-grid{grid-template-columns:1fr}.ks-gallery-head{padding:45px 0 25px}}</style>
+</head>
+<body>
+<div class="topbar">2027 customer intake now open • Newton-le-Willows &amp; surrounding areas</div>
+<header><div class="wrap nav"><a class="brand" href="index.html"><img src="../KS%20Garden%20Services%20Logo.png" alt="KS Garden Services logo"><span>KS Garden Services</span></a><button class="menuBtn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mainNav">Menu</button><nav class="links" id="mainNav"><a href="services.html">Services</a><a href="../index.html">Prices</a><a href="areas.html">Areas</a><a href="gallery.html" aria-current="page">Gallery</a><a href="reviews.html">Reviews</a><a href="about.html">About</a><a href="news.html">News</a><a href="gift-vouchers.html">Gift Vouchers</a><a href="contact.html">Contact</a></nav><a class="btn" href="../index.html">Get a price</a></div></header>
+<main>
+<section class="ks-gallery-head"><div class="wrap"><p class="eyebrow">REAL GARDEN WORK</p><h1>Our garden gallery</h1><p>From a tidy lawn to a complete garden transformation, take a look at some of the work carried out by KS Garden Services. Tap any photo for a closer look.</p></div></section>
+<section class="section"><div class="wrap"><div id="filters" class="ks-gallery-filters" aria-label="Filter gallery photos"></div><div id="photos" class="ks-photo-grid"></div><div id="empty" class="ks-gallery-empty" hidden>New garden photos are coming soon. Check back again!</div></div></section>
+</main>
+<footer><div class="wrap footgrid"><div><strong>KS Garden Services</strong><br>Keeping Gardens Looking Their Best.<br><a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a></div><div class="footlinks"><strong>Explore</strong><a href="services.html">Services</a><a href="gallery.html">Gallery</a><a href="reviews.html">Reviews</a><a href="news.html">Garden News</a></div><div class="footlinks"><strong>Information</strong><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="cookies.html">Cookies</a><a href="contact.html">Contact</a></div></div><div class="wrap"><p class="small" style="color:#b9c8bd">© 2026 KS Garden Services. All rights reserved.</p></div></footer>
+<dialog id="zoom" class="ks-zoom"><button id="closeZoom" aria-label="Close enlarged photo">Close ✕</button><img id="zoomImg" alt=""><p id="zoomCaption"></p></dialog>
+<script>
+(function(){
+const menu=document.getElementById("menuBtn"),nav=document.getElementById("mainNav");
+if(menu&&nav)menu.onclick=()=>{const open=nav.classList.toggle("open");menu.setAttribute("aria-expanded",String(open));};
+const wrap=document.getElementById("photos"),filters=document.getElementById("filters"),empty=document.getElementById("empty"),dialog=document.getElementById("zoom");
+document.getElementById("closeZoom").addEventListener("click",()=>dialog.close());
+dialog.addEventListener("click",e=>{if(e.target===dialog)dialog.close();});
+let all=[],active="All";
+function valid(src){return /^gallery-images\/[a-zA-Z0-9._/-]+\.jpg$/.test(src)&&!src.includes("..");}
+function draw(){
+ wrap.replaceChildren();const filtered=all.filter(p=>active==="All"||p.category===active);
+ empty.hidden=filtered.length>0;
+ filtered.forEach(p=>{
+  const fig=document.createElement("figure");fig.className="ks-photo";const btn=document.createElement("button");btn.type="button";
+  const img=document.createElement("img");img.src=p.src;img.alt=[p.job,p.caption].filter(Boolean).join(" — ")||"KS Garden Services project";img.loading="lazy";btn.append(img);
+  btn.addEventListener("click",()=>{document.getElementById("zoomImg").src=p.src;document.getElementById("zoomImg").alt=img.alt;document.getElementById("zoomCaption").textContent=img.alt;dialog.showModal();});
+  const caption=document.createElement("figcaption");const cat=document.createElement("span");cat.className="cat";cat.textContent=p.category||"Garden work";
+  const title=document.createElement("strong");title.textContent=p.job||"Garden work";const sub=document.createElement("p");sub.textContent=p.caption||"";caption.append(cat,title,sub);fig.append(btn,caption);wrap.append(fig);
+ });
+}
+function buttons(){
+ filters.replaceChildren();["All",...new Set(all.map(p=>p.category).filter(Boolean))].forEach(category=>{
+  const btn=document.createElement("button");btn.type="button";btn.textContent=category;btn.setAttribute("aria-pressed",String(active===category));btn.onclick=()=>{active=category;buttons();draw();};filters.append(btn);
+ });
+}
+fetch("./gallery-data.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("Missing gallery");return r.json();}).then(info=>{all=(info.photos||[]).filter(p=>p&&valid(p.src));buttons();draw();}).catch(()=>{empty.textContent="The gallery is temporarily unavailable. Please try again later.";empty.hidden=false;});
+})();
+</script></body></html>
