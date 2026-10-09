@@ -48,6 +48,7 @@
 <div class="ks-reviews-label">CUSTOMER REVIEWS</div>
 <h2>What customers say</h2>
 <p>Genuine feedback from customers of KS Garden Services.</p>
+<a class="ksrf-review-jump" href="#leave-a-review">★ Leave your own review ↓</a>
 </div>
 <div class="ks-marquee">
 <div class="ks-marquee-track">
@@ -196,6 +197,147 @@
 </div>
 </div>
 </section>
+
+<section id="leave-a-review" class="ksrf-section" aria-labelledby="ksrf-title">
+  <div class="ksrf-shell">
+    <div class="ksrf-intro">
+      <span class="ksrf-kicker">SHARE YOUR EXPERIENCE</span>
+      <h2 id="ksrf-title">Leave a review</h2>
+      <p>Had some garden work done by KS Garden Services? I'd love to hear how it went. Your honest feedback helps my small business grow and improve.</p>
+      <span class="ksrf-time">★ Takes around 2 minutes</span>
+    </div>
+    <div id="ksrf-success" class="ksrf-success" role="status" hidden>
+      <strong>Thank you for taking the time to leave a review!</strong>
+      <p>I've received your feedback for review. It won't appear publicly unless you've given permission.</p>
+    </div>
+    <form id="ksrf-form" action="https://formsubmit.co/info@ksgardenservices.co.uk" method="POST" class="ksrf-form">
+      <input type="hidden" name="_subject" value="New KS Garden Services website review">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="https://www.ksgardenservices.co.uk/reviews/?submitted=1#leave-a-review">
+      <input type="hidden" name="_url" value="https://www.ksgardenservices.co.uk/reviews/#leave-a-review">
+      <div class="ksrf-trap" aria-hidden="true"><label>Leave this empty<input type="text" name="_honey" tabindex="-1" autocomplete="off"></label></div>
+      <fieldset class="ksrf-rating">
+        <legend>How would you rate your experience? <span class="ksrf-required">*</span></legend>
+        <p class="ksrf-hint">Tap a star to give a rating from 1 to 5.</p>
+        <div class="ksrf-stars" aria-label="Overall rating, five stars is excellent">
+          <input id="ksrf-star5" type="radio" name="Overall rating" value="5 stars" required><label for="ksrf-star5" title="5 stars - Excellent" aria-label="5 stars - Excellent">★</label>
+          <input id="ksrf-star4" type="radio" name="Overall rating" value="4 stars"><label for="ksrf-star4" title="4 stars - Very good" aria-label="4 stars - Very good">★</label>
+          <input id="ksrf-star3" type="radio" name="Overall rating" value="3 stars"><label for="ksrf-star3" title="3 stars - Good" aria-label="3 stars - Good">★</label>
+          <input id="ksrf-star2" type="radio" name="Overall rating" value="2 stars"><label for="ksrf-star2" title="2 stars - Fair" aria-label="2 stars - Fair">★</label>
+          <input id="ksrf-star1" type="radio" name="Overall rating" value="1 star"><label for="ksrf-star1" title="1 star - Poor" aria-label="1 star - Poor">★</label>
+        </div>
+        <p class="ksrf-rating-text" id="ksrf-rating-text" aria-live="polite">Select your rating</p>
+      </fieldset>
+      <div class="ksrf-grid">
+        <div class="ksrf-field">
+          <label for="ksrf-name">Your name <span class="ksrf-required">*</span></label>
+          <input id="ksrf-name" name="Customer name" type="text" autocomplete="name" maxlength="100" required placeholder="e.g. Sarah">
+        </div>
+        <div class="ksrf-field">
+          <label for="ksrf-town">Town or area <span class="ksrf-optional">(optional)</span></label>
+          <input id="ksrf-town" name="Customer town" type="text" maxlength="100" placeholder="e.g. Warrington">
+        </div>
+        <div class="ksrf-field">
+          <label for="ksrf-service">What work did I carry out? <span class="ksrf-required">*</span></label>
+          <select id="ksrf-service" name="Service received" required>
+            <option value="" selected disabled>Choose a service</option>
+            <option>Regular garden maintenance</option>
+            <option>Lawn mowing and edging</option>
+            <option>Hedge or shrub cutting</option>
+            <option>Garden tidy-up or clearance</option>
+            <option>Lawn care and renovation</option>
+            <option>Pressure washing</option>
+            <option>Other garden work</option>
+          </select>
+        </div>
+        <div class="ksrf-field">
+          <label for="ksrf-recommend">Would you recommend KS Garden Services? <span class="ksrf-required">*</span></label>
+          <select id="ksrf-recommend" name="Would recommend" required>
+            <option value="" selected disabled>Please choose</option>
+            <option>Yes</option>
+            <option>Maybe</option>
+            <option>No</option>
+          </select>
+        </div>
+      </div>
+      <div class="ksrf-field">
+        <label for="ksrf-feedback">How did I do? <span class="ksrf-required">*</span></label>
+        <p class="ksrf-hint">You could mention quality of work, communication, reliability or tidiness.</p>
+        <textarea id="ksrf-feedback" name="Customer review" rows="5" maxlength="2500" minlength="10" required placeholder="Tell me about your experience..."></textarea>
+      </div>
+      <div class="ksrf-field">
+        <label for="ksrf-improve">Anything I could do better? <span class="ksrf-optional">(optional)</span></label>
+        <textarea id="ksrf-improve" name="Suggestions to improve" rows="3" maxlength="1500" placeholder="All feedback is welcome..."></textarea>
+      </div>
+      <div class="ksrf-field">
+        <label for="ksrf-email">Your email address <span class="ksrf-optional">(optional, not published)</span></label>
+        <input id="ksrf-email" name="email" type="email" autocomplete="email" maxlength="160" placeholder="Only if you'd like me to be able to reply">
+      </div>
+      <fieldset class="ksrf-publication">
+        <legend>Can I share your review on my website? <span class="ksrf-required">*</span></legend>
+        <p class="ksrf-hint">I may publish your review using only your first name and town. Your email and improvement suggestions will never be shown publicly.</p>
+        <label><input type="radio" name="Permission to publish review" value="Yes - first name and town only" required> Yes, you can share my review</label>
+        <label><input type="radio" name="Permission to publish review" value="No - private feedback only" required> No, please keep it private</label>
+      </fieldset>
+      <button class="ksrf-submit" type="submit">Submit my review <span aria-hidden="true">→</span></button>
+      <p class="ksrf-fine">Your feedback is emailed securely for manual review and is not automatically posted. The form is processed by FormSubmit; please see the <a href="/privacy-policy/">privacy policy</a>. On first use, KS Garden Services must activate its receiving address.</p>
+    </form>
+  </div>
+</section>
+<style>
+.ksrf-section{scroll-margin-top:105px;padding:25px 18px 75px;background:linear-gradient(180deg,#fff 0%,#f4f7f3 100%);font-family:"Raleway",Arial,sans-serif;color:#24362a}
+.ksrf-shell{max-width:850px;margin:0 auto}
+.ksrf-intro{text-align:center;margin-bottom:28px}
+.ksrf-kicker{display:block;margin:0 0 9px;color:#376245;font-size:12px;font-weight:750;letter-spacing:.16em}
+.ksrf-intro h2{font-family:"Lato",Arial,sans-serif!important;font-size:clamp(32px,5vw,46px)!important;line-height:1.18!important;color:#193f29!important;margin:0 0 11px!important}
+.ksrf-intro p{max-width:620px;margin:0 auto 15px!important;font-size:16px!important;color:#56685b!important;line-height:1.65!important}
+.ksrf-time{display:inline-block;color:#496753;font-size:13px;font-weight:600}
+.ksrf-form{background:#fff;border:1px solid #e0e8de;border-radius:22px;padding:clamp(20px,5vw,38px);box-shadow:0 14px 50px rgba(30,62,39,.07);display:grid;gap:23px}
+.ksrf-section *, .ksrf-section *:before,.ksrf-section *:after{box-sizing:border-box}
+.ksrf-field{min-width:0}
+.ksrf-field>label,.ksrf-rating legend,.ksrf-publication legend{font-weight:750;display:block;color:#263f2e;font-size:15px;margin:0 0 9px}
+.ksrf-required{color:#ad532c}
+.ksrf-optional,.ksrf-hint{font-size:12px;color:#737f75;font-weight:400}
+.ksrf-hint{margin:-3px 0 10px!important;line-height:1.55!important}
+.ksrf-field input,.ksrf-field select,.ksrf-field textarea{display:block;width:100%;padding:13px 15px;min-height:48px;border:1px solid #cbd8cc;border-radius:10px;color:#2d3a32;background:#fff;font:inherit;font-size:16px;outline-offset:3px;transition:border-color .15s}
+.ksrf-field textarea{resize:vertical;min-height:110px}
+.ksrf-field input:focus,.ksrf-field textarea:focus,.ksrf-field select:focus{border-color:#356c45;box-shadow:0 0 0 3px rgba(53,108,69,.09);outline:0}
+.ksrf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.ksrf-rating,.ksrf-publication{margin:0;padding:0;border:none;min-width:0}
+.ksrf-stars{display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:4px}
+.ksrf-stars input{position:absolute;width:1px;height:1px;opacity:0}
+.ksrf-stars label{font-family:Arial,sans-serif;font-size:clamp(37px,8vw,51px);line-height:1.1;color:#d6dcd3;cursor:pointer;padding:0 3px;transition:color .15s,transform .15s;-webkit-tap-highlight-color:transparent}
+.ksrf-stars input:checked ~ label,.ksrf-stars label:hover,.ksrf-stars label:hover ~ label{color:#e7a91c}
+.ksrf-stars input:focus-visible + label{outline:2px solid #376245;outline-offset:2px;border-radius:4px}
+.ksrf-rating-text{margin:8px 0 0!important;font-size:13px!important;color:#6b7c6f!important}
+.ksrf-publication{border-top:1px solid #e4eae2;padding-top:21px}
+.ksrf-publication label{display:flex;gap:12px;align-items:center;font-size:14px;font-weight:500;color:#364b3b;margin:11px 0;cursor:pointer}
+.ksrf-publication input{accent-color:#326a45;min-width:19px;min-height:19px}
+.ksrf-submit{width:100%;padding:17px 20px;border:0;border-radius:12px;background:#2d5b3c!important;color:#fff!important;font:700 16px "Raleway",Arial,sans-serif;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:12px}
+.ksrf-submit:hover{background:#224b2f!important}
+.ksrf-fine{font-size:12px!important;color:#738076!important;line-height:1.7!important;margin:-8px 0 0!important}
+.ksrf-fine a{color:#315b3a;text-decoration:underline}
+.ksrf-trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.ksrf-success{background:#ebf5eb;border:1px solid #c8e2cb;color:#1f4e2e;border-radius:14px;padding:22px;margin-bottom:22px}
+.ksrf-success strong{display:block;font-size:18px;margin-bottom:5px}
+.ksrf-success p{margin:0;color:#3c6045}
+.ksrf-review-jump{display:inline-flex;align-items:center;text-decoration:none;justify-content:center;margin-top:18px;padding:12px 22px;border:1px solid #28573b;border-radius:999px;color:#245335;font-size:14px;font-weight:700;transition:.2s}
+.ksrf-review-jump:hover{background:#ecf4ee}
+@media(max-width:610px){.ksrf-section{padding:20px 12px 58px}.ksrf-form{border-radius:16px;gap:19px}.ksrf-grid{grid-template-columns:1fr;gap:19px}.ksrf-stars label{padding:0 2px}}
+</style>
+<script>
+(function(){
+  var inputs=document.querySelectorAll('#ksrf-form input[name="Overall rating"]');
+  var desc={'1 star':'1 of 5 · Poor','2 stars':'2 of 5 · Fair','3 stars':'3 of 5 · Good','4 stars':'4 of 5 · Very good','5 stars':'5 of 5 · Excellent'};
+  var ratingText=document.getElementById('ksrf-rating-text');
+  inputs.forEach(function(input){input.addEventListener('change',function(){ratingText.textContent=desc[input.value] || input.value;});});
+  if(new URLSearchParams(location.search).get('submitted')==='1'){
+    var notice=document.getElementById('ksrf-success');
+    if(notice){notice.hidden=false;document.getElementById('ksrf-form').hidden=true;}
+  }
+})();
+</script>
+
 <style>
 
 .ks-reviews-wrap{
