@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KS Garden Services CRM</title>
+<style>
+:root{--g:#173d25;--g2:#245b36;--cream:#ebe9cf;--bg:#f4f7f4;--line:#dce5dd;--text:#1d2921;--muted:#6c786f;--red:#a33b3b;--amber:#9a6d00}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:245px 1fr}aside{background:linear-gradient(180deg,#102f1d,#173d25);color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:2px 4px 20px;border-bottom:1px solid #ffffff20}.brand img{width:60px;height:60px;border-radius:50%;border:1px solid #d9d2a9;object-fit:cover}.brand b{font-family:Georgia,serif;display:block}.brand small{color:#d9d2a9}
+nav{display:grid;gap:7px;margin-top:20px}nav button{border:0;background:transparent;color:#d6e3d9;padding:12px;text-align:left;border-radius:10px;cursor:pointer}nav button.active,nav button:hover{background:#ffffff18;color:white}
+main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px}h1{margin:0;color:var(--g)}header p{margin:5px 0 0;color:var(--muted)}.actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:white;color:var(--g);border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--g2);color:white;border-color:var(--g2)}.btn.danger{color:var(--red)}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:18px}.kpi{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 7px 20px #173d2510}.kpi span{font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700}.kpi strong{display:block;color:var(--g);font-size:27px;margin-top:8px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 7px 20px #173d2510}.toolbar{padding:14px;display:flex;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap}.toolbar input,.toolbar select{padding:10px 11px;border:1px solid #ccd8ce;border-radius:9px}
+.tablewrap{overflow:auto}table{width:100%;min-width:1080px;border-collapse:collapse}th,td{padding:12px 13px;border-bottom:1px solid #edf1ed;text-align:left;font-size:13px}th{background:#f8faf8;color:#536158;font-size:11px;text-transform:uppercase}tr:hover td{background:#fbfcfb}.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-weight:700;font-size:11px;background:#edf4ee;color:var(--g2)}.won{background:#e2f5e6;color:#1b6c31}.lost{background:#fde8e8;color:#993434}.follow-up{background:#fff1cc;color:#805c00}.quote-sent{background:#e8f1ff;color:#315d99}
+.empty{padding:42px;text-align:center;color:var(--muted)}.empty b{display:block;color:var(--g);font-size:18px;margin-bottom:7px}
+.modalback{display:none;position:fixed;inset:0;background:#07170eaa;z-index:50;align-items:center;justify-content:center;padding:16px}.modalback.show{display:flex}.modal{background:white;width:min(800px,100%);max-height:92vh;overflow:auto;border-radius:17px;padding:22px}.modal h2{margin-top:0;color:var(--g)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:#536158;font-weight:700;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #ccd8ce;border-radius:9px}.full{grid-column:1/-1}.modalactions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}.right{display:flex;gap:9px}
+.toast{display:none;position:fixed;right:18px;bottom:18px;background:#173d25;color:white;padding:12px 16px;border-radius:10px;z-index:80}.toast.show{display:block}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:740px){.app{grid-template-columns:1fr}aside{position:relative;height:auto;padding:12px}.brand{padding-bottom:10px}.brand img{width:50px;height:50px}nav{display:flex;overflow:auto;margin-top:10px}nav button{white-space:nowrap}main{padding:14px}header{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<div class="brand"><img src="data:image/jpeg;base64,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" alt="KS Garden Services"><div><b>KS Garden Services</b><small>Quote CRM</small></div></div>
+<nav id="nav">
+<button class="active" data-filter="">▦ Dashboard</button><button data-filter="New Enquiry">✉ New Enquiries</button><button data-filter="Quote Sent">£ Quote Sent</button><button data-filter="Won">✓ Won</button><button data-filter="Lost">× Lost</button><button data-filter="due">⏰ Follow-ups</button>
+</nav>
+</aside>
+<main>
+<header><div><h1>Quote Dashboard</h1><p>Every enquiry, quote and follow-up in one place.</p></div><div class="actions"><button class="btn" id="notify">🔔 Enable browser alerts</button><button class="btn primary" id="add">+ New Enquiry</button></div></header>
+<section class="cards">
+<div class="kpi"><span>New enquiries</span><strong id="kNew">0</strong></div><div class="kpi"><span>Open quotes</span><strong id="kOpen">0</strong></div><div class="kpi"><span>Won</span><strong id="kWon">0</strong></div><div class="kpi"><span>Conversion</span><strong id="kConv">0%</strong></div><div class="kpi"><span>Won value</span><strong id="kVal">£0</strong></div>
+</section>
+<section class="panel">
+<div class="toolbar"><input id="search" placeholder="Search customer, postcode or service"><select id="status"><option value="">All statuses</option><option>New Enquiry</option><option>Contacted</option><option>Site Visit / Photos Needed</option><option>Quote Sent</option><option>Follow-up</option><option>Won</option><option>Lost</option><option>On Hold</option></select></div>
+<div class="tablewrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Service</th><th>Postcode</th><th>Guide</th><th>Quote</th><th>Status</th><th>Follow-up</th><th>Source</th><th></th></tr></thead><tbody id="rows"></tbody></table><div id="empty" class="empty"><b>Loading your CRM…</b></div></div>
+</section>
+</main></div>
+
+<div id="modal" class="modalback"><div class="modal"><h2 id="mtitle">Enquiry</h2><div class="grid">
+<div class="field"><label>Customer *</label><input id="name"></div><div class="field"><label>Phone</label><input id="phone"></div><div class="field"><label>Email</label><input id="email" type="email"></div><div class="field"><label>Postcode</label><input id="postcode"></div><div class="field"><label>Address</label><input id="address"></div><div class="field"><label>Service</label><input id="service"></div>
+<div class="field"><label>Guide price</label><input id="guide" type="number"></div><div class="field"><label>Actual quote</label><input id="actual" type="number"></div><div class="field"><label>Status</label><select id="leadStatus"><option>New Enquiry</option><option>Contacted</option><option>Site Visit / Photos Needed</option><option>Quote Sent</option><option>Follow-up</option><option>Won</option><option>Lost</option><option>On Hold</option></select></div><div class="field"><label>Follow-up date</label><input id="follow" type="date"></div>
+<div class="field"><label>Source</label><select id="source"><option>Website</option><option>Facebook</option><option>Recommendation</option><option>Existing Customer</option><option>Leaflet</option><option>Google</option><option>Other</option></select></div><div class="field"><label>Lost reason</label><select id="lostReason"><option value="">—</option><option>Price</option><option>No response</option><option>Timing</option><option>Went elsewhere</option><option>Outside budget</option><option>Outside service area</option><option>Job changed/cancelled</option><option>Other</option></select></div>
+<div class="field full"><label>Notes</label><textarea id="notes" rows="4"></textarea></div></div>
+<div class="modalactions"><button class="btn danger" id="del">Delete</button><div class="right"><button class="btn primary" id="confirmBookingBtn" type="button">✓ Confirm booking</button><button class="btn" id="cancel">Cancel</button><button class="btn primary" id="save">Save</button></div></div>
+</div></div>
+<div id="bookingModal" class="modalback" style="z-index:75" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+<h2 id="bookingTitle">Confirm garden booking</h2><p id="bookingCustomer" style="color:#58705f;margin:0 0 18px"></p>
+<p style="background:#eef5ef;padding:12px;border-radius:9px;font-size:14px">This action creates an appointment in your KS Google Calendar, marks the CRM enquiry as Won and records the booking. Tick the invite option only if you'd like Google to email the customer.</p>
+<div class="grid">
+<div class="field"><label>First confirmed date<input id="bookDate" type="date" required></label></div>
+<div class="field"><label>Frequency<select id="bookFrequency"><option value="once">One-off visit</option><option value="1">Weekly maintenance</option><option value="2">Every 2 weeks</option><option value="3">Every 3 weeks</option><option value="4">Every 4 weeks</option><option value="monthly">Monthly</option></select></label></div>
+<div class="field"><label>Start of visit window<input id="bookStart" type="time" value="08:00"></label></div>
+<div class="field"><label>End of visit window<input id="bookEnd" type="time" value="12:00"></label></div>
+<div class="field" id="bookCountField"><label>Number of planned visits<input id="bookCount" type="number" min="2" max="52" step="1" value="8"></label></div>
+<div class="field full"><label style="display:flex;align-items:center;gap:9px"><input id="bookInvite" type="checkbox" style="width:auto"> Email a Google Calendar invitation to this customer</label><small id="bookInviteHint">Leave unticked to add the job to your calendar only.</small></div>
+</div>
+<div class="modalactions"><button class="btn" id="bookCancel" type="button">Back</button><button class="btn primary" id="bookConfirm" type="button">Confirm & add to Google Calendar</button></div>
+<p id="bookStatus" role="status" style="color:#245c38;font-weight:700;font-size:14px"></p>
+</div></div><div id="toast" class="toast"></div>
+
+<script>
+let DATA=[], EDIT=null, NAV='', notified=false; const $=x=>document.getElementById(x);
+function gbp(v){return v!==''&&v!=null&&!isNaN(Number(v))?new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(Number(v)):'—'}
+function d(v){if(!v)return '—';const x=new Date(v);return isNaN(x)?'—':x.toLocaleDateString('en-GB')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function due(x){if(!x.follow||['Won','Lost'].includes(x.status))return false;const a=new Date(x.follow+'T23:59:59'),b=new Date();return a<=b}
+function load(){google.script.run.withSuccessHandler(x=>{DATA=x||[];render();browserDue()}).withFailureHandler(err=>toast(err.message||err)).getLeads()}
+function render(){
+ const q=$('search').value.toLowerCase().trim(),sf=$('status').value;
+ const rows=DATA.filter(x=>{if(NAV==='due'&&!due(x))return false;if(NAV&&NAV!=='due'&&x.status!==NAV)return false;if(sf&&x.status!==sf)return false;return !q||[x.name,x.phone,x.email,x.postcode,x.service].join(' ').toLowerCase().includes(q)});
+ $('rows').innerHTML=rows.map(x=>`<tr><td>${d(x.date)}</td><td><b>${esc(x.name)}</b><br><small>${esc(x.phone)}</small></td><td>${esc(x.service||'—')}</td><td>${esc(x.postcode||'—')}</td><td>${gbp(x.guide)}</td><td>${gbp(x.actual)}</td><td><span class="badge ${x.status.toLowerCase().replaceAll(' ','-')}">${esc(x.status)}</span></td><td>${due(x)?'⚠️ ':''}${d(x.follow)}</td><td>${esc(x.source||'—')}</td><td><button class="btn" onclick="openLead('${x.id}')">Open</button></td></tr>`).join('');
+ $('empty').style.display=rows.length?'none':'block';$('empty').innerHTML='<b>No matching enquiries</b>Nothing needs showing in this view.';
+ const won=DATA.filter(x=>x.status==='Won'),lost=DATA.filter(x=>x.status==='Lost');$('kNew').textContent=DATA.filter(x=>x.status==='New Enquiry').length;$('kOpen').textContent=DATA.filter(x=>['Quote Sent','Follow-up'].includes(x.status)).length;$('kWon').textContent=won.length;$('kConv').textContent=(won.length+lost.length?Math.round(won.length/(won.length+lost.length)*100):0)+'%';$('kVal').textContent=gbp(won.reduce((a,x)=>a+Number(x.actual||0),0)).replace('—','£0')
+}
+function browserDue(){if(notified||Notification.permission!=='granted')return;const n=DATA.filter(due).length;if(n)new Notification('KS Garden Services CRM',{body:`${n} follow-up${n===1?'':'s'} due or overdue.`});notified=true}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2500)}
+function openLead(id){const x=DATA.find(a=>a.id===id)||{};EDIT=id||null;$('mtitle').textContent=id?'Edit enquiry':'New enquiry';['name','phone','email','postcode','address','service','guide','actual','follow','source','lostReason','notes'].forEach(k=>$(k).value=x[k]||'');$('leadStatus').value=x.status||'New Enquiry';$('source').value=x.source||'Website';$('del').style.visibility=id?'visible':'hidden';$('confirmBookingBtn').style.display=id?'inline-flex':'none';$('modal').classList.add('show')}
+window.openLead=openLead;
+
+let BOOKING_REFERENCE=null;
+function ksOpenConfirmBooking(){
+ if(!EDIT){toast('Save the customer record first, then confirm the booking.');return;}
+ const lead=DATA.find(x=>x.id===EDIT);
+ if(!lead){toast('Refresh the CRM and open the customer again.');return;}
+ if(!lead.name){toast('Customer name required.');return;}
+ BOOKING_REFERENCE=(typeof crypto!=='undefined'&&crypto.randomUUID)?crypto.randomUUID().replaceAll('-',''):Date.now().toString(36)+Math.random().toString(36).slice(2);
+ $('bookingCustomer').textContent=lead.name+' · '+(lead.service||'Garden maintenance');
+ $('bookStatus').textContent='';
+ $('bookDate').value='';
+ $('bookStart').value='08:00';
+ $('bookEnd').value='12:00';
+ $('bookFrequency').value='once';
+ $('bookCount').value=8;
+ $('bookInvite').checked=false;
+ $('bookInvite').disabled=!lead.email;
+ $('bookInviteHint').textContent=lead.email?'Customer email saved: '+lead.email:'No customer email saved — calendar invitation cannot be emailed.';
+ ksBookingCountToggle();
+ $('bookingModal').classList.add('show');
+ $('bookingModal').setAttribute('aria-hidden','false');
+}
+function ksBookingCountToggle(){$('bookCountField').style.display=$('bookFrequency').value==='once'?'none':'';}
+$('confirmBookingBtn').onclick=ksOpenConfirmBooking;
+$('bookFrequency').onchange=ksBookingCountToggle;
+$('bookCancel').onclick=()=>{$('bookingModal').classList.remove('show');$('bookingModal').setAttribute('aria-hidden','true');};
+$('bookConfirm').onclick=()=>{
+ const btn=$('bookConfirm'),lead=DATA.find(x=>x.id===EDIT);
+ if(!lead||!BOOKING_REFERENCE){$('bookStatus').textContent='Please reopen the customer booking.';return;}
+ const payload={bookingId:BOOKING_REFERENCE,leadId:lead.id,date:$('bookDate').value,
+   start:$('bookStart').value,end:$('bookEnd').value,frequency:$('bookFrequency').value,
+   count:Number($('bookCount').value),inviteCustomer:$('bookInvite').checked};
+ if(!payload.date){$('bookStatus').textContent='Choose the confirmed appointment date.';return;}
+ if(!payload.start||!payload.end||payload.start>=payload.end){$('bookStatus').textContent='Enter valid start and end times.';return;}
+ if(payload.frequency!=='once'&&(!Number.isInteger(payload.count)||payload.count<2||payload.count>52)){
+   $('bookStatus').textContent='Enter 2–52 planned visits.';return;
+ }
+ if(!confirm('Confirm this appointment in your KS Google Calendar'+(payload.inviteCustomer?' and send a calendar invitation to '+lead.email:'')+'?'))return;
+ btn.disabled=true;$('bookStatus').textContent='Confirming in Google Calendar and CRM…';
+ google.script.run.withSuccessHandler(result=>{
+   btn.disabled=false;
+   $('bookStatus').textContent=result.alreadyConfirmed?'This booking was already created.':'Booking confirmed in Google Calendar.';
+   if(result.ok){
+     $('bookingModal').classList.remove('show');$('bookingModal').setAttribute('aria-hidden','true');
+     $('modal').classList.remove('show');
+     toast(result.crmStatusUpdated?'Booking confirmed and CRM updated':'Calendar saved — check CRM status');
+     load();
+   }
+ }).withFailureHandler(error=>{
+   btn.disabled=false;
+   $('bookStatus').textContent=error.message||String(error);
+ }).confirmGardenBooking(payload);
+};
+
+$('add').onclick=()=>openLead(null);$('cancel').onclick=()=>$('modal').classList.remove('show');$('search').oninput=render;$('status').onchange=render;
+$('save').onclick=()=>{const obj={id:EDIT,name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim(),postcode:$('postcode').value.trim(),address:$('address').value.trim(),service:$('service').value.trim(),guide:$('guide').value,actual:$('actual').value,status:$('leadStatus').value,follow:$('follow').value,source:$('source').value,lostReason:$('lostReason').value,notes:$('notes').value.trim()};if(!obj.name){alert('Please enter the customer name.');return}google.script.run.withSuccessHandler(()=>{$('modal').classList.remove('show');toast('Saved');load()}).withFailureHandler(e=>toast(e.message||e)).saveLead(obj)};
+$('del').onclick=()=>{if(!EDIT||!confirm('Delete this enquiry?'))return;google.script.run.withSuccessHandler(()=>{$('modal').classList.remove('show');toast('Deleted');load()}).deleteLead(EDIT)};
+$('notify').onclick=async()=>{if(!('Notification'in window))return alert('Browser notifications are not available here.');const p=await Notification.requestPermission();toast(p==='granted'?'Browser alerts enabled':'Browser alerts not enabled');browserDue()};
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');NAV=b.dataset.filter;render()});
+load();
+</script></body></html>
