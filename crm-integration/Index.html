@@ -43,7 +43,27 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 <div class="field"><label>Customer *</label><input id="name"></div><div class="field"><label>Phone</label><input id="phone"></div><div class="field"><label>Email</label><input id="email" type="email"></div><div class="field"><label>Postcode</label><input id="postcode"></div><div class="field"><label>Address</label><input id="address"></div><div class="field"><label>Service</label><input id="service"></div>
 <div class="field"><label>Guide price</label><input id="guide" type="number"></div><div class="field"><label>Actual quote</label><input id="actual" type="number"></div><div class="field"><label>Status</label><select id="leadStatus"><option>New Enquiry</option><option>Contacted</option><option>Site Visit / Photos Needed</option><option>Quote Sent</option><option>Follow-up</option><option>Won</option><option>Lost</option><option>On Hold</option></select></div><div class="field"><label>Follow-up date</label><input id="follow" type="date"></div>
 <div class="field"><label>Source</label><select id="source"><option>Website</option><option>Facebook</option><option>Recommendation</option><option>Existing Customer</option><option>Leaflet</option><option>Google</option><option>Other</option></select></div><div class="field"><label>Lost reason</label><select id="lostReason"><option value="">—</option><option>Price</option><option>No response</option><option>Timing</option><option>Went elsewhere</option><option>Outside budget</option><option>Outside service area</option><option>Job changed/cancelled</option><option>Other</option></select></div>
-<div class="field full"><label>Notes</label><textarea id="notes" rows="4"></textarea></div></div>
+<div class="field full"><label>Notes</label><textarea id="notes" rows="4"></textarea></div>
+<div class="field full" style="border-top:1px solid #dae7dc;padding-top:16px;margin-top:4px">
+  <h3 style="font-size:18px;margin:0 0 8px">Customer communication</h3>
+  <p style="font-size:13px;color:#536158;margin:0 0 12px">Minimal is the default. Your own calendar reminders and morning diary stay on regardless of these choices.</p>
+</div>
+<div class="field"><label>Communication preference<select id="prefLevel">
+<option value="minimal" selected>Minimal — important updates only</option>
+<option value="standard">Standard — booking and arrival updates</option>
+<option value="full">Full — requested service updates</option>
+</select></label></div>
+<div class="field"><label>Preferred way to contact<select id="prefContact">
+<option value="phone">Telephone / landline</option><option value="sms">Text message</option>
+<option value="email">Email</option><option value="letter">Written appointment card</option>
+<option value="inperson">In person</option></select></label></div>
+<div class="field full"><label style="display:flex;align-items:center;gap:9px">
+<input type="checkbox" id="prefTracking" style="width:auto"> Customer wants an optional on-the-day arrival countdown
+</label><small style="color:#536158">Tracking is a separate choice, even with Minimal selected. The link feature is still under development; nothing is sent automatically.</small></div>
+<div class="field full"><label style="display:flex;align-items:center;gap:9px">
+<input type="checkbox" id="prefReports" style="width:auto"> Customer expressly requests post-visit reports
+</label><small style="color:#536158">Off by default. No report is automatically generated or sent.</small></div>
+</div>
 <div class="modalactions"><button class="btn danger" id="del">Delete</button><div class="right"><button class="btn" id="quoteVisitBtn" type="button">▦ Book quote visit</button><button class="btn primary" id="confirmBookingBtn" type="button">✓ Confirm agreed job</button><button class="btn" id="cancel">Cancel</button><button class="btn primary" id="save">Save</button></div></div>
 </div></div>
 <div id="bookingModal" class="modalback" style="z-index:75" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
@@ -82,7 +102,38 @@ function render(){
 }
 function browserDue(){if(notified||Notification.permission!=='granted')return;const n=DATA.filter(due).length;if(n)new Notification('KS Garden Services CRM',{body:`${n} follow-up${n===1?'':'s'} due or overdue.`});notified=true}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2500)}
-function openLead(id){const x=DATA.find(a=>a.id===id)||{};EDIT=id||null;$('mtitle').textContent=id?'Edit enquiry':'New enquiry';['name','phone','email','postcode','address','service','guide','actual','follow','source','lostReason','notes'].forEach(k=>$(k).value=x[k]||'');$('leadStatus').value=x.status||'New Enquiry';$('source').value=x.source||'Website';$('del').style.visibility=id?'visible':'hidden';$('confirmBookingBtn').style.display=id?'inline-flex':'none';$('quoteVisitBtn').style.display=id?'inline-flex':'none';$('modal').classList.add('show')}
+function ksApplyCustomerPreferences(pref){
+  $('prefLevel').value=pref?.communicationLevel||'minimal';
+  $('prefContact').value=pref?.preferredContact||'phone';
+  $('prefTracking').checked=pref?.daytimeTracking===true;
+  $('prefReports').checked=pref?.postVisitReports===true;
+}
+function ksCurrentCustomerPreferences(){
+  return {communicationLevel:$('prefLevel').value,preferredContact:$('prefContact').value,
+    daytimeTracking:$('prefTracking').checked,postVisitReports:$('prefReports').checked};
+}
+function openLead(id){
+  const x=DATA.find(a=>a.id===id)||{};EDIT=id||null;
+  $('mtitle').textContent=id?'Edit enquiry':'New enquiry';
+  ['name','phone','email','postcode','address','service','guide','actual','follow','source','lostReason','notes']
+    .forEach(k=>$(k).value=x[k]||'');
+  $('leadStatus').value=x.status||'New Enquiry';
+  $('source').value=x.source||'Website';
+  $('del').style.visibility=id?'visible':'hidden';
+  $('confirmBookingBtn').style.display=id?'inline-flex':'none';
+  $('quoteVisitBtn').style.display=id?'inline-flex':'none';
+  ksApplyCustomerPreferences(null);
+  $('save').disabled=!!id;
+  $('modal').classList.add('show');
+  if(id)google.script.run.withSuccessHandler(prefs=>{
+    if(EDIT!==id)return;
+    ksApplyCustomerPreferences(prefs);$('save').disabled=false;
+  }).withFailureHandler(e=>{
+    if(EDIT!==id)return;
+    $('save').disabled=false;
+    toast('Customer preferences unavailable: '+(e.message||e));
+  }).getKsCustomerPreferences(id);
+}
 window.openLead=openLead;
 
 let BOOKING_REFERENCE=null, BOOKING_KIND="job";
@@ -106,7 +157,7 @@ function ksOpenConfirmBooking(kind="job"){
  $('bookFrequency').value='once';
  $('bookFrequency').disabled=BOOKING_KIND==="quote";
  $('bookCount').value=8;
- $('bookContact').value='phone';
+ $('bookContact').value=$('prefContact').value||'phone';
  $('bookContact').querySelector('option[value="email"]').disabled=!lead.email;
  $('bookInvite').checked=false;
  $('bookInvite').disabled=true;
@@ -154,7 +205,20 @@ $('bookConfirm').onclick=()=>{
 };
 
 $('add').onclick=()=>openLead(null);$('cancel').onclick=()=>$('modal').classList.remove('show');$('search').oninput=render;$('status').onchange=render;
-$('save').onclick=()=>{const obj={id:EDIT,name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim(),postcode:$('postcode').value.trim(),address:$('address').value.trim(),service:$('service').value.trim(),guide:$('guide').value,actual:$('actual').value,status:$('leadStatus').value,follow:$('follow').value,source:$('source').value,lostReason:$('lostReason').value,notes:$('notes').value.trim()};if(!obj.name){alert('Please enter the customer name.');return}google.script.run.withSuccessHandler(()=>{$('modal').classList.remove('show');toast('Saved');load()}).withFailureHandler(e=>toast(e.message||e)).saveLead(obj)};
+$('save').onclick=()=>{
+  const obj={id:EDIT,name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim(),
+    postcode:$('postcode').value.trim(),address:$('address').value.trim(),service:$('service').value.trim(),
+    guide:$('guide').value,actual:$('actual').value,status:$('leadStatus').value,follow:$('follow').value,
+    source:$('source').value,lostReason:$('lostReason').value,notes:$('notes').value.trim()};
+  if(!obj.name){alert('Please enter the customer name.');return;}
+  const button=$('save');
+  button.disabled=true;
+  google.script.run.withSuccessHandler(()=>{
+    button.disabled=false;$('modal').classList.remove('show');toast('Customer and communication preferences saved');load();
+  }).withFailureHandler(e=>{
+    button.disabled=false;toast('Could not save preferences: '+(e.message||e));
+  }).saveKsLeadWithPreferences(obj,ksCurrentCustomerPreferences());
+};
 $('del').onclick=()=>{if(!EDIT||!confirm('Delete this enquiry?'))return;google.script.run.withSuccessHandler(()=>{$('modal').classList.remove('show');toast('Deleted');load()}).deleteLead(EDIT)};
 $('notify').onclick=async()=>{if(!('Notification'in window))return alert('Browser notifications are not available here.');const p=await Notification.requestPermission();toast(p==='granted'?'Browser alerts enabled':'Browser alerts not enabled');browserDue()};
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');NAV=b.dataset.filter;render()});
