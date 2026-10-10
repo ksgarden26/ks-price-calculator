@@ -7,7 +7,7 @@ function showReviews(reviews){
  list.replaceChildren();
  if(!reviews.length){list.append(node("p","review-message","No website reviews have been submitted yet. Be the first to share your experience."));summary.textContent="";return;}
  const average=reviews.reduce((sum,r)=>sum+Number(r.rating),0)/reviews.length;
- summary.replaceChildren(node("strong","",average.toFixed(1)+" / 5"),node("span","stars","★★★★★"),node("p","small",reviews.length+" customer review"+(reviews.length===1?"":"s")));
+ summary.replaceChildren(node("strong","",average.toFixed(1)+" / 5"),node("span","stars","★".repeat(Math.round(average))+"☆".repeat(5-Math.round(average))),node("p","small",reviews.length+" customer review"+(reviews.length===1?"":"s")));
  for(const r of reviews){
   const card=node("article","review-card"),head=node("div","review-card-head"),who=node("div");
   who.append(node("div","review-name",r.name),node("div","review-date",niceDate(r.created_at)));
@@ -19,8 +19,17 @@ function showReviews(reviews){
  }
 }
 async function load(){
- try{const r=await fetch("/api/reviews",{cache:"no-store"});if(!r.ok)throw Error("Reviews temporarily unavailable");showReviews((await r.json()).reviews||[]);}
- catch{list.replaceChildren(node("p","review-message","Reviews are temporarily unavailable. Please try again later."));}
+ try{
+  const r=await fetch("/api/reviews",{cache:"no-store"});
+  if(!r.ok)throw Error("Reviews temporarily unavailable");
+  showReviews((await r.json()).reviews||[]);
+  form.hidden=false;
+ }catch{
+  list.replaceChildren(node("p","review-message","Online website reviews are being connected. Please check again soon."));
+  form.hidden=true;
+  const hint=document.getElementById("reviewOfflineMessage");
+  if(hint)hint.hidden=false;
+ }
 }
 form.addEventListener("submit",async e=>{
  e.preventDefault();notice.classList.remove("error");notice.textContent="";
@@ -38,7 +47,7 @@ form.addEventListener("submit",async e=>{
   const r=await fetch("/api/reviews",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(data)});
   const result=await r.json().catch(()=>({}));
   if(!r.ok)throw Error(result.error||"Review submission is temporarily unavailable.");
-  notice.textContent="Thank you — your review has been posted. I appreciate you taking the time to leave feedback!";
+  notice.textContent="Thank you — your review has been published. I appreciate you taking the time to leave feedback!";
   form.reset();await load();
  }catch(err){notice.classList.add("error");notice.textContent=err.message||"Unable to submit review right now.";}
  finally{button.disabled=false;button.textContent="Submit my review";}
