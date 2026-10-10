@@ -1,0 +1,24 @@
+name = "ks-reviews-api"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+# Replace this ID with the ID printed by: npx wrangler d1 create ks-reviews
+[[d1_databases]]
+binding = "DB"
+database_name = "ks-reviews"
+database_id = "REPLACE_WITH_REAL_D1_DATABASE_ID"
+
+# Set these after verifying the exact live admin-page URL.
+[vars]
+NOTIFY_TO_EMAIL = "info@ksgardenservices.co.uk"
+REVIEW_FROM_EMAIL = "KS Garden Services <reviews@ksgardenservices.co.uk>"
+REVIEW_ADMIN_URL = "https://ksgardenservices.co.uk/review-admin.html"
+
+# Add these routes only after confirming this domain is on your Cloudflare account.
+# [[routes]]
+# pattern = "ksgardenservices.co.uk/api/reviews*"
+# zone_name = "ksgardenservices.co.uk"
+# [[routes]]
+# pattern = "www.ksgardenservices.co.uk/api/reviews*"
+# zone_name = "ksgardenservices.co.uk"
