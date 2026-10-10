@@ -28,6 +28,9 @@ function ksSendDailyBookingBriefTrigger_() {
     .filter(r=>String(r[11])==="Confirmed");
   const byEvent={};
   for(const row of bookings)if(row[10])byEvent[String(row[10])]=row;
+  // Preferences do not affect internal diary or calendar alerts.
+  // Minimal customers should not receive routine day-before calls.
+  const preferences=ksPrefsByLead_();
   const leads=getLeads(), byLead={};
   for(const lead of leads)byLead[String(lead.id)]=lead;
   const clean=v=>String(v==null?"":v).replace(/[\r\n]+/g," ").trim();
@@ -47,7 +50,9 @@ function ksSendDailyBookingBriefTrigger_() {
   for(const event of tomorrowEvents){
     const row=byEvent[String(event.getId())];
     if(!row)continue;
-    const contact=String(row[15]||"phone");
+    const pref=preferences[String(row[1])]||ksDefaultPreferences_(String(row[1]));
+    if(pref.communicationLevel==="minimal")continue; // No routine customer contact.
+    const contact=String(row[15]||pref.preferredContact||"phone");
     if(contact==="email")continue;
     const action=contact==="sms"?"TEXT":contact==="letter"?"PREPARE CARD":
       contact==="inperson"?"CONFIRM IN PERSON":"PHONE";
