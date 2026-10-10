@@ -5,9 +5,9 @@ const $=name=>form.elements.namedItem(name);
 const el=id=>document.getElementById(id);
 const status=(message,error=false)=>{const e=el("appointmentStatus");e.textContent=message;e.style.color=error?"#a03232":"#23663d";};
 const pad=n=>String(n).padStart(2,"0");
-const isISODate=s=>/^\\d{4}-\\d{2}-\\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s+"T12:00:00Z"));
+const isISODate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s+"T12:00:00Z"));
 const dateTime=(date,time)=>date.replace(/-/g,"")+"T"+time.replace(":","")+"00";
-const esc=s=>String(s||"").replace(/\\/g,"\\\\").replace(/\\r?\\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;");
+const esc=s=>String(s||"").replace(/\\/g,"\\\\").replace(/\r?\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;");
 const fold=line=>{let parts=[],current="",bytes=0;for(const c of line){const n=new TextEncoder().encode(c).length;if(bytes+n>73){parts.push(current);current=" ";bytes=1;}current+=c;bytes+=n;}parts.push(current);return parts.join("\r\n");};
 const timezone=[
 "BEGIN:VTIMEZONE","TZID:Europe/London","X-LIC-LOCATION:Europe/London",
@@ -23,7 +23,7 @@ const date=$("date").value;
 if(!isISODate(date))throw Error("Enter a valid visit date.");
 let windowName=$("window").value;
 let [start,end,description]=windowTimes[windowName]||[$("start").value,$("end").value,"agreed time"];
-if(!/^\\d{2}:\\d{2}$/.test(start)||!/^\\d{2}:\\d{2}$/.test(end)||start>=end)throw Error("The finishing time must be after the start time.");
+if(!/^\d{2}:\d{2}$/.test(start)||!/^\\d{2}:\\d{2}$/.test(end)||start>=end)throw Error("The finishing time must be after the start time.");
 let frequency=$("frequency").value;
 let count=frequency==="once"?1:Number($("count").value);
 if(!Number.isInteger(count)||count<1||count>52||(frequency!=="once"&&count<2))throw Error("Choose between 2 and 52 regular visits.");
@@ -34,8 +34,8 @@ const key=JSON.stringify(a);if(key!==lastKey){lastKey=key;lastUid=crypto.randomU
 return lastUid+"@ksgardenservices.co.uk";
 }
 function content(a){
-const dtstamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\\.\\d{3}Z$/,"Z");
-const description=a.service+".\\nVisit window: "+a.description+".\\nThis is a planned appointment. Weather or changes may require a separate confirmation or revised date.\\nContact: info@ksgardenservices.co.uk | 07715 559 170\\nhttps://ksgardenservices.co.uk";
+const dtstamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}Z$/,"Z");
+const description=a.service+".\nVisit window: "+a.description+".\nThis is a planned appointment. Weather or changes may require a separate confirmation or revised date.\nContact: info@ksgardenservices.co.uk | 07715 559 170\nhttps://ksgardenservices.co.uk";
 const lines=[
 "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//KS Garden Services//Appointment Calendar//EN","CALSCALE:GREGORIAN",
 ...timezone,"BEGIN:VEVENT","UID:"+uid(a),"DTSTAMP:"+dtstamp,
