@@ -34,7 +34,7 @@ async function userSession(request, env) {
 }
 async function makeCookie(env) {
   const payload=encode64(JSON.stringify({role:"owner",exp:Date.now()+12*60*60*1000}));
-  return COOKIE+"="+payload+"."+await signature(env.SESSION_SECRET,payload)+"; Path=/api/reviews; Max-Age=43200; HttpOnly; Secure; SameSite=Strict";
+  return COOKIE+"="+payload+"."+await signature(env.SESSION_SECRET,payload)+"; Path=/api; Max-Age=43200; HttpOnly; Secure; SameSite=Strict";
 }
 function originAllowed(request) {
   const origin=request.headers.get("origin");
@@ -130,7 +130,7 @@ async function handle(request,env) {
     }
     if(method==="POST" && path==="/api/reviews/admin/logout") {
       if(!originAllowed(request)) return response({error:"Invalid request origin."},403);
-      return response({success:true},200,{"set-cookie":COOKIE+"=; Path=/api/reviews; Max-Age=0; HttpOnly; Secure; SameSite=Strict"});
+      return response({success:true},200,{"set-cookie":COOKIE+"=; Path=/api; Max-Age=0; HttpOnly; Secure; SameSite=Strict"});
     }
     const match=path.match(/^\/api\/reviews\/admin\/([0-9a-f-]{36})\/reply$/);
     if(method==="PUT" && match) {
@@ -152,6 +152,117 @@ async function handle(request,env) {
         }catch(e){console.error("Customer response email failed",e);}
       }
       return response({success:true,email_requested:data.email_customer===true,email_sent:emailSent});
+    }
+  }
+
+  // Unified KS Garden Services dashboard: the same owner cookie authorises all sections.
+  if(method==="GET" && path==="/api/reviews/legacy-replies") {
+    const found=await env.DB.prepare("SELECT review_id,owner_reply,replied_at FROM legacy_review_replies").all();
+    return response({replies:found.results||[]});
+  }
+  if(method==="GET" && path==="/api/news") {
+    const found=await env.DB.prepare("SELECT id,title,category,body,image_url,source_url,published,created_at,updated_at FROM news_posts ORDER BY updated_at DESC LIMIT 100").all();
+    // Include unpublished article IDs, so the public page can suppress retired seed articles.
+    return response({articles:(found.results||[]).map(a=>a.published?{...a}:{id:a.id,published:0})});
+  }
+  if(method==="GET" && path==="/api/gallery") {
+    const found=await env.DB.prepare("SELECT id,job,category,caption,created_at FROM gallery_photos ORDER BY created_at DESC LIMIT 120").all();
+    return response({photos:(found.results||[]).map(p=>({...p,src:"/api/media/"+p.id+".jpg"}))});
+  }
+  const imageMatch=path.match(/^\/api\/media\/([a-f0-9-]{36})\.jpg$/);
+  if(method==="GET" && imageMatch) {
+    if(!env.PHOTO_BUCKET)return response({error:"Gallery storage not configured."},503);
+    const stored=await env.PHOTO_BUCKET.get(imageMatch[1]+".jpg");
+    if(!stored)return response({error:"Image not found."},404);
+    return new Response(stored.body,{headers:{"content-type":"image/jpeg","cache-control":"public, max-age=86400","x-content-type-options":"nosniff"}});
+  }
+  if(path==="/api/admin/login" && method==="POST") {
+    // Re-use the protected password sign-in already implemented above.
+    const rewritten=new URL(request.url);
+    rewritten.pathname="/api/reviews/admin/login";
+    return handle(new Request(rewritten,request),env);
+  }
+  if(path==="/api/admin/logout" && method==="POST") {
+    const rewritten=new URL(request.url);
+    rewritten.pathname="/api/reviews/admin/logout";
+    return handle(new Request(rewritten,request),env);
+  }
+  if(path.startsWith("/api/admin/") || path==="/api/admin") {
+    if(!(await userSession(request,env)))return response({error:"Please sign in to your admin account."},401);
+    if(method!=="GET"&&!originAllowed(request))return response({error:"Invalid request origin."},403);
+    if(method==="GET" && path==="/api/admin/session")return response({signed_in:true});
+    if(method==="GET" && path==="/api/admin/reviews") {
+      const r=await env.DB.prepare("SELECT id,name,rating,message,email,email_opt_in,owner_reply,replied_at,created_at,notification_sent FROM reviews ORDER BY created_at DESC LIMIT 250").all();
+      const l=await env.DB.prepare("SELECT review_id,owner_reply,replied_at FROM legacy_review_replies").all();
+      return response({reviews:r.results||[],legacy_replies:l.results||[]});
+    }
+    const legacyMatch=path.match(/^\/api\/admin\/legacy-reviews\/([a-z0-9-]{36})\/reply$/);
+    if(method==="PUT" && legacyMatch) {
+      // Only allow IDs assigned to the five historical customer testimonials.
+      const allowed=new Set(["ac000000-0000-4000-8000-000000000001","ac000000-0000-4000-8000-000000000002","ac000000-0000-4000-8000-000000000003","ac000000-0000-4000-8000-000000000004","ac000000-0000-4000-8000-000000000005"]);
+      if(!allowed.has(legacyMatch[1]))return response({error:"Unknown historical review."},404);
+      let data;try{data=await body(request)}catch{return response({error:"Invalid reply."},400)}
+      const reply=clean(data.reply,1500);
+      if(!reply||reply.length>1500)return response({error:"Your reply must be between 1 and 1,500 characters."},400);
+      const now=new Date().toISOString();
+      await env.DB.prepare("INSERT INTO legacy_review_replies (review_id,owner_reply,replied_at) VALUES (?,?,?) ON CONFLICT(review_id) DO UPDATE SET owner_reply=excluded.owner_reply,replied_at=excluded.replied_at").bind(legacyMatch[1],reply,now).run();
+      return response({success:true});
+    }
+    if(method==="GET" && path==="/api/admin/news") {
+      const r=await env.DB.prepare("SELECT * FROM news_posts ORDER BY updated_at DESC LIMIT 150").all();
+      return response({articles:r.results||[]});
+    }
+    if(method==="POST" && path==="/api/admin/news") {
+      let data;try{data=await body(request)}catch{return response({error:"Invalid article."},400)}
+      const id=clean(data.id,80)||crypto.randomUUID(),title=clean(data.title,150);
+      const category=clean(data.category,60)||"Garden advice",bodyText=clean(data.body,10000);
+      const imageUrl=clean(data.image_url,600),sourceUrl=clean(data.source_url,600);
+      if(!/^[a-z0-9-]{3,80}$/.test(id)||title.length<3||title.length>150||bodyText.length<10||bodyText.length>10000)return response({error:"Add a title and at least 10 characters of article text."},400);
+      if(imageUrl&&!(imageUrl.startsWith("/api/media/")||imageUrl.startsWith("../")||imageUrl.startsWith("https://")))return response({error:"Use a valid HTTPS image URL or an uploaded photo."},400);
+      if(sourceUrl&&!sourceUrl.startsWith("https://"))return response({error:"Source links must begin with https://"},400);
+      const pub=data.published===false?0:1,now=new Date().toISOString();
+      await env.DB.prepare("INSERT INTO news_posts (id,title,category,body,image_url,source_url,published,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,category=excluded.category,body=excluded.body,image_url=excluded.image_url,source_url=excluded.source_url,published=excluded.published,updated_at=excluded.updated_at")
+        .bind(id,title,category,bodyText,imageUrl,sourceUrl,pub,now,now).run();
+      return response({success:true,id});
+    }
+    const newsMatch=path.match(/^\/api\/admin\/news\/([a-z0-9-]{3,80})$/);
+    if(method==="DELETE" && newsMatch) {
+      await env.DB.prepare("DELETE FROM news_posts WHERE id=?").bind(newsMatch[1]).run();
+      return response({success:true});
+    }
+    if(method==="GET" && path==="/api/admin/gallery") {
+      const r=await env.DB.prepare("SELECT id,job,category,caption,created_at FROM gallery_photos ORDER BY created_at DESC LIMIT 150").all();
+      return response({photos:(r.results||[]).map(p=>({...p,src:"/api/media/"+p.id+".jpg"}))});
+    }
+    if(method==="POST" && path==="/api/admin/gallery/upload") {
+      if(!env.PHOTO_BUCKET)return response({error:"Cloudflare R2 photo storage isn't connected yet."},503);
+      if(Number(request.headers.get("content-length")||0)>6500000)return response({error:"Photo must be under 6 MB."},413);
+      let parts;try{parts=await request.formData()}catch{return response({error:"Invalid upload."},400)}
+      const file=parts.get("photo"),job=clean(parts.get("job"),100),category=clean(parts.get("category"),60)||"Garden work",caption=clean(parts.get("caption"),350);
+      if(!file||typeof file.arrayBuffer!=="function"||file.size>6000000||file.size<100||file.type!=="image/jpeg")return response({error:"Upload a JPEG photo under 6 MB."},400);
+      if(!job||job.length>100)return response({error:"Please add a job or photo title."},400);
+      const id=crypto.randomUUID(),created=new Date().toISOString(),key=id+".jpg";
+      await env.PHOTO_BUCKET.put(key,await file.arrayBuffer(),{httpMetadata:{contentType:"image/jpeg"}});
+      try{await env.DB.prepare("INSERT INTO gallery_photos (id,job,category,caption,image_key,created_at) VALUES (?,?,?,?,?,?)")
+        .bind(id,job,category,caption,key,created).run();}
+      catch(err){await env.PHOTO_BUCKET.delete(key);throw err}
+      return response({success:true,id,src:"/api/media/"+id+".jpg"},201);
+    }
+    const photoMatch=path.match(/^\/api\/admin\/gallery\/([a-f0-9-]{36})$/);
+    if(photoMatch && method==="PUT") {
+      let data;try{data=await body(request)}catch{return response({error:"Invalid photo details."},400)}
+      const job=clean(data.job,100),category=clean(data.category,60)||"Garden work",caption=clean(data.caption,350);
+      if(!job)return response({error:"A photo title is required."},400);
+      const r=await env.DB.prepare("UPDATE gallery_photos SET job=?,category=?,caption=? WHERE id=?").bind(job,category,caption,photoMatch[1]).run();
+      return response({success:true});
+    }
+    if(photoMatch && method==="DELETE") {
+      if(!env.PHOTO_BUCKET)return response({error:"Photo storage not configured."},503);
+      const photo=await env.DB.prepare("SELECT image_key FROM gallery_photos WHERE id=?").bind(photoMatch[1]).first();
+      if(!photo)return response({error:"Photo not found."},404);
+      await env.DB.prepare("DELETE FROM gallery_photos WHERE id=?").bind(photoMatch[1]).run();
+      await env.PHOTO_BUCKET.delete(photo.image_key);
+      return response({success:true});
     }
   }
   return response({error:"Not found."},404);
