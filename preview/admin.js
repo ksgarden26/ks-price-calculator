@@ -240,7 +240,7 @@ const crmInput=$("ksPrivateCRMUrl"),crmStatus=$("ksCRMStatus");
 function cleanCRMUrl(){
   const value=crmInput.value.trim();let url;
   try{url=new URL(value);}catch{throw Error("Enter a valid private Apps Script web app URL.");}
-  if(url.protocol!=="https:"||url.hostname!=="script.google.com"||!/^\\/macros\\/s\\/[^/]+\\/exec$/.test(url.pathname))
+  if(url.protocol!=="https:"||url.hostname!=="script.google.com"||!url.pathname.startsWith("/macros/s/")||!url.pathname.endsWith("/exec")||url.pathname.split("/").length!==5)
     throw Error("Use your private Google Apps Script web app /exec address, not the public intake URL.");
   return url.toString();
 }
