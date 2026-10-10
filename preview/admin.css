@@ -1,0 +1,37 @@
+:root{--ksdeep:#1f3d2a;--ksgreen:#2d6341;--ksline:#dce6de}
+[hidden]{display:none!important}
+body{background:#f6f8f5}
+.ks-admin-header{background:#fff;border-bottom:1px solid var(--ksline);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(18px,calc((100vw - 1170px)/2));}
+.ks-admin-brand{display:flex;align-items:center;gap:10px;text-decoration:none!important;color:#173825;font-weight:800;font-size:17px}
+.ks-admin-brand img{height:46px;width:46px;object-fit:contain}.ks-admin-brand small{display:block;font-size:11px;letter-spacing:.04em;color:#728178;font-weight:600}
+.ks-public-link{font-size:13px;color:var(--ksgreen);font-weight:700}
+.ks-admin-main{max-width:1160px;margin:auto;padding:clamp(24px,5vw,55px) 18px 70px;min-height:65vh}
+.ks-admin-login{max-width:540px;margin:0 auto}.ks-admin-login h1{font-size:clamp(30px,5vw,43px);margin:10px 0}.ks-admin-login>p{color:#4f6255;line-height:1.65}
+.ks-admin-panel,.ks-admin-card{background:#fff;border:1px solid var(--ksline);border-radius:17px;padding:clamp(17px,3vw,25px);box-shadow:0 5px 22px #294b2e0b}
+.ks-admin-login form{display:grid;gap:12px;margin-top:24px}
+.ks-admin-panel h3{margin:0 0 16px;font-size:21px;color:var(--ksdeep)}
+.ks-admin-panel input:not([type=checkbox]),.ks-admin-panel textarea,.ks-admin-panel select,.ks-admin-card textarea{font:inherit;border:1px solid #b8cbbd;border-radius:9px;padding:11px;width:100%;background:#fff;color:#243d2a}
+.ks-admin-panel label{font-size:14px;font-weight:650;color:#23412d}
+.ks-admin-panel label input,.ks-admin-panel label select,.ks-admin-panel label textarea{margin-top:6px}
+.ks-admin-fields{display:grid;gap:17px}.ks-admin-check{display:flex;align-items:center;gap:10px}.ks-admin-panel .ks-admin-check input{width:18px!important;height:18px!important;margin:0}
+.ks-admin-topline{display:flex;justify-content:space-between;align-items:start;gap:20px;margin-bottom:23px}.ks-admin-topline h1{font-size:clamp(29px,4vw,43px);margin:7px 0}.ks-admin-topline p{margin:0;color:#63736a}
+.ks-admin-tabs{display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--ksline);padding-bottom:12px;margin-bottom:28px}
+.ks-admin-tabs button{border:1px solid #d7e4da;border-radius:30px;background:#fff;color:#284c34;padding:12px 17px;font-size:14px;font-weight:800;cursor:pointer}
+.ks-admin-tabs button[aria-selected=true]{background:var(--ksdeep);color:white;border-color:var(--ksdeep)}
+.ks-admin-section-head{display:flex;gap:18px;align-items:end;justify-content:space-between;margin-bottom:20px}
+.ks-admin-section-head h2{font-size:clamp(23px,3vw,30px);margin:0 0 6px}.ks-admin-section-head p{color:#617268;line-height:1.55;margin:0}
+.ks-admin-section-head a{font-size:13px;font-weight:800;white-space:nowrap}
+.ks-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
+.ks-admin-card h3{margin:4px 0;font-size:19px}.ks-admin-card p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+.ks-admin-card .ks-stars{color:#b38a28;font-size:20px;letter-spacing:1px;margin-bottom:9px}
+.ks-admin-muted,.ks-admin-subnote{color:#6c7c70;font-size:13px;line-height:1.6}
+.ks-admin-card textarea{display:block;margin:14px 0 12px;min-height:105px;resize:vertical}
+.ks-admin-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.ks-admin-actions .btn{padding:11px 14px;font-size:13px}
+.ks-admin-status{font-size:13px;min-height:1.4em;color:#287044;font-weight:650;margin:10px 0}
+.ks-admin-status.error{color:#ab3434}
+.ks-admin-photo{width:100%;height:180px;object-fit:cover;border-radius:11px;margin-bottom:12px;background:#e8eee9}
+.ks-admin-news-preview{border-left:3px solid #c7d8ca;padding-left:12px}
+.ks-admin-footer{background:#1c3525;color:#cad5cb;text-align:center;font-size:12px;padding:26px 15px}
+.ks-admin-footer a{color:#fff}
+@media(max-width:760px){.ks-admin-grid{grid-template-columns:1fr}.ks-admin-topline{align-items:center}.ks-admin-section-head{display:block}.ks-admin-section-head a{display:inline-block;margin-top:10px}.ks-admin-header{padding:12px 14px}.ks-admin-brand{font-size:14px}.ks-public-link{font-size:11px}}
