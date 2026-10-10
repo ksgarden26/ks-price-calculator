@@ -35,3 +35,8 @@ body{background:#f6f8f5}
 .ks-admin-footer{background:#1c3525;color:#cad5cb;text-align:center;font-size:12px;padding:26px 15px}
 .ks-admin-footer a{color:#fff}
 @media(max-width:760px){.ks-admin-grid{grid-template-columns:1fr}.ks-admin-topline{align-items:center}.ks-admin-section-head{display:block}.ks-admin-section-head a{display:inline-block;margin-top:10px}.ks-admin-header{padding:12px 14px}.ks-admin-brand{font-size:14px}.ks-public-link{font-size:11px}}
+
+.ks-admin-card input:not([type=checkbox]){display:block;width:100%;padding:10px;border:1px solid #b8cbbd;border-radius:9px;font:inherit;margin:9px 0;background:#fff}
+.ks-admin-card blockquote{margin:14px 0;border-left:3px solid #3c7051;background:#f1f7f3;padding:10px 13px;border-radius:0 8px 8px 0}
+.ks-admin-card blockquote p{margin:8px 0 0}
+.ks-admin-panel .btn:disabled,.ks-admin-card .btn:disabled{opacity:.55;cursor:wait}
