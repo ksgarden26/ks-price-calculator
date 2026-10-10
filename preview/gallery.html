@@ -20,7 +20,7 @@ const wrap=document.getElementById("photos"),filters=document.getElementById("fi
 document.getElementById("closeZoom").addEventListener("click",()=>dialog.close());
 dialog.addEventListener("click",e=>{if(e.target===dialog)dialog.close();});
 let all=[],active="All";
-function valid(src){return /^gallery-images\/[a-zA-Z0-9._/-]+\.jpg$/.test(src)&&!src.includes("..");}
+function valid(src){return (typeof src==="string"&&(/^gallery-images\/[a-zA-Z0-9._/-]+\.jpg$/.test(src)&&!src.includes("..")||/^\/api\/media\/[a-f0-9-]{36}\.jpg$/.test(src)));}
 function draw(){
  wrap.replaceChildren();const filtered=all.filter(p=>active==="All"||p.category===active);
  empty.hidden=filtered.length>0;
@@ -37,6 +37,13 @@ function buttons(){
   const btn=document.createElement("button");btn.type="button";btn.textContent=category;btn.setAttribute("aria-pressed",String(active===category));btn.onclick=()=>{active=category;buttons();draw();};filters.append(btn);
  });
 }
-fetch("./gallery-data.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("Missing gallery");return r.json();}).then(info=>{all=(info.photos||[]).filter(p=>p&&valid(p.src));buttons();draw();}).catch(()=>{empty.textContent="The gallery is temporarily unavailable. Please try again later.";empty.hidden=false;});
+Promise.all([
+ fetch("./gallery-data.json",{cache:"no-store"}).then(r=>r.ok?r.json():{photos:[]}).catch(()=>({photos:[]})),
+ fetch("/api/gallery",{cache:"no-store"}).then(r=>r.ok?r.json():{photos:[]}).catch(()=>({photos:[]}))
+]).then(([staticData,liveData])=>{
+ const merged=new Map();
+ for(const p of [...(liveData.photos||[]),...(staticData.photos||[])])if(p&&valid(p.src)&&!merged.has(p.id||p.src))merged.set(p.id||p.src,p);
+ all=[...merged.values()];buttons();draw();
+}).catch(()=>{empty.textContent="The gallery is temporarily unavailable. Please try again later.";empty.hidden=false;});
 })();
 </script></body></html>
