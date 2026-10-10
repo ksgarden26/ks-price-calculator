@@ -1,0 +1,106 @@
+<!doctype html><html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#244b36">
+<title>Quotes & Driveway Measuring | KS Garden Services</title>
+<link rel="stylesheet" href="quote-builder.css">
+<script defer src="quote-builder.js"></script></head>
+<body>
+<main class="qb-shell">
+<section id="qbSignIn" class="qb-notice" hidden><h1>Owner sign-in required</h1><p>Quotes contain private customer information. Sign in from the KS Garden Services owner dashboard to open the quoting tool.</p><a href="admin.html#quotes">Open owner login →</a></section>
+<div id="qbApp" hidden>
+  <div class="qb-top"><div><p class="qb-eyebrow">KS GARDEN SERVICES · ON-SITE ADMIN</p><h1>Measure & quote</h1><p>Measure driveways, calculate quantities and prepare quotes while you're at the property.</p></div>
+  <div class="qb-actions"><button id="qbNew" class="qb-secondary" type="button">New quote</button><button id="qbPrint" class="qb-secondary" type="button">Print / Save PDF</button></div></div>
+  <p id="qbStatus" role="status" aria-live="polite" class="qb-status"></p>
+  <nav class="qb-steps" aria-label="Quote sections"><a href="#qbCustomer">1 · Customer</a><a href="#qbMeasuring">2 · Measure</a><a href="#qbPricing">3 · Price</a><a href="#qbPreview">4 · Quote</a></nav>
+  <section class="qb-card" id="qbCustomer">
+    <div class="qb-card-head"><h2>1. Customer & job</h2><span>Private details</span></div>
+    <div class="qb-fields">
+      <label>Customer name *<input id="qCustomer" autocomplete="name" maxlength="100" required placeholder="Customer's name"></label>
+      <label>Quote number<input id="qNumber" maxlength="50" placeholder="KS-Q-…"></label>
+      <label>Customer email (optional)<input id="qEmail" autocomplete="email" type="email" maxlength="150" placeholder="customer@example.com"></label>
+      <label>Phone (optional)<input id="qPhone" autocomplete="tel" maxlength="40" placeholder="Mobile or landline"></label>
+      <label class="qb-wide">Site address (optional)<input id="qAddress" autocomplete="street-address" maxlength="240" placeholder="Street address, town, postcode"></label>
+      <label>Job type<select id="qType"><option value="Driveway cleaning">Driveway cleaning</option><option value="Patio cleaning">Patio cleaning</option><option value="Garden maintenance">Garden maintenance</option><option value="Garden clearance">Garden clearance</option><option value="Hedge cutting">Hedge cutting</option><option value="Other garden work">Other garden work</option></select></label>
+      <label>Surface<select id="qSurface"><option value="Block paving">Block paving</option><option value="Concrete">Concrete</option><option value="Indian sandstone">Indian sandstone</option><option value="Porcelain">Porcelain</option><option value="Natural stone">Other natural stone</option><option value="Tarmac">Tarmac</option><option value="Other">Other</option></select></label>
+    </div>
+  </section>
+  <section class="qb-card" id="qbMeasuring">
+    <div class="qb-card-head"><h2>2. Measure the area</h2><span>Square metres (m²)</span></div>
+    <div class="qb-note"><strong>Best accuracy:</strong> measure lengths and widths on site with a tape or laser distance measurer. Split L-shaped or irregular driveways into rectangles, triangles and trapeziums, then add or subtract each section.</div>
+    <div class="qb-measure-tabs"><button id="qbDimsTab" type="button" aria-pressed="true">Measured dimensions</button><button id="qbPhotoTab" type="button" aria-pressed="false">Trace from photo</button></div>
+    <div id="qbDimsPanel">
+      <div class="qb-fields">
+        <label>Section name<input id="mName" maxlength="70" placeholder="Main driveway"></label>
+        <label>Shape<select id="mShape"><option value="rectangle">Rectangle</option><option value="triangle">Triangle</option><option value="trapezium">Trapezium</option><option value="manual">Known area (m²)</option></select></label>
+        <label id="mLengthLabel">Length / perpendicular height (m)<input id="mLength" type="number" inputmode="decimal" min="0" max="100000" step="any" placeholder="e.g. 8.2"></label>
+        <label id="mWidthLabel">Width / base (m)<input id="mWidth" type="number" inputmode="decimal" min="0" max="100000" step="any" placeholder="e.g. 4.3"></label>
+        <label id="mSecondWidthLabel" hidden>Second parallel width (m)<input id="mSecondWidth" type="number" inputmode="decimal" min="0" max="100000" step="any"></label>
+        <label id="mAreaLabel" hidden>Measured area (m²)<input id="mArea" type="number" inputmode="decimal" min="0" max="1000000" step="any"></label>
+        <label>Include or deduct<select id="mSign"><option value="1">Add to area</option><option value="-1">Deduct (planting bed / obstacle)</option></select></label>
+      </div>
+      <div class="qb-inline"><span id="mInstant">Section: —</span><button class="qb-primary" type="button" id="mAdd">+ Add section</button></div>
+    </div>
+    <div id="qbPhotoPanel" hidden>
+      <p class="qb-note"><strong>Photo estimate only.</strong> For the most useful results, use a near-overhead, straight-on image (for example from a raised position). A photo taken at a steep angle distorts size. Include a measured reference in the <em>same ground plane</em> as the driveway. Do not use this for a guaranteed area without a physical measurement.</p>
+      <label class="qb-upload">Take or choose a photo <input type="file" id="pImage" accept="image/*,.heic,.heif"></label>
+      <div class="qb-photo-buttons"><button id="pCalibrate" type="button" class="qb-secondary" aria-pressed="true">1. Set reference (2 taps)</button><button id="pTrace" type="button" class="qb-secondary" aria-pressed="false">2. Trace boundary</button><button id="pUndo" type="button" class="qb-secondary">Undo point</button><button id="pClear" type="button" class="qb-secondary">Clear points</button></div>
+      <div id="pCanvasWrap" class="qb-canvas-wrap"><canvas id="pCanvas" width="900" height="560" aria-label="Driveway photograph. Tap or click to mark reference endpoints and outline points."></canvas><p id="pEmpty" class="qb-photo-empty">Upload a near-overhead photo to start marking points.</p></div>
+      <div class="qb-fields">
+        <label>Actual length between reference points (metres)<input type="number" id="pLength" min="0" step="any" inputmode="decimal" placeholder="e.g. 2.00"></label>
+        <label>Area section name<input id="pName" maxlength="70" placeholder="Photo-traced driveway"></label>
+      </div>
+      <p id="pReadout" class="qb-photo-readout">Tap two ends of a known measurement, enter its length, then trace at least three points around the area.</p>
+      <button id="pAdd" type="button" class="qb-primary">Add traced estimate to quote</button>
+    </div>
+    <div class="qb-total"><div><span>Total measured area</span><strong id="mTotal">0.00 m²</strong></div><div><span>Sections</span><strong id="mCount">0</strong></div></div>
+    <div id="mSections" class="qb-section-list"><p class="qb-muted">No sections yet.</p></div>
+  </section>
+  <section class="qb-card" id="qbPricing">
+    <div class="qb-card-head"><h2>3. Services & costs</h2><span>Adjust your own rates</span></div>
+    <p class="qb-note">All £/m² prices and costs are editable. No rates are pre-filled as confirmed KS Garden Services prices. Tick only work you are quoting. Travel is kept private and is <strong>not shown as a separate item</strong> on the customer quotation.</p>
+    <div id="qbServices" class="qb-services">
+      <div class="qb-service"><label><input id="sWash" type="checkbox" checked> Pressure washing</label><label>£ per m² <input id="rWash" type="number" inputmode="decimal" min="0" step=".01" placeholder="Enter"></label></div>
+      <div class="qb-service"><label><input id="sWeed" type="checkbox"> Weed removal / treatment</label><label>£ per m² <input id="rWeed" type="number" inputmode="decimal" min="0" step=".01" placeholder="Enter"></label></div>
+      <div class="qb-service"><label><input id="sSand" type="checkbox"> Re-sanding joints</label><label>£ per m² <input id="rSand" type="number" inputmode="decimal" min="0" step=".01" placeholder="Enter"></label></div>
+      <div class="qb-service"><label><input id="sSeal" type="checkbox"> Sealing</label><label>£ per m² <input id="rSeal" type="number" inputmode="decimal" min="0" step=".01" placeholder="Enter"></label></div>
+      <div class="qb-service"><label><input id="sPre" type="checkbox"> Pre-treatment / specialist clean</label><label>£ per m² <input id="rPre" type="number" inputmode="decimal" min="0" step=".01" placeholder="Enter"></label></div>
+    </div>
+    <h3>Internal charges & additions</h3>
+    <div class="qb-fields">
+      <label>Additional labour hours<input id="qHours" type="number" min="0" step=".25" inputmode="decimal" placeholder="0"></label>
+      <label>Hourly labour rate (£)<input id="qHourlyRate" type="number" min="0" step=".01" inputmode="decimal" placeholder="0"></label>
+      <label>Materials (additional £)<input id="qMaterials" type="number" min="0" step=".01" inputmode="decimal" placeholder="0"></label>
+      <label>Green waste / disposal (£)<input id="qWaste" type="number" min="0" step=".01" inputmode="decimal" placeholder="0"></label>
+      <label>Travel allowance — internal only (£)<input id="qTravel" type="number" min="0" step=".01" inputmode="decimal" placeholder="0"></label>
+      <label>Other service charge (£)<input id="qOther" type="number" min="0" step=".01" inputmode="decimal" placeholder="0"></label>
+      <label>Discount (£)<input id="qDiscount" type="number" min="0" step=".01" inputmode="decimal" placeholder="0"></label>
+      <label>VAT (%) — only if registered<input id="qVat" type="number" min="0" max="100" step=".01" inputmode="decimal" placeholder="0"></label>
+    </div>
+    <h3>Materials planning (quantities, not automatically charged)</h3>
+    <div class="qb-fields">
+      <label>Sand allowance (kg / m²)<input id="qSandKg" type="number" min="0" step=".01" inputmode="decimal" placeholder="Supplier or measured coverage"></label>
+      <label>Sealer coverage (m² / litre / coat)<input id="qSealerCoverage" type="number" min="0" step=".01" inputmode="decimal" placeholder="From product label"></label>
+      <label>Number of sealer coats<input id="qCoats" type="number" min="1" max="6" step="1" inputmode="numeric" value="2"></label>
+      <label>Sealer tub size (litres)<input id="qTubLitres" type="number" min="0" step=".1" inputmode="decimal" placeholder="e.g. 5"></label>
+    </div>
+    <div id="qMaterialsEstimate" class="qb-materials"></div>
+    <div class="qb-inline"><strong>Estimated customer total</strong><strong id="qGrandTotal" class="qb-large">£0.00</strong></div>
+  </section>
+  <section class="qb-card" id="qbPreview">
+    <div class="qb-card-head"><h2>4. Prepare the quotation</h2><span>Customer-facing preview</span></div>
+    <div class="qb-fields"><label>Quote status<select id="qStatus"><option>Draft</option><option>Sent</option><option>Accepted</option><option>Declined</option></select></label><label>Validity (days)<input id="qValidDays" type="number" min="1" max="365" value="30" step="1"></label></div>
+    <label class="qb-block-label">Work description & exclusions<textarea id="qNotes" maxlength="1500" rows="4" placeholder="Include access, water availability, treatment suitability, exclusions and weather-dependent scheduling."></textarea></label>
+    <div id="qPaper" class="qb-paper">
+      <div class="qb-paper-head"><div><h2>KS Garden Services</h2><p>Keeping Gardens Looking Their Best.</p><p>info@ksgardenservices.co.uk · ksgardenservices.co.uk</p></div><div><strong>QUOTATION</strong><p id="qPaperNo"></p><p id="qPaperDate"></p></div></div>
+      <div id="qPaperClient"></div><hr><h3 id="qPaperTitle">Driveway cleaning quotation</h3><div id="qPaperLines"></div><div class="qb-paper-total"><strong>Total estimate</strong><strong id="qPaperTotal">£0.00</strong></div><div id="qPaperNotes"></div>
+      <p class="qb-disclaimer">Measurements and material quantities are estimates unless verified on site. Work, products and suitability will be confirmed before proceeding. This quotation does not constitute a survey.</p>
+    </div>
+    <div class="qb-actions"><button type="button" class="qb-primary" id="qSave">Save quote</button><button type="button" class="qb-secondary" id="qCopy">Copy customer summary</button><button type="button" class="qb-secondary" id="qPrint2">Print / Save PDF</button></div>
+    <p id="qSavedState" class="qb-muted"></p>
+  </section>
+  <section class="qb-card" id="qbSaved">
+    <div class="qb-card-head"><h2>Your saved quotations</h2><button id="qReload" class="qb-secondary" type="button">Refresh</button></div>
+    <div id="qSavedList" class="qb-saved-list"><p class="qb-muted">Loading saved quotes…</p></div>
+  </section>
+</div></main></body></html>
