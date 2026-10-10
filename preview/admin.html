@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#244b36"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>KS Garden Services | Owner Dashboard</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="reviews.css">
+<link rel="stylesheet" href="admin.css">
+<link rel="manifest" href="admin.webmanifest">
+<script defer src="legacy-reviews.js"></script><script defer src="admin.js"></script>
+</head>
+<body>
+<header class="ks-admin-header">
+  <a class="ks-admin-brand" href="index.html">
+    <img src="../KS%20Garden%20Services%20Logo.png" alt="">
+    <span>KS Garden Services<small>Private owner dashboard</small></span>
+  </a>
+  <a class="ks-public-link" href="index.html">View website ↗</a>
+</header>
+<main class="ks-admin-main">
+  <section id="adminLogin" class="ks-admin-login">
+    <p class="eyebrow">PRIVATE ACCESS</p><h1>Your website, one place.</h1>
+    <p>Sign in to reply to customer reviews, add garden photos and update the news page.</p>
+    <form id="adminLoginForm" class="ks-admin-panel">
+      <label for="adminPassword">Owner password</label>
+      <input id="adminPassword" type="password" autocomplete="current-password" required minlength="16" placeholder="Your secure password">
+      <button type="submit" class="btn">Sign in securely</button>
+      <p id="loginStatus" class="ks-admin-status" role="status"></p>
+    </form>
+    <p class="ks-admin-subnote">This uses your Cloudflare review-admin password. If it has not been set up, the website admin service must be deployed first.</p>
+  </section>
+  <section id="adminApp" hidden>
+    <div class="ks-admin-topline">
+      <div><p class="eyebrow">WEBSITE MANAGEMENT</p><h1>Welcome back, Karl.</h1><p>Reply to customers and keep KS Garden Services up to date.</p></div>
+      <button type="button" id="adminLogout" class="btn outline">Sign out</button>
+    </div>
+    <nav class="ks-admin-tabs" aria-label="Admin sections">
+      <button type="button" data-tab="reviews" aria-selected="true"> <span aria-hidden="true">★</span> Reviews</button>
+      <button type="button" data-tab="photos" aria-selected="false"> <span aria-hidden="true">▧</span> Photos</button>
+      <button type="button" data-tab="news" aria-selected="false"> <span aria-hidden="true">✎</span> News & advice</button>
+    </nav>
+    <p id="globalStatus" class="ks-admin-status" role="status" aria-live="polite"></p>
+    <div id="tab-reviews" class="ks-admin-section">
+      <div class="ks-admin-section-head"><div><h2>Customer reviews & your replies</h2><p>Your earlier reviews are listed too — an email address is not needed to write a public reply.</p></div><a href="reviews.html" target="_blank" rel="noopener">View public reviews ↗</a></div>
+      <div id="adminReviews" class="ks-admin-grid"><p>Loading reviews…</p></div>
+    </div>
+    <div id="tab-photos" class="ks-admin-section" hidden>
+      <div class="ks-admin-section-head"><div><h2>Website gallery</h2><p>Add a garden photo, change the description or remove an uploaded image.</p></div><a href="gallery.html" target="_blank" rel="noopener">View gallery ↗</a></div>
+      <div class="ks-admin-panel">
+        <h3>Add photos from your phone</h3>
+        <form id="adminPhotoForm" class="ks-admin-fields">
+          <label>Photo <input id="photoFile" name="photo" type="file" accept="image/*,.heic,.heif" capture="environment" required></label>
+          <label>Job or title <input name="job" maxlength="100" required placeholder="Front garden tidy-up"></label>
+          <label>Category <select name="category"><option>Before & after</option><option>Garden maintenance</option><option>Hedge cutting</option><option>Lawn care</option><option>Pressure washing</option><option>Plants & flowers</option><option>Other work</option></select></label>
+          <label>Photo caption <textarea name="caption" rows="2" maxlength="350" placeholder="What did you do on this job?"></textarea></label>
+          <button type="submit" class="btn">Upload photo</button>
+        </form>
+      </div>
+      <div id="adminPhotoList" class="ks-admin-grid"></div>
+      <p class="ks-admin-subnote">Previously uploaded GitHub gallery photos can still be managed in the <a href="gallery-manager/" target="_blank" rel="noopener">existing Gallery Manager</a>. Photos uploaded here use the new owner login.</p>
+    </div>
+    <div id="tab-news" class="ks-admin-section" hidden>
+      <div class="ks-admin-section-head"><div><h2>Garden news & advice</h2><p>Create, edit, publish or unpublish stories, seasonal tips and business updates.</p></div><a href="news.html" target="_blank" rel="noopener">View news page ↗</a></div>
+      <div class="ks-admin-panel">
+        <h3 id="newsFormHeading">Write an article</h3>
+        <form id="adminNewsForm" class="ks-admin-fields">
+          <input type="hidden" name="id">
+          <label>Headline <input name="title" maxlength="150" placeholder="What to do in the garden this month" required></label>
+          <label>Section <select name="category"><option>Garden advice</option><option>Local garden news</option><option>Seasonal tips</option><option>Plant spotlight</option><option>Horticultural news</option><option>KS Garden Services update</option></select></label>
+          <label>Article <textarea name="body" rows="9" maxlength="10000" required placeholder="Write the story here. Use blank lines between paragraphs."></textarea></label>
+          <label>Photo URL <input name="image_url" placeholder="https://… or /api/media/…"></label>
+          <label>Link to source (optional) <input name="source_url" type="url" placeholder="https://www.rhs.org.uk/…"></label>
+          <label class="ks-admin-check"><input name="published" type="checkbox" checked> Publish on the website</label>
+          <div class="ks-admin-actions"><button type="submit" class="btn">Save article</button><button type="button" id="newsReset" class="btn outline">New article / clear</button></div>
+        </form>
+      </div>
+      <div id="adminNewsList" class="ks-admin-grid"></div>
+    </div>
+  </section>
+</main>
+<footer class="ks-admin-footer">KS Garden Services · Keeping Gardens Looking Their Best. · <a href="mailto:info@ksgardenservices.co.uk">Email</a></footer>
+</body></html>
