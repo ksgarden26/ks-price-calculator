@@ -5,10 +5,10 @@ function node(tag,cls,text){const el=document.createElement(tag);if(cls)el.class
 function niceDate(s){const d=new Date(s);return Number.isNaN(d.getTime())?"":d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});}
 const oldReviews=Array.isArray(window.KS_LEGACY_REVIEWS)?window.KS_LEGACY_REVIEWS:[];
 const oldReviewIds=new Set(oldReviews.map(r=>r.id));
-function addExisting(reviews){
+function addExisting(reviews, replies={}){
   const live=Array.isArray(reviews)?reviews:[];
   const existing=new Set(live.map(r=>String(r.name||"").trim().toLowerCase()+"|"+String(r.message||"").trim()));
-  return [...live,...oldReviews.filter(r=>!live.some(x=>x.id===r.id)&&!existing.has(r.name.toLowerCase()+"|"+r.message.trim()))];
+  return [...live,...oldReviews.filter(r=>!live.some(x=>x.id===r.id)&&!existing.has(r.name.toLowerCase()+"|"+r.message.trim())).map(r=>({...r,owner_reply:replies[r.id]||r.owner_reply||""}))];
 }
 function showReviews(reviews){
  list.replaceChildren();
@@ -28,9 +28,14 @@ function showReviews(reviews){
 }
 async function load(){
  try{
-  const r=await fetch("/api/reviews",{cache:"no-store"});
+  const [r,legacyR]=await Promise.all([
+    fetch("/api/reviews",{cache:"no-store"}),
+    fetch("/api/reviews/legacy-replies",{cache:"no-store"}).catch(()=>null)
+  ]);
   if(!r.ok)throw Error("Reviews temporarily unavailable");
-  showReviews(addExisting((await r.json()).reviews||[]));
+  const live=await r.json(),publishedReplies=legacyR&&legacyR.ok?await legacyR.json():{replies:[]};
+  const replies=Object.fromEntries((publishedReplies.replies||[]).map(r=>[r.review_id,r.owner_reply]));
+  showReviews(addExisting(live.reviews||[],replies));
   form.hidden=false;
   const hint=document.getElementById("reviewOfflineMessage");if(hint)hint.hidden=true;
  }catch{
