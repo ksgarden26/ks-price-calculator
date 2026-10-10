@@ -55,6 +55,11 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 <div class="field"><label>Start of visit window<input id="bookStart" type="time" value="08:00"></label></div>
 <div class="field"><label>End of visit window<input id="bookEnd" type="time" value="12:00"></label></div>
 <div class="field" id="bookCountField"><label>Number of planned visits<input id="bookCount" type="number" min="2" max="52" step="1" value="8"></label></div>
+<div class="field"><label>How should this customer be contacted?<select id="bookContact">
+<option value="phone">Telephone / landline (manual)</option><option value="sms">Text message (manual)</option>
+<option value="email">Email (optional Google invitation)</option><option value="letter">Written appointment card</option>
+<option value="inperson">In person</option></select></label></div>
+<div class="field full"><p style="font-size:12px;margin:0">Your daily KS diary email will remind <strong>you</strong> to call or contact customers the day before their booking. Nothing is automatically sent to customers without your approval.</p></div>
 <div class="field full"><label style="display:flex;align-items:center;gap:9px"><input id="bookInvite" type="checkbox" style="width:auto"> Email a Google Calendar invitation to this customer</label><small id="bookInviteHint">Leave unticked to add the job to your calendar only.</small></div>
 </div>
 <div class="modalactions"><button class="btn" id="bookCancel" type="button">Back</button><button class="btn primary" id="bookConfirm" type="button">Confirm & add to Google Calendar</button></div>
@@ -101,8 +106,10 @@ function ksOpenConfirmBooking(kind="job"){
  $('bookFrequency').value='once';
  $('bookFrequency').disabled=BOOKING_KIND==="quote";
  $('bookCount').value=8;
+ $('bookContact').value='phone';
+ $('bookContact').querySelector('option[value="email"]').disabled=!lead.email;
  $('bookInvite').checked=false;
- $('bookInvite').disabled=!lead.email;
+ $('bookInvite').disabled=true;
  $('bookInviteHint').textContent=lead.email?'Customer email saved: '+lead.email:'No customer email saved — calendar invitation cannot be emailed.';
  ksBookingCountToggle();
  $('bookingModal').classList.add('show');
@@ -112,11 +119,16 @@ function ksBookingCountToggle(){$('bookCountField').style.display=$('bookFrequen
 $('confirmBookingBtn').onclick=()=>ksOpenConfirmBooking("job");
 $('quoteVisitBtn').onclick=()=>ksOpenConfirmBooking("quote");
 $('bookFrequency').onchange=ksBookingCountToggle;
+$('bookContact').onchange=()=>{
+  const emailAllowed=$('bookContact').value==='email' && !!(DATA.find(x=>x.id===EDIT)||{}).email;
+  $('bookInvite').disabled=!emailAllowed;
+  if(!emailAllowed)$('bookInvite').checked=false;
+};
 $('bookCancel').onclick=()=>{$('bookingModal').classList.remove('show');$('bookingModal').setAttribute('aria-hidden','true');};
 $('bookConfirm').onclick=()=>{
  const btn=$('bookConfirm'),lead=DATA.find(x=>x.id===EDIT);
  if(!lead||!BOOKING_REFERENCE){$('bookStatus').textContent='Please reopen the customer booking.';return;}
- const payload={bookingId:BOOKING_REFERENCE,leadId:lead.id,kind:BOOKING_KIND,date:$('bookDate').value,
+ const payload={bookingId:BOOKING_REFERENCE,leadId:lead.id,kind:BOOKING_KIND,contactMethod:$('bookContact').value,date:$('bookDate').value,
    start:$('bookStart').value,end:$('bookEnd').value,frequency:$('bookFrequency').value,
    count:Number($('bookCount').value),inviteCustomer:$('bookInvite').checked};
  if(!payload.date){$('bookStatus').textContent='Choose the confirmed appointment date.';return;}
