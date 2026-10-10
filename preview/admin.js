@@ -29,7 +29,7 @@ async function api(path,method="GET",payload){
 function tab(name){
   currentTab=name;
   document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===name)));
-  for(const t of ["reviews","photos","news"])$("tab-"+t).hidden=t!==name;
+  for(const t of ["reviews","photos","news","quotes"])$("tab-"+t).hidden=t!==name;
   window.location.hash=name;
 }
 async function session(){
@@ -40,6 +40,7 @@ async function reload(){
   if(currentTab==="reviews")await loadReviews();
   if(currentTab==="photos")await loadPhotos();
   if(currentTab==="news")await loadNews();
+  if(currentTab==="quotes")document.getElementById("ksQuoteFrame")?.contentWindow?.postMessage({type:"ks-refresh-quotes"},location.origin);
 }
 loginForm.addEventListener("submit",async event=>{
   event.preventDefault();const password=$("adminPassword").value;
@@ -57,7 +58,7 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",as
   alertStatus("");
   try{await reload()}catch(e){alertStatus(e.message,true)}
 }));
-if(["reviews","news","photos"].includes(location.hash.slice(1)))tab(location.hash.slice(1));
+if(["reviews","news","photos","quotes"].includes(location.hash.slice(1)))tab(location.hash.slice(1));
 
 function makeReview(r,legacy=false){
   const card=element("article","ks-admin-card");
@@ -225,5 +226,11 @@ async function loadNews(){
     }
   }catch(e){newsList.replaceChildren(element("p","ks-admin-status error",e.message))}
 }
+window.addEventListener("message",e=>{
+  if(e.origin!==location.origin||e.source!==document.getElementById("ksQuoteFrame")?.contentWindow)return;
+  if(e.data?.type==="ks-quote-height"&&Number.isFinite(e.data.height)){
+    document.getElementById("ksQuoteFrame").style.height=Math.max(750,Math.min(7000,e.data.height+12))+"px";
+  }
+});
 session();
 })();
