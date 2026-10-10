@@ -1,0 +1,19 @@
+# Copy to reviews-worker/wrangler.toml AFTER creating the D1 database.
+# This is intentionally an example, not an active deployment config.
+name = "ks-garden-reviews-api"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+routes = [
+  { pattern = "ksgardenservices.co.uk/api/*", zone_name = "ksgardenservices.co.uk" },
+  { pattern = "www.ksgardenservices.co.uk/api/*", zone_name = "ksgardenservices.co.uk" }
+]
+
+[vars]
+ADMIN_URL = "https://ksgardenservices.co.uk/review-admin.html"
+MAIL_FROM = "KS Garden Services <reviews@ksgardenservices.co.uk>"
+
+[[d1_databases]]
+binding = "REVIEWS_DB"
+database_name = "ks-garden-reviews"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
