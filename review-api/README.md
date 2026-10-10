@@ -52,3 +52,25 @@ These files are committed to the GitHub website project, but **do not automatica
 ## Important deployment distinction
 
 The GitHub repo contains a preview folder and a separate price calculator at the root. This new API does not replace the existing website Worker. It should be deployed to the API route in the same Cloudflare zone, alongside the existing site. Connecting the GitHub repository is not the same thing as connecting or administering the Cloudflare account.
+## Unified owner dashboard (added 10 October 2026)
+
+The new dashboard is `preview/admin.html` and combines:
+- **Reviews:** public replies for existing CJ, Margaret, Abbie, Peter and Alex reviews *without email addresses*, plus replies to future 1–5-star website reviews.
+- **Photos:** iPhone camera upload (resized to JPEG), edit photo titles/captions, remove uploads. Images stored in a private Cloudflare **R2** bucket; public images served through read-only Worker media routes.
+- **News & advice:** create/edit/publish/unpublish and remove articles. The existing 8 October Cornish lily story lives as fallback data in `preview/news-data.json`, and can be overridden or unpublished from the dashboard without altering original historical HTML.
+- **One owner login:** Cloudflare `ADMIN_PASSWORD` and `SESSION_SECRET` sign the session for the whole `/api/` section. The older `preview/review-admin.html` can redirect to this dashboard.
+
+### Additional activation steps
+1. Upload the updated `preview/` static files to the **live website**, including `admin.html`, `admin.js`, `admin.css`, `admin.webmanifest`, `legacy-reviews.js`, `news.js`, `news-data.json`, and the updated gallery/review/news HTML and scripts. Direct commits to GitHub are not evidence of a live deployment.
+2. For **a new D1 database**, apply the latest `schema.sql`. For an **existing D1 database**, apply only the new `admin-migration.sql` in the D1 SQL console or using `npx wrangler d1 execute ks-reviews --remote --file=./admin-migration.sql`.
+3. Create a private **R2 bucket** named `ks-garden-photos` in Cloudflare. Uncomment its `PHOTO_BUCKET` binding in `wrangler.toml`. R2 may require account billing activation.
+4. Change the two Cloudflare Worker route patterns to `ksgardenservices.co.uk/api/*` and `www.ksgardenservices.co.uk/api/*` as documented in `wrangler.toml`. This route is required for all admin features, not just reviews. Confirm it does not overlap existing active API routes before deploying.
+5. Configure `ADMIN_PASSWORD` and `SESSION_SECRET` privately through Cloudflare Worker secrets, never in source or chat. `RESEND_API_KEY` is optional for replying on-screen, but **required** for review email alerts.
+6. Run `npx wrangler deploy` from `review-api/`. From the published site test `GET /api/admin/session` (should return 401 while logged out), `GET /api/reviews`, `GET /api/news`, `GET /api/gallery` (JSON).
+7. Sign in from `/admin.html` and test a reply to an existing review, 1 JPEG upload, creation/edit of a news post, and sign-out. Confirm public pages display updates without exposing private reviewer email addresses.
+
+### Important: earlier gallery manager
+The separate `preview/gallery-manager/` app uses a GitHub personal access token and edits `preview/gallery-data.json`. The unified dashboard stores **new** photo uploads in Cloudflare R2 instead. The public gallery combines both sources, so existing photos do not need reuploading. Previously uploaded GitHub photos may continue to be edited using the old gallery manager.
+
+### Security and privacy
+No admin password, database ID or email API key is committed in the public source. The admin page itself is visible at a public URL, but all updates require a valid signed owner session. Do not treat the page URL as authentication. Customer reviews stay intact and owner replies are saved independently. The editor is not an integration for Google or Facebook native reviews.
