@@ -44,11 +44,11 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 <div class="field"><label>Guide price</label><input id="guide" type="number"></div><div class="field"><label>Actual quote</label><input id="actual" type="number"></div><div class="field"><label>Status</label><select id="leadStatus"><option>New Enquiry</option><option>Contacted</option><option>Site Visit / Photos Needed</option><option>Quote Sent</option><option>Follow-up</option><option>Won</option><option>Lost</option><option>On Hold</option></select></div><div class="field"><label>Follow-up date</label><input id="follow" type="date"></div>
 <div class="field"><label>Source</label><select id="source"><option>Website</option><option>Facebook</option><option>Recommendation</option><option>Existing Customer</option><option>Leaflet</option><option>Google</option><option>Other</option></select></div><div class="field"><label>Lost reason</label><select id="lostReason"><option value="">—</option><option>Price</option><option>No response</option><option>Timing</option><option>Went elsewhere</option><option>Outside budget</option><option>Outside service area</option><option>Job changed/cancelled</option><option>Other</option></select></div>
 <div class="field full"><label>Notes</label><textarea id="notes" rows="4"></textarea></div></div>
-<div class="modalactions"><button class="btn danger" id="del">Delete</button><div class="right"><button class="btn primary" id="confirmBookingBtn" type="button">✓ Confirm booking</button><button class="btn" id="cancel">Cancel</button><button class="btn primary" id="save">Save</button></div></div>
+<div class="modalactions"><button class="btn danger" id="del">Delete</button><div class="right"><button class="btn" id="quoteVisitBtn" type="button">▦ Book quote visit</button><button class="btn primary" id="confirmBookingBtn" type="button">✓ Confirm agreed job</button><button class="btn" id="cancel">Cancel</button><button class="btn primary" id="save">Save</button></div></div>
 </div></div>
 <div id="bookingModal" class="modalback" style="z-index:75" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
 <h2 id="bookingTitle">Confirm garden booking</h2><p id="bookingCustomer" style="color:#58705f;margin:0 0 18px"></p>
-<p style="background:#eef5ef;padding:12px;border-radius:9px;font-size:14px">This action creates an appointment in your KS Google Calendar, marks the CRM enquiry as Won and records the booking. Tick the invite option only if you'd like Google to email the customer.</p>
+<p id="bookingHelp" style="background:#eef5ef;padding:12px;border-radius:9px;font-size:14px">This action adds an appointment to your Google Calendar.</p>
 <div class="grid">
 <div class="field"><label>First confirmed date<input id="bookDate" type="date" required></label></div>
 <div class="field"><label>Frequency<select id="bookFrequency"><option value="once">One-off visit</option><option value="1">Weekly maintenance</option><option value="2">Every 2 weeks</option><option value="3">Every 3 weeks</option><option value="4">Every 4 weeks</option><option value="monthly">Monthly</option></select></label></div>
@@ -77,22 +77,29 @@ function render(){
 }
 function browserDue(){if(notified||Notification.permission!=='granted')return;const n=DATA.filter(due).length;if(n)new Notification('KS Garden Services CRM',{body:`${n} follow-up${n===1?'':'s'} due or overdue.`});notified=true}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2500)}
-function openLead(id){const x=DATA.find(a=>a.id===id)||{};EDIT=id||null;$('mtitle').textContent=id?'Edit enquiry':'New enquiry';['name','phone','email','postcode','address','service','guide','actual','follow','source','lostReason','notes'].forEach(k=>$(k).value=x[k]||'');$('leadStatus').value=x.status||'New Enquiry';$('source').value=x.source||'Website';$('del').style.visibility=id?'visible':'hidden';$('confirmBookingBtn').style.display=id?'inline-flex':'none';$('modal').classList.add('show')}
+function openLead(id){const x=DATA.find(a=>a.id===id)||{};EDIT=id||null;$('mtitle').textContent=id?'Edit enquiry':'New enquiry';['name','phone','email','postcode','address','service','guide','actual','follow','source','lostReason','notes'].forEach(k=>$(k).value=x[k]||'');$('leadStatus').value=x.status||'New Enquiry';$('source').value=x.source||'Website';$('del').style.visibility=id?'visible':'hidden';$('confirmBookingBtn').style.display=id?'inline-flex':'none';$('quoteVisitBtn').style.display=id?'inline-flex':'none';$('modal').classList.add('show')}
 window.openLead=openLead;
 
-let BOOKING_REFERENCE=null;
-function ksOpenConfirmBooking(){
+let BOOKING_REFERENCE=null, BOOKING_KIND="job";
+function ksOpenConfirmBooking(kind="job"){
  if(!EDIT){toast('Save the customer record first, then confirm the booking.');return;}
  const lead=DATA.find(x=>x.id===EDIT);
  if(!lead){toast('Refresh the CRM and open the customer again.');return;}
  if(!lead.name){toast('Customer name required.');return;}
+ BOOKING_KIND=kind==="quote"?"quote":"job";
  BOOKING_REFERENCE=(typeof crypto!=='undefined'&&crypto.randomUUID)?crypto.randomUUID().replaceAll('-',''):Date.now().toString(36)+Math.random().toString(36).slice(2);
+ $('bookingTitle').textContent=BOOKING_KIND==="quote"?"Book a quotation visit":"Confirm agreed garden work";
+ $('bookConfirm').textContent=BOOKING_KIND==="quote"?"Book quotation visit":"Confirm agreed job";
+ $('bookingHelp').textContent=BOOKING_KIND==="quote"?
+   "Adds a garden quotation / site assessment to your Google Calendar. The enquiry stays open and is NOT counted as a won job.":
+   "Adds agreed work to your Google Calendar, records it in your CRM and marks the job as Won. Recurring maintenance can be scheduled for multiple visits.";
  $('bookingCustomer').textContent=lead.name+' · '+(lead.service||'Garden maintenance');
  $('bookStatus').textContent='';
  $('bookDate').value='';
  $('bookStart').value='08:00';
  $('bookEnd').value='12:00';
  $('bookFrequency').value='once';
+ $('bookFrequency').disabled=BOOKING_KIND==="quote";
  $('bookCount').value=8;
  $('bookInvite').checked=false;
  $('bookInvite').disabled=!lead.email;
@@ -101,14 +108,15 @@ function ksOpenConfirmBooking(){
  $('bookingModal').classList.add('show');
  $('bookingModal').setAttribute('aria-hidden','false');
 }
-function ksBookingCountToggle(){$('bookCountField').style.display=$('bookFrequency').value==='once'?'none':'';}
-$('confirmBookingBtn').onclick=ksOpenConfirmBooking;
+function ksBookingCountToggle(){$('bookCountField').style.display=$('bookFrequency').value==='once'||BOOKING_KIND==="quote"?'none':'';}
+$('confirmBookingBtn').onclick=()=>ksOpenConfirmBooking("job");
+$('quoteVisitBtn').onclick=()=>ksOpenConfirmBooking("quote");
 $('bookFrequency').onchange=ksBookingCountToggle;
 $('bookCancel').onclick=()=>{$('bookingModal').classList.remove('show');$('bookingModal').setAttribute('aria-hidden','true');};
 $('bookConfirm').onclick=()=>{
  const btn=$('bookConfirm'),lead=DATA.find(x=>x.id===EDIT);
  if(!lead||!BOOKING_REFERENCE){$('bookStatus').textContent='Please reopen the customer booking.';return;}
- const payload={bookingId:BOOKING_REFERENCE,leadId:lead.id,date:$('bookDate').value,
+ const payload={bookingId:BOOKING_REFERENCE,leadId:lead.id,kind:BOOKING_KIND,date:$('bookDate').value,
    start:$('bookStart').value,end:$('bookEnd').value,frequency:$('bookFrequency').value,
    count:Number($('bookCount').value),inviteCustomer:$('bookInvite').checked};
  if(!payload.date){$('bookStatus').textContent='Choose the confirmed appointment date.';return;}
@@ -116,15 +124,15 @@ $('bookConfirm').onclick=()=>{
  if(payload.frequency!=='once'&&(!Number.isInteger(payload.count)||payload.count<2||payload.count>52)){
    $('bookStatus').textContent='Enter 2–52 planned visits.';return;
  }
- if(!confirm('Confirm this appointment in your KS Google Calendar'+(payload.inviteCustomer?' and send a calendar invitation to '+lead.email:'')+'?'))return;
+ if(!confirm((BOOKING_KIND==="quote"?"Book a quotation visit":"Confirm the agreed job")+" in KS Google Calendar"+(payload.inviteCustomer?" and email the invitation to "+lead.email:"")+"?"))return;
  btn.disabled=true;$('bookStatus').textContent='Confirming in Google Calendar and CRM…';
  google.script.run.withSuccessHandler(result=>{
    btn.disabled=false;
-   $('bookStatus').textContent=result.alreadyConfirmed?'This booking was already created.':'Booking confirmed in Google Calendar.';
+   $('bookStatus').textContent=result.alreadyConfirmed?'This booking was already created.':(BOOKING_KIND==="quote"?'Quotation visit added to Google Calendar.':'Job confirmed in Google Calendar.');
    if(result.ok){
      $('bookingModal').classList.remove('show');$('bookingModal').setAttribute('aria-hidden','true');
      $('modal').classList.remove('show');
-     toast(result.crmStatusUpdated?'Booking confirmed and CRM updated':'Calendar saved — check CRM status');
+     toast(BOOKING_KIND==="quote"?'Quotation visit booked; job not marked Won':(result.crmStatusUpdated?'Job booked and CRM updated':'Calendar saved — check CRM status'));
      load();
    }
  }).withFailureHandler(error=>{
