@@ -230,6 +230,39 @@ async function handle(request,env) {
       await env.DB.prepare("DELETE FROM news_posts WHERE id=?").bind(newsMatch[1]).run();
       return response({success:true});
     }
+    // Customer quotes are private and accessible only after owner sign-in.
+    if(method==="GET" && path==="/api/admin/quotes") {
+      const q=await env.DB.prepare("SELECT id,quote_no,customer_name,status,area_m2,total_gbp,snapshot,created_at,updated_at FROM quotes ORDER BY updated_at DESC LIMIT 200").all();
+      return response({quotes:(q.results||[]).map(item=>({
+        id:item.id,quote_no:item.quote_no,customer_name:item.customer_name,
+        status:item.status,area_m2:item.area_m2,total_gbp:item.total_gbp,
+        snapshot:JSON.parse(item.snapshot),created_at:item.created_at,updated_at:item.updated_at
+      }))});
+    }
+    if(method==="POST" && path==="/api/admin/quotes") {
+      let info;try{info=await body(request)}catch{return response({error:"Invalid quote details or quote too long."},400)}
+      const id=clean(info.id,36)||crypto.randomUUID();
+      if(!/^[a-f0-9-]{36}$/.test(id))return response({error:"Invalid quote identifier."},400);
+      const quoteNo=clean(info.quote_no,50),customer=clean(info.customer_name,100);
+      const status=["Draft","Sent","Accepted","Declined"].includes(info.status)?info.status:"Draft";
+      const area=Number(info.area_m2),total=Number(info.total_gbp);
+      if(!quoteNo||!customer||!Number.isFinite(area)||area<0||area>1000000||!Number.isFinite(total)||total<0||total>1000000)
+        return response({error:"Please add the customer, quote number and valid amounts."},400);
+      const snap=info.snapshot;
+      if(!snap||typeof snap!=="object"||Array.isArray(snap))return response({error:"Quote details are missing."},400);
+      const json=JSON.stringify(snap);
+      if(json.length>8500)return response({error:"Quote details exceed the storage limit."},400);
+      const now=new Date().toISOString();
+      await env.DB.prepare("INSERT INTO quotes (id,quote_no,customer_name,status,area_m2,total_gbp,snapshot,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET quote_no=excluded.quote_no,customer_name=excluded.customer_name,status=excluded.status,area_m2=excluded.area_m2,total_gbp=excluded.total_gbp,snapshot=excluded.snapshot,updated_at=excluded.updated_at")
+        .bind(id,quoteNo,customer,status,area,total,json,now,now).run();
+      return response({success:true,id});
+    }
+    if(method==="DELETE" && path.startsWith("/api/admin/quotes/")) {
+      const id=path.slice("/api/admin/quotes/".length);
+      if(!/^[a-f0-9-]{36}$/.test(id))return response({error:"Invalid quote."},400);
+      await env.DB.prepare("DELETE FROM quotes WHERE id=?").bind(id).run();
+      return response({success:true});
+    }
     if(method==="GET" && path==="/api/admin/gallery") {
       const r=await env.DB.prepare("SELECT id,job,category,caption,created_at FROM gallery_photos ORDER BY created_at DESC LIMIT 150").all();
       return response({photos:(r.results||[]).map(p=>({...p,src:"/api/media/"+p.id+".jpg"}))});
