@@ -31,3 +31,5 @@
 .review-admin-card .review-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .review-admin-card .review-actions button{min-width:130px}.review-form button:disabled,.review-admin-card button:disabled{opacity:.6;cursor:wait}
 @media(max-width:780px){.review-form-layout,.review-list{grid-template-columns:1fr}.review-heading{display:block}.review-summary{text-align:left;margin-top:15px}.review-form{padding:19px}.review-star-options{gap:4px}.review-star-options span{font-size:11px;letter-spacing:-1.8px;padding:8px 1px;min-height:62px}.review-star-options small{font-size:10px}}
+
+#reviewForm[hidden],#reviewOfflineMessage[hidden]{display:none!important}
