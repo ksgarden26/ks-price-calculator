@@ -22,7 +22,7 @@
 <main class="ks-admin-main">
   <section id="adminLogin" class="ks-admin-login">
     <p class="eyebrow">PRIVATE ACCESS</p><h1>Your website, one place.</h1>
-    <p>Sign in to reply to customer reviews, add garden photos and update the news page.</p>
+    <p>Sign in to manage customer reviews, garden photos, news and customer quotes.</p>
     <form id="adminLoginForm" class="ks-admin-panel">
       <label for="adminPassword">Owner password</label>
       <input id="adminPassword" type="password" autocomplete="current-password" required minlength="16" placeholder="Your secure password">
@@ -40,6 +40,7 @@
       <button type="button" data-tab="reviews" aria-selected="true"> <span aria-hidden="true">★</span> Reviews</button>
       <button type="button" data-tab="photos" aria-selected="false"> <span aria-hidden="true">▧</span> Photos</button>
       <button type="button" data-tab="news" aria-selected="false"> <span aria-hidden="true">✎</span> News & advice</button>
+      <button type="button" data-tab="quotes" aria-selected="false"> <span aria-hidden="true">▤</span> Quotes & measuring</button>
     </nav>
     <p id="globalStatus" class="ks-admin-status" role="status" aria-live="polite"></p>
     <div id="tab-reviews" class="ks-admin-section">
@@ -60,6 +61,10 @@
       </div>
       <div id="adminPhotoList" class="ks-admin-grid"></div>
       <p class="ks-admin-subnote">Previously uploaded GitHub gallery photos can still be managed in the <a href="gallery-manager/" target="_blank" rel="noopener">existing Gallery Manager</a>. Photos uploaded here use the new owner login.</p>
+    </div>
+    <div id="tab-quotes" class="ks-admin-section" hidden>
+      <div class="ks-admin-section-head"><div><h2>Quotes & driveway measuring</h2><p>Measure awkward areas, plan cleaning materials, and prepare professional quotes for customers.</p></div><a href="quote-builder.html" target="_blank" rel="noopener">Open full screen ↗</a></div>
+      <iframe id="ksQuoteFrame" title="KS Garden Services quote and driveway measuring app" src="quote-builder.html" loading="lazy" style="width:100%;min-height:1800px;border:0;border-radius:16px;background:#f6f8f5"></iframe>
     </div>
     <div id="tab-news" class="ks-admin-section" hidden>
       <div class="ks-admin-section-head"><div><h2>Garden news & advice</h2><p>Create, edit, publish or unpublish stories, seasonal tips and business updates.</p></div><a href="news.html" target="_blank" rel="noopener">View news page ↗</a></div>
