@@ -9,7 +9,7 @@ const KS_BOOKING_CALENDAR_ID = "info@ksgardenservices.co.uk";
 const KS_BOOKING_COLUMNS = [
   "Booking ID","Enquiry ID","Customer","Service","Start Date","Start Time",
   "End Time","Repeat","Visit Count","Address","Calendar iCalUID",
-  "Status","Invite Customer","Created At"
+  "Status","Invite Customer","Created At","Booking Type"
 ];
 
 function ksBookingOwnerOnly_() {
@@ -27,12 +27,14 @@ function ksBookingSheet_() {
     sh.getRange(1,1,1,KS_BOOKING_COLUMNS.length).setValues([KS_BOOKING_COLUMNS]);
     sh.setFrozenRows(1);
   }
+  // Existing test sheets may have been created before Booking Type was added.
+  if (String(sh.getRange(1,15).getValue()) !== "Booking Type") sh.getRange(1,15).setValue("Booking Type");
   return sh;
 }
 function ksBookingRow_(data) {
   return [data.bookingId,data.leadId,data.name,data.service,data.date,data.start,
     data.end,data.frequency,data.count,data.address,data.eventId,data.status,
-    data.invited ? "Yes" : "No",new Date()];
+    data.invited ? "Yes" : "No",new Date(),data.kind];
 }
 function ksBookingDate_(date,time) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date)) || !/^\d{2}:\d{2}$/.test(String(time)))
@@ -59,9 +61,12 @@ function confirmGardenBooking(input) {
   input=input||{};
   const bookingId=String(input.bookingId||"").trim();
   const leadId=String(input.leadId||"").trim();
+  const kind=String(input.kind||"job");
+  if(!["quote","job"].includes(kind))throw new Error("Unknown booking type.");
   if(!/^[A-Za-z0-9_-]{12,100}$/.test(bookingId) || !leadId)throw new Error("Missing booking reference or CRM enquiry.");
   const freq=String(input.frequency||"once");
   if(!["once","1","2","3","4","monthly"].includes(freq))throw new Error("Invalid visit frequency.");
+  if(kind==="quote" && freq!=="once")throw new Error("Quotation visits must be one-off appointments.");
   const count=freq==="once"?1:Number(input.count);
   if(!Number.isInteger(count)||count<1||count>52||(freq!=="once"&&count<2))throw new Error("Visit count must be between 2 and 52 for maintenance.");
 
@@ -83,9 +88,10 @@ function confirmGardenBooking(input) {
         throw new Error("This booking needs review before retrying; no duplicate calendar entry was created.");
       }
       const sameVisit=prior.find(r=>String(r[1])===leadId && String(r[4])===String(input.date) &&
-        String(r[7])===freq && String(r[11])==="Confirmed");
+        String(r[7])===freq && String(r[11])==="Confirmed" && (String(r[14]||"job")===kind));
       if(sameVisit)return {ok:true,alreadyConfirmed:true,eventId:String(sameVisit[10]||""),bookingId:String(sameVisit[0])};
-      if(freq!=="once"&&prior.some(r=>String(r[1])===leadId && String(r[7])!=="once" && String(r[11])==="Confirmed"))
+      if(kind==="job"&&freq!=="once"&&prior.some(r=>String(r[1])===leadId && String(r[7])!=="once" &&
+        String(r[14]||"job")==="job" && String(r[11])==="Confirmed"))
         throw new Error("This customer already has a recurring maintenance series. Reschedule the existing series rather than creating another.");
     }
     const leads=getLeads();
@@ -99,9 +105,11 @@ function confirmGardenBooking(input) {
     const calendar=CalendarApp.getCalendarById(KS_BOOKING_CALENDAR_ID);
     if(!calendar)throw new Error("Business Google Calendar is not accessible to this Apps Script account.");
     const service=String(lead.service||"Garden maintenance").slice(0,100);
-    const title="KS | "+lead.name+" — "+service;
-    const description="KS Garden Services confirmed visit\nCRM enquiry: "+leadId+
-      "\nAgreed service: "+service+"\nBusiness phone: 07715 559 170"+
+    const title=kind==="quote" ? "KS | Quote visit — "+lead.name+" — "+service
+      : "KS | "+lead.name+" — "+service;
+    const description=(kind==="quote"?"KS Garden Services quotation / garden assessment"
+      :"KS Garden Services confirmed work visit")+"\nCRM enquiry: "+leadId+
+      "\nService: "+service+"\nBusiness phone: 07715 559 170"+
       "\nWeather or other schedule changes will be communicated separately.";
     const options={description,location:String(lead.address||lead.postcode||"").slice(0,230)};
     if(invite){options.guests=email;options.sendInvites=true;}
@@ -111,7 +119,7 @@ function confirmGardenBooking(input) {
     sh.getRange(rowNum,1,1,KS_BOOKING_COLUMNS.length).setValues([
       ksBookingRow_({bookingId,leadId,name:lead.name,service,date:input.date,
         start:input.start,end:input.end,frequency:freq,count,address:options.location,
-        eventId:"",status:"Creating",invited:invite})
+        eventId:"",status:"Creating",invited:invite,kind})
     ]);
     let event;
     try {
@@ -126,9 +134,15 @@ function confirmGardenBooking(input) {
     }
     // The status update is secondary; the Booking row remains the source of truth.
     let crmStatusUpdated=false;
-    try{saveLead(Object.assign({},lead,{status:"Won"}));crmStatusUpdated=true;}catch(e){Logger.log("CRM status update failed: "+e);}
+    // A quotation appointment is only a viewing; it must NEVER count as won work.
+    const nextStatus=kind==="job"?"Won":
+      (["New Enquiry","Contacted"].includes(lead.status)?"Site Visit / Photos Needed":lead.status);
+    if(nextStatus!==lead.status){
+      try{saveLead(Object.assign({},lead,{status:nextStatus}));crmStatusUpdated=true;}
+      catch(e){Logger.log("CRM status update failed: "+e);}
+    }
     return {ok:true,alreadyConfirmed:false,bookingId,eventId:event.getId(),
-      frequency:freq,count,customerInvited:invite,crmStatusUpdated};
+      kind,frequency:freq,count,customerInvited:invite,crmStatusUpdated};
   } finally {
     lock.releaseLock();
   }
@@ -140,5 +154,5 @@ function getGardenBookings(leadId) {
   return rows.filter(r=>!leadId||String(r[1])===String(leadId))
     .map(r=>({bookingId:r[0],leadId:r[1],customer:r[2],service:r[3],
       date:r[4],start:r[5],end:r[6],frequency:r[7],count:r[8],
-      eventId:r[10],status:r[11],invited:r[12]}));
+      eventId:r[10],status:r[11],invited:r[12],kind:r[14]||"job"}));
 }
