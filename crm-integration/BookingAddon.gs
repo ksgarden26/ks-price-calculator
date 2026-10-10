@@ -9,7 +9,7 @@ const KS_BOOKING_CALENDAR_ID = "info@ksgardenservices.co.uk";
 const KS_BOOKING_COLUMNS = [
   "Booking ID","Enquiry ID","Customer","Service","Start Date","Start Time",
   "End Time","Repeat","Visit Count","Address","Calendar iCalUID",
-  "Status","Invite Customer","Created At","Booking Type"
+  "Status","Invite Customer","Created At","Booking Type","Contact Method"
 ];
 
 function ksBookingOwnerOnly_() {
@@ -29,12 +29,13 @@ function ksBookingSheet_() {
   }
   // Existing test sheets may have been created before Booking Type was added.
   if (String(sh.getRange(1,15).getValue()) !== "Booking Type") sh.getRange(1,15).setValue("Booking Type");
+  if (String(sh.getRange(1,16).getValue()) !== "Contact Method") sh.getRange(1,16).setValue("Contact Method");
   return sh;
 }
 function ksBookingRow_(data) {
   return [data.bookingId,data.leadId,data.name,data.service,data.date,data.start,
     data.end,data.frequency,data.count,data.address,data.eventId,data.status,
-    data.invited ? "Yes" : "No",new Date(),data.kind];
+    data.invited ? "Yes" : "No",new Date(),data.kind,data.contactMethod];
 }
 function ksBookingDate_(date,time) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date)) || !/^\d{2}:\d{2}$/.test(String(time)))
@@ -62,6 +63,8 @@ function confirmGardenBooking(input) {
   const bookingId=String(input.bookingId||"").trim();
   const leadId=String(input.leadId||"").trim();
   const kind=String(input.kind||"job");
+  const contactMethod=String(input.contactMethod||"phone");
+  if(!["phone","sms","email","letter","inperson"].includes(contactMethod))throw new Error("Invalid contact preference.");
   if(!["quote","job"].includes(kind))throw new Error("Unknown booking type.");
   if(!/^[A-Za-z0-9_-]{12,100}$/.test(bookingId) || !leadId)throw new Error("Missing booking reference or CRM enquiry.");
   const freq=String(input.frequency||"once");
@@ -100,6 +103,7 @@ function confirmGardenBooking(input) {
     if(!lead.name)throw new Error("CRM customer has no name.");
     const invite=input.inviteCustomer===true;
     const email=String(lead.email||"").trim();
+    if(invite && contactMethod!=="email")throw new Error("Email contact preference is needed to send an invitation.");
     if(invite && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       throw new Error("Customer invitation requested but there is no valid email saved in the CRM.");
     const calendar=CalendarApp.getCalendarById(KS_BOOKING_CALENDAR_ID);
@@ -119,14 +123,16 @@ function confirmGardenBooking(input) {
     sh.getRange(rowNum,1,1,KS_BOOKING_COLUMNS.length).setValues([
       ksBookingRow_({bookingId,leadId,name:lead.name,service,date:input.date,
         start:input.start,end:input.end,frequency:freq,count,address:options.location,
-        eventId:"",status:"Creating",invited:invite,kind})
+        eventId:"",status:"Creating",invited:invite,kind,contactMethod})
     ]);
     let event;
     try {
       event=freq==="once"
         ? calendar.createEvent(title,start,end,options)
         : calendar.createEventSeries(title,start,end,ksBookingSeriesRecurrence_(freq,count),options);
-      event.addPopupReminder(24*60); // Owner's Google Calendar reminder; customer reminders follow their settings.
+      event.removeAllReminders(); // Replace inherited reminders to avoid duplicates.
+      event.addPopupReminder(24*60); // Day before.
+      event.addPopupReminder(60); // One hour before; also applies to regular visits.
       sh.getRange(rowNum,11,1,2).setValues([[event.getId(),"Confirmed"]]);
     } catch(err) {
       sh.getRange(rowNum,12).setValue("Needs review");
@@ -154,5 +160,5 @@ function getGardenBookings(leadId) {
   return rows.filter(r=>!leadId||String(r[1])===String(leadId))
     .map(r=>({bookingId:r[0],leadId:r[1],customer:r[2],service:r[3],
       date:r[4],start:r[5],end:r[6],frequency:r[7],count:r[8],
-      eventId:r[10],status:r[11],invited:r[12],kind:r[14]||"job"}));
+      eventId:r[10],status:r[11],invited:r[12],kind:r[14]||"job",contactMethod:r[15]||"phone"}));
 }
