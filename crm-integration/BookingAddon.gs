@@ -82,6 +82,11 @@ function confirmGardenBooking(input) {
           return {ok:true,alreadyConfirmed:true,eventId:String(existing[10]||""),bookingId};
         throw new Error("This booking needs review before retrying; no duplicate calendar entry was created.");
       }
+      const sameVisit=prior.find(r=>String(r[1])===leadId && String(r[4])===String(input.date) &&
+        String(r[7])===freq && String(r[11])==="Confirmed");
+      if(sameVisit)return {ok:true,alreadyConfirmed:true,eventId:String(sameVisit[10]||""),bookingId:String(sameVisit[0])};
+      if(freq!=="once"&&prior.some(r=>String(r[1])===leadId && String(r[7])!=="once" && String(r[11])==="Confirmed"))
+        throw new Error("This customer already has a recurring maintenance series. Reschedule the existing series rather than creating another.");
     }
     const leads=getLeads();
     const lead=leads.find(l=>String(l.id)===leadId);
@@ -113,6 +118,7 @@ function confirmGardenBooking(input) {
       event=freq==="once"
         ? calendar.createEvent(title,start,end,options)
         : calendar.createEventSeries(title,start,end,ksBookingSeriesRecurrence_(freq,count),options);
+      event.addPopupReminder(24*60); // Owner's Google Calendar reminder; customer reminders follow their settings.
       sh.getRange(rowNum,11,1,2).setValues([[event.getId(),"Confirmed"]]);
     } catch(err) {
       sh.getRange(rowNum,12).setValue("Needs review");
