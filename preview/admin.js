@@ -29,7 +29,7 @@ async function api(path,method="GET",payload){
 function tab(name){
   currentTab=name;
   document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===name)));
-  for(const t of ["reviews","photos","news","quotes"])$("tab-"+t).hidden=t!==name;
+  for(const t of ["reviews","photos","news","quotes","appointments"])$("tab-"+t).hidden=t!==name;
   window.location.hash=name;
 }
 async function session(){
@@ -58,7 +58,7 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",as
   alertStatus("");
   try{await reload()}catch(e){alertStatus(e.message,true)}
 }));
-if(["reviews","news","photos","quotes"].includes(location.hash.slice(1)))tab(location.hash.slice(1));
+if(["reviews","news","photos","quotes","appointments"].includes(location.hash.slice(1)))tab(location.hash.slice(1));
 
 function makeReview(r,legacy=false){
   const card=element("article","ks-admin-card");
@@ -227,10 +227,31 @@ async function loadNews(){
   }catch(e){newsList.replaceChildren(element("p","ks-admin-status error",e.message))}
 }
 window.addEventListener("message",e=>{
-  if(e.origin!==location.origin||e.source!==document.getElementById("ksQuoteFrame")?.contentWindow)return;
+  if(e.origin!==location.origin)return;
+  if(e.source===document.getElementById("ksAppointmentFrame")?.contentWindow && e.data?.type==="ks-appointment-height" && Number.isFinite(e.data.height)){
+    document.getElementById("ksAppointmentFrame").style.height=Math.max(900,Math.min(6500,e.data.height+18))+"px";return;
+  }
+  if(e.source!==document.getElementById("ksQuoteFrame")?.contentWindow)return;
   if(e.data?.type==="ks-quote-height"&&Number.isFinite(e.data.height)){
     document.getElementById("ksQuoteFrame").style.height=Math.max(750,Math.min(7000,e.data.height+12))+"px";
   }
+});
+const crmInput=$("ksPrivateCRMUrl"),crmStatus=$("ksCRMStatus");
+function cleanCRMUrl(){
+  const value=crmInput.value.trim();let url;
+  try{url=new URL(value);}catch{throw Error("Enter a valid private Apps Script web app URL.");}
+  if(url.protocol!=="https:"||url.hostname!=="script.google.com"||!url.pathname.startsWith("/macros/s/")||!url.pathname.endsWith("/exec")||url.pathname.split("/").length!==5)
+    throw Error("Use your private Google Apps Script web app /exec address, not the public intake URL.");
+  return url.toString();
+}
+try{crmInput.value=localStorage.getItem("ks-private-crm-url")||"";}catch{}
+$("ksSaveCRMUrl").addEventListener("click",()=>{
+  try{const link=cleanCRMUrl();localStorage.setItem("ks-private-crm-url",link);crmStatus.textContent="Private CRM shortcut saved on this device.";}
+  catch(e){alertStatus(e.message,true,crmStatus);}
+});
+$("ksOpenCRM").addEventListener("click",()=>{
+  try{const link=cleanCRMUrl();window.open(link,"_blank","noopener,noreferrer");crmStatus.textContent="Private CRM opened. Confirm the visit there once its booking update has been deployed.";}
+  catch(e){alertStatus(e.message,true,crmStatus);}
 });
 session();
 })();

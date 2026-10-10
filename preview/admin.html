@@ -22,7 +22,7 @@
 <main class="ks-admin-main">
   <section id="adminLogin" class="ks-admin-login">
     <p class="eyebrow">PRIVATE ACCESS</p><h1>Your website, one place.</h1>
-    <p>Sign in to manage customer reviews, garden photos, news and customer quotes.</p>
+    <p>Sign in to manage reviews, garden photos, news, quotes and customer appointments.</p>
     <form id="adminLoginForm" class="ks-admin-panel">
       <label for="adminPassword">Owner password</label>
       <input id="adminPassword" type="password" autocomplete="current-password" required minlength="16" placeholder="Your secure password">
@@ -40,6 +40,7 @@
       <button type="button" data-tab="reviews" aria-selected="true"> <span aria-hidden="true">★</span> Reviews</button>
       <button type="button" data-tab="photos" aria-selected="false"> <span aria-hidden="true">▧</span> Photos</button>
       <button type="button" data-tab="news" aria-selected="false"> <span aria-hidden="true">✎</span> News & advice</button>
+      <button type="button" data-tab="appointments" aria-selected="false"> <span aria-hidden="true">▦</span> Appointments</button>
       <button type="button" data-tab="quotes" aria-selected="false"> <span aria-hidden="true">▤</span> Quotes & measuring</button>
     </nav>
     <p id="globalStatus" class="ks-admin-status" role="status" aria-live="polite"></p>
@@ -65,6 +66,22 @@
     <div id="tab-quotes" class="ks-admin-section" hidden>
       <div class="ks-admin-section-head"><div><h2>Quotes & driveway measuring</h2><p>Measure awkward areas, plan cleaning materials, and prepare professional quotes for customers.</p></div><a href="quote-builder.html" target="_blank" rel="noopener">Open full screen ↗</a></div>
       <iframe id="ksQuoteFrame" title="KS Garden Services quote and driveway measuring app" src="quote-builder.html" loading="lazy" style="width:100%;min-height:1800px;border:0;border-radius:16px;background:#f6f8f5"></iframe>
+    </div>
+    <div id="tab-appointments" class="ks-admin-section" hidden>
+      <div class="ks-admin-section-head"><div><h2>Appointments & customer calendars</h2><p>Prepare single or recurring calendar invitations for confirmed visits, then share them with customers.</p></div><a href="appointment-calendar.html" target="_blank" rel="noopener">Open full screen ↗</a></div>
+      <div class="ks-admin-panel" style="margin:0 0 22px">
+        <h3>Your private CRM booking diary</h3>
+        <p class="ks-admin-muted">Once the private CRM booking update is deployed, use its <strong>Confirm Booking</strong> button to create your Google Calendar event and record the booking in your CRM.</p>
+        <label for="ksPrivateCRMUrl">Private CRM web app address</label>
+        <input id="ksPrivateCRMUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://script.google.com/macros/s/…/exec">
+        <div class="ks-admin-actions">
+          <button type="button" id="ksSaveCRMUrl" class="btn">Save shortcut on this device</button>
+          <button type="button" id="ksOpenCRM" class="btn outline">Open private CRM ↗</button>
+        </div>
+        <p id="ksCRMStatus" class="ks-admin-status" role="status"></p>
+        <p class="ks-admin-muted">The link stays on this device only; it does not store CRM passwords or customer details. Access still requires your Google account. Do not enter the public website enquiry URL.</p>
+      </div>
+      <iframe id="ksAppointmentFrame" title="KS Garden Services appointments and customer calendar invitations" src="appointment-calendar.html" loading="lazy" style="width:100%;min-height:1500px;border:0;border-radius:16px;background:#f6f8f5"></iframe>
     </div>
     <div id="tab-news" class="ks-admin-section" hidden>
       <div class="ks-admin-section-head"><div><h2>Garden news & advice</h2><p>Create, edit, publish or unpublish stories, seasonal tips and business updates.</p></div><a href="news.html" target="_blank" rel="noopener">View news page ↗</a></div>
