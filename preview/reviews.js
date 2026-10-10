@@ -3,6 +3,13 @@
 const list=document.getElementById("reviewList"), summary=document.getElementById("reviewSummary"), form=document.getElementById("reviewForm"), notice=document.getElementById("reviewFormStatus");
 function node(tag,cls,text){const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;}
 function niceDate(s){const d=new Date(s);return Number.isNaN(d.getTime())?"":d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});}
+const oldReviews=Array.isArray(window.KS_LEGACY_REVIEWS)?window.KS_LEGACY_REVIEWS:[];
+const oldReviewIds=new Set(oldReviews.map(r=>r.id));
+function addExisting(reviews){
+  const live=Array.isArray(reviews)?reviews:[];
+  const existing=new Set(live.map(r=>String(r.name||"").trim().toLowerCase()+"|"+String(r.message||"").trim()));
+  return [...live,...oldReviews.filter(r=>!live.some(x=>x.id===r.id)&&!existing.has(r.name.toLowerCase()+"|"+r.message.trim()))];
+}
 function showReviews(reviews){
  list.replaceChildren();
  if(!reviews.length){list.append(node("p","review-message","No website reviews have been submitted yet. Be the first to share your experience."));summary.textContent="";return;}
@@ -10,7 +17,8 @@ function showReviews(reviews){
  summary.replaceChildren(node("strong","",average.toFixed(1)+" / 5"),node("span","stars","★".repeat(Math.round(average))+"☆".repeat(5-Math.round(average))),node("p","small",reviews.length+" customer review"+(reviews.length===1?"":"s")));
  for(const r of reviews){
   const card=node("article","review-card"),head=node("div","review-card-head"),who=node("div");
-  who.append(node("div","review-name",r.name),node("div","review-date",niceDate(r.created_at)));
+  who.append(node("div","review-name",r.name));
+  if(!r.legacy&&!oldReviewIds.has(r.id)&&r.created_at)who.append(node("div","review-date",niceDate(r.created_at)));
   const stars=node("div","stars","★".repeat(r.rating)+"☆".repeat(5-r.rating));
   stars.setAttribute("aria-label",r.rating+" out of 5 stars");head.append(who,stars);
   card.append(head,node("p","review-text",r.message));
@@ -22,10 +30,11 @@ async function load(){
  try{
   const r=await fetch("/api/reviews",{cache:"no-store"});
   if(!r.ok)throw Error("Reviews temporarily unavailable");
-  showReviews((await r.json()).reviews||[]);
+  showReviews(addExisting((await r.json()).reviews||[]));
   form.hidden=false;
+  const hint=document.getElementById("reviewOfflineMessage");if(hint)hint.hidden=true;
  }catch{
-  list.replaceChildren(node("p","review-message","Online website reviews are being connected. Please check again soon."));
+  showReviews(addExisting([]));
   form.hidden=true;
   const hint=document.getElementById("reviewOfflineMessage");
   if(hint)hint.hidden=false;
