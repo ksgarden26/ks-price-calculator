@@ -74,3 +74,27 @@ The separate `preview/gallery-manager/` app uses a GitHub personal access token 
 
 ### Security and privacy
 No admin password, database ID or email API key is committed in the public source. The admin page itself is visible at a public URL, but all updates require a valid signed owner session. Do not treat the page URL as authentication. Customer reviews stay intact and owner replies are saved independently. The editor is not an integration for Google or Facebook native reviews.
+
+## Mobile quoting & measuring (added 10 October 2026)
+
+The private dashboard has a **Quotes & measuring** tab, backed by `preview/quote-builder.html`, `preview/quote-builder.js` and `preview/quote-builder.css`. It is designed for iPhone and iPad, and also works in desktop browsers.
+
+**What it can do**
+- Add measured rectangles, triangles and trapeziums; subtract obstructions/planting beds. Automatically total m².
+- Upload an *approximately overhead* driveway photograph, tap the two ends of a measured reference length in the same plane, then tap around the work area to calculate an **approximate** polygon area.
+- **Photo-traced area is not an AR/LiDAR measurement, not perspective corrected and not survey-grade.** A single photo with arbitrary perspective is unsuitable for reliable area without proper mapping. Measure with a tape or laser on site before committing prices.
+- Calculate charges for pressure washing, weed treatment, re-sanding, sealing, pre-treatment, extra labour, materials, disposal, internal travel, discounts and optional VAT.
+- Work out sand kilograms and sealer litres/tubs from **user-entered product coverage**; these are planning quantities, not verified supplier specifications.
+- See a customer-facing quote preview which rolls internal travel into site costs rather than listing it as a separate travel fee; print/save a PDF or copy the text to WhatsApp/email.
+- Save, edit, view and delete confidential quotes in Cloudflare D1 via the **same signed admin login**. No customer data is placed in website localStorage.
+
+**Deployment**
+1. Publish updated `preview/admin.html`, `admin.js`, `quote-builder.html`, `quote-builder.js`, `quote-builder.css`, plus previous admin static assets.
+2. For a fresh D1 database use the current `schema.sql`; for an existing database run the latest `admin-migration.sql`, which now includes the `quotes` table.
+3. Deploy updated `review-api/src/index.js` to the **/api/** routes on the active Cloudflare zone.
+4. Verify `GET /api/admin/session` is 401 while signed out; then log in at `/admin.html`, choose **Quotes & measuring**, save a quote, refresh, load it, and test print and copy.
+5. Check the phone/tablet layout in portrait and landscape. The iframe resizes itself to fit the app content.
+
+**iPhone/iPad home screen:** Open the published `https://ksgardenservices.co.uk/admin.html` in Safari → Share → **Add to Home Screen**. This places a shortcut on the device. Admin saving, photo uploads, news edits and quote retrieval still **need an internet connection**; this is not an offline-first native app.
+
+**Safety/pricing:** Prices are all editable and initially blank. Do not treat this as a verified automatic price schedule, precise AR measurement, or a connection to Xero. VAT is zero unless explicitly entered, and should be charged only when legally appropriate. Verify surface/product suitability, disposal terms, labour, materials and site conditions.
