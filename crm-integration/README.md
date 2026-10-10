@@ -17,7 +17,13 @@ For accepted work, choose a first date, visit window and recurrence:
 - Creates a row in a new **Bookings** worksheet, with Booking Type `quote` or `job`. Only confirmed work marks the enquiry **Won**.
 - Sets **two Google Calendar pop-up alerts for the owner**: 24 hours before and 1 hour before EVERY booking, including recurring maintenance instances
 - Stores a **contact preference per booking**: Phone/landline, SMS, Email, written appointment card, or in-person
-- Provides a **private 7am-ish morning email digest** summarising today's jobs, tomorrow's jobs, quotation follow-ups and tomorrow's customers you need to call/text/prepare a card for (only after installing its trigger). Does not send customer messages.
+- Every enquiry/new customer defaults to **Minimal communications** in the private CRM, stored in a separate **Customer Preferences** worksheet. The selected level stays attached to the customer:
+  - **Minimal (default):** no routine appointment messages, calls, post-visit reports, photos or review requests. Only contact when necessary (changes, problems, customer-requested information, billing), or if a message is expressly requested.
+  - **Standard/Full:** enables owner-selectable routine communication preferences, but no routine messages are automatically sent by these settings alone.
+  - **Optional on-the-day ETA countdown:** separate affirmative opt-in checkbox, independent of level. This is only a stored preference at present; the tracking delivery feature is NOT connected or live.
+  - **Post-visit reports:** explicit opt-in checkbox, OFF by default. No automatic report generation/sending is implemented.
+  - Internal owner 24h + 1h alerts and daily diary remain ON regardless of customer communication level.
+- Provides a **private 7am-ish morning email digest** summarising today's jobs, tomorrow's jobs, quotation follow-ups and tomorrow's customers who have opted for routine contact and need calling/texting/cards (only after installing its trigger). Does not send customer messages.
 - Optionally invites the customer's saved email address via a **Google Calendar invitation**, only when its checkbox is ticked
 - Checks booking references and existing confirmed maintenance series to avoid accidental duplicates
 
@@ -30,7 +36,7 @@ For accepted work, choose a first date, visit window and recurrence:
 1. **Security first:** Use a **private, owner-only Apps Script project** for customer records and Calendar permissions. If your existing CRM project has a public `Anyone` website-intake deployment, do **not** install the Calendar add-on into that publicly deployed project. Move the public intake handler into its own separate, least-privilege Apps Script project first. This must be reviewed in the live configuration.
 2. Open the existing private CRM Apps Script editor from **[KS Garden Services – Quote CRM](https://docs.google.com/spreadsheets/d/1OBGz9VKwv_Aog0H6rpPkUZLtAm3etHIx6YPL1Rr2dIM/edit)** using Extensions → Apps Script.
 3. Compare the live `Index.html` with this updated `crm-integration/Index.html`. If it still matches the early October source, replace it with the updated file; otherwise carefully merge the confirm-booking button, form, and JavaScript.
-4. Add new Apps Script files **BookingAddon.gs** and **BookingReminders.gs**; paste the correspondingly named GitHub files. Keep the existing Code.gs, which provides `CFG.SPREADSHEET_ID`, `getLeads()` and `saveLead()`.
+4. Add new Apps Script files **BookingAddon.gs**, **BookingReminders.gs**, and **CustomerPreferencesAddon.gs**; paste the correspondingly named GitHub files. Keep the existing Code.gs, which provides `CFG.SPREADSHEET_ID`, `getLeads()` and `saveLead()`.
 5. In Apps Script → Project Settings, set timezone to **Europe/London**. Under Script Properties, add `KS_OWNER_EMAIL` with the account email used to sign into the private CRM (the owner must actually sign in using this address). Optional `KS_DIGEST_EMAIL` overrides the owner email recipient for the daily brief; otherwise, it sends to `info@ksgardenservices.co.uk`. No passwords are stored in these scripts.
 6. In Project Settings, verify the project is authorised for Google Calendar, Google Sheets, Apps Script triggers and email sending. Re-authorise on first run as prompted. Deploy a **new version** of the private web app with **Execute as: Me** and **Who has access: Only myself**.
 7. Run `setupKsDailyBookingBrief()` once **as the authorised owner** in the private Apps Script editor, granting permissions. This creates one time-driven trigger to email your morning briefing around 7am London time (Google's clock triggers aren't guaranteed to run at an exact minute). No customers are sent messages. Confirm the trigger in Apps Script → Triggers. Ensure Google Calendar mobile notifications are enabled on your phone or tablet so the 24h and 1h reminders actually appear.
@@ -52,3 +58,13 @@ For accepted work, choose a first date, visit window and recurrence:
 Choose **Phone / landline** while booking an elderly or offline customer. The CRM still creates YOUR Google Calendar event. Their booking is written to the Bookings sheet, with no email invitation. The daily brief shows **CALL CUSTOMER** (with their stored phone number) on the day before each appointment. It is a reminder to you to confirm manually, NOT an automated telephone call. The same system supports text-message, appointment-card and in-person contact preferences. An email invitation can only be selected for a customer whose contact preference is Email and whose address is recorded.
 
 Both one-off quotation visits and confirmed one-off/regular jobs get two popup reminders: 24h and 1h. The new reminder changes are source-only until the owner-only Apps Script integration is installed, tested and enabled. 
+
+
+## Minimal communication test checklist
+
+- Create a new customer and confirm **Minimal**, daytime tracker OFF and post-visit reports OFF.
+- Book a quote visit and a confirmed job: verify the customer's email invitation stays **unticked** and no routine customer messages are sent.
+- Verify the customer's chosen preference loads when their CRM record is reopened.
+- Select optional daytime ETA tracking on one customer's record: check it remains saved without enabling after-visit reports.
+- Check the private morning diary and Google Calendar owner alerts still work for Minimal customers, but routine day-before customer call reminders are skipped.
+- A customer selecting full communication does **not** imply automatic consent to marketing emails or automatic post-visit reports; use express choices and comply with applicable contact preferences.
