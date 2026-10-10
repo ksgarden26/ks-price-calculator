@@ -15,10 +15,16 @@ NOTIFY_TO_EMAIL = "info@ksgardenservices.co.uk"
 REVIEW_FROM_EMAIL = "KS Garden Services <reviews@ksgardenservices.co.uk>"
 REVIEW_ADMIN_URL = "https://ksgardenservices.co.uk/review-admin.html"
 
-# Add these routes only after confirming this domain is on your Cloudflare account.
+# Enable after creating the R2 bucket named ks-garden-photos.
+# [[r2_buckets]]
+# binding = "PHOTO_BUCKET"
+# bucket_name = "ks-garden-photos"
+
+# Uncomment to route public reviews, gallery, news and private admin API
+# through this same worker, without replacing existing website pages:
 # [[routes]]
-# pattern = "ksgardenservices.co.uk/api/reviews*"
+# pattern = "ksgardenservices.co.uk/api/*"
 # zone_name = "ksgardenservices.co.uk"
 # [[routes]]
-# pattern = "www.ksgardenservices.co.uk/api/reviews*"
+# pattern = "www.ksgardenservices.co.uk/api/*"
 # zone_name = "ksgardenservices.co.uk"
