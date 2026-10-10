@@ -51,3 +51,17 @@ CREATE TABLE IF NOT EXISTS gallery_photos (
   created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_gallery_photos_created ON gallery_photos(created_at DESC);
+
+-- Private, editable customer quotes. No public access to quote information.
+CREATE TABLE IF NOT EXISTS quotes (
+  id TEXT PRIMARY KEY,
+  quote_no TEXT NOT NULL,
+  customer_name TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Sent','Accepted','Declined')),
+  area_m2 REAL NOT NULL DEFAULT 0,
+  total_gbp REAL NOT NULL DEFAULT 0,
+  snapshot TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_quotes_updated ON quotes(updated_at DESC);
