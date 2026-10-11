@@ -172,6 +172,6 @@ function ksCustomerGardenPlants(leadId) {
   if(sh.getLastRow()<2)return [];
   return sh.getRange(2,1,sh.getLastRow()-1,KS_GARDEN_PLANT_HEADERS.length)
     .getValues().filter(r=>String(r[1])===String(leadId)).slice(-50).reverse()
-    .map(r=>({id:String(r[0]),observedAt:r[3],commonName:r[4],
+    .map(r=>({id:String(r[0]),observedAt:r[3]?(new Date(r[3])).toISOString():"",commonName:r[4],
       scientificName:r[5],score:r[7],notes:r[8]}));
 }
