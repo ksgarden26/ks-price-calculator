@@ -207,3 +207,115 @@ function submitReferral(payload) {
     return {ok:false,error:String(err.message||err).slice(0,200)};
   }
 }
+
+
+/**
+ * Standalone public website intake (contact page and price calculator).
+ * This endpoint can ONLY insert new enquiries and email the owner.
+ * It never retrieves, updates or deletes existing customer data.
+ */
+function doPost(e) {
+  let response;
+  try {
+    const raw=String(e&&e.postData&&e.postData.contents||"");
+    if(!raw||raw.length>12000)throw Error("Invalid submission size.");
+    const data=JSON.parse(raw);
+    if(!data||typeof data!=="object"||Array.isArray(data))throw Error("Invalid submission.");
+    if(ksPlain_(data.website,100)) {
+      response={ok:true}; // anti-spam honeypot; no new record
+    } else {
+      response=ksSubmitWebsiteLead_(data);
+    }
+  }catch(error) {
+    // Generic public error; no customer or private script information.
+    console.error("Public enquiry rejected: "+(error.message||error));
+    response={ok:false,error:"Please check your details and contact us by email if this continues."};
+  }
+  return ContentService.createTextOutput(JSON.stringify(response))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+function ksPublicPrice_(v) {
+  const n=Number(String(v==null?"":v).replace(/[£,\s]/g,""));
+  return Number.isFinite(n)&&n>=0&&n<=100000&&String(v||"").trim()?n:"";
+}
+function ksSubmitWebsiteLead_(data) {
+  const name=ksPlain_(data.name||data.customer,100);
+  const phone=ksPlain_(data.phone,30);
+  const email=ksPlain_(data.email,254).toLowerCase();
+  const postcode=ksPlain_(data.postcode,12).toUpperCase();
+  const service=ksPlain_(data.service,100)||"General garden enquiry";
+  const details=ksPlain_(data.details||data.message||data.notes,1200);
+  const address=ksPlain_(data.address,300);
+  const guide=ksPublicPrice_(data.guide??data.guidePrice);
+  const travel=ksPublicPrice_(data.travel??data.travelMiles);
+  const size=ksPlain_(data.size||data.gardenSize,70);
+  const condition=ksPlain_(data.condition,70);
+  const area=ksPlain_(data.area,100);
+  const waste=ksPlain_(data.waste||data.greenWaste,60);
+  if(name.length<2||phone.length<7||phone.length>30)
+    throw Error("A name and contact telephone number are required.");
+  if(email&&!ksValidEmail_(email))throw Error("Invalid email address.");
+  if(!postcode||!/^[A-Z0-9 ]{5,10}$/.test(postcode))
+    throw Error("Please enter a valid postcode.");
+  const sourceText=ksPlain_(data.source,70).toLowerCase();
+  const source=/(price|calculator|estimate|guide)/.test(sourceText)?"Website Price Guide":"Website Contact";
+  const now=new Date();
+  const nextFollow=ksFollow_(now);
+  const digest=Utilities.computeDigest(
+    Utilities.DigestAlgorithm.SHA_256,
+    [name.toLowerCase(),phone.replace(/\D/g,""),postcode,service.toLowerCase(),source].join("|")
+  ).map(byte=>(byte<0?byte+256:byte).toString(16).padStart(2,"0")).join("");
+  const cache=CacheService.getScriptCache(),key="ks-web-"+digest.slice(0,55);
+  const lock=LockService.getScriptLock();
+  if(!lock.tryLock(10000))throw Error("Form is busy.");
+  let id;
+  try{
+    const existing=cache.get(key);
+    if(existing)return {ok:true,id:existing,duplicate:true};
+    id=Utilities.getUuid();
+    const notes=[
+      details,
+      size?"Garden size: "+size:"",
+      condition?"Condition: "+condition:"",
+      area?"Area: "+area:"",
+      waste?"Green waste: "+waste:""
+    ].filter(Boolean).join("\n");
+    const row=[
+      now,ksSheetSafe_(name,100),ksSheetSafe_(phone,30),
+      ksSheetSafe_(email,254),postcode,ksSheetSafe_(service,100),
+      guide,"","New Enquiry",nextFollow,source,"","","",
+      ksSheetSafe_(notes,2000),ksSheetSafe_(address,300),
+      travel,waste?ksSheetSafe_(waste,60):"",
+      ksSheetSafe_(size,70),ksSheetSafe_(condition,70),
+      ksSheetSafe_(area,100),id
+    ];
+    const sh=SpreadsheetApp.openById(KS_REF.SHEET_ID).getSheetByName(KS_REF.CRM_SHEET);
+    if(!sh)throw Error("Quotes tab is unavailable.");
+    sh.appendRow(row);
+    cache.put(key,id,1200);
+  }finally{lock.releaseLock()}
+  let emailNotified=true;
+  try{
+    MailApp.sendEmail({
+      to:KS_REF.OWNER_EMAIL,
+      subject:"New "+(source==="Website Price Guide"?"price-guide":"website")+" enquiry — "+name,
+      body:[
+        "New KS Garden Services enquiry",
+        "Customer: "+name,
+        "Phone: "+phone,
+        "Email: "+(email||"Not provided"),
+        "Postcode: "+postcode,
+        "Service: "+service,
+        "Guide price: "+(guide!==""?"£"+guide:"Not provided"),
+        "Source: "+source,
+        "Details: "+(notes||"Not provided"),
+        "Reference: "+id,
+        "Saved as New Enquiry; follow up in your private CRM."
+      ].join("\n")
+    });
+  }catch(err){
+    emailNotified=false;
+    console.error("Public enquiry alert email failed: "+(err.message||err));
+  }
+  return {ok:true,id,emailNotified};
+}
