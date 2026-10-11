@@ -2,7 +2,10 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KS Garden Services CRM</title>
+<title>KS Garden Services Admin</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ksgarden26/ks-price-calculator/cloudflare-site/KS%20Garden%20Services%20Logo.png">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ksgarden26/ks-price-calculator/cloudflare-site/KS%20Garden%20Services%20Logo.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root{--g:#173d25;--g2:#245b36;--cream:#ebe9cf;--bg:#f4f7f4;--line:#dce5dd;--text:#1d2921;--muted:#6c786f;--red:#a33b3b;--amber:#9a6d00}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}
@@ -136,6 +139,33 @@ html,body{min-height:100%;background:#f6f8f6}
  .ks-tile small{font-size:11px}
 }
 
+
+/* Measuring tool and visible, on-page overdue / new-enquiry count bubbles */
+.ks-tile{position:relative}
+.ks-count{position:absolute;top:7px;right:8px;min-width:23px;height:23px;
+ padding:2px 6px;border-radius:999px;background:#bb2638;color:#fff;
+ display:flex;justify-content:center;align-items:center;font-weight:750;font-size:12px;
+ box-shadow:0 0 0 2px #fff}
+.ks-count[hidden]{display:none}
+.ks-area-modal{width:min(860px,100%);max-height:95dvh}
+.ks-area-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.ks-area-tabs button{min-height:49px}
+.ks-area-tabs .ks-is-active{color:#fff;background:var(--g2);border-color:var(--g2)}
+.ks-area-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.ks-area-grid label{font-weight:700;font-size:13px;color:#344d3a}
+.ks-area-grid input,.ks-area-grid select,.ks-area-notes{display:block;width:100%;min-height:47px;margin-top:6px;
+border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
+.ks-area-grid .ks-span-all{grid-column:1/-1}
+.ks-area-result{padding:15px 18px;background:#eef6ee;border-radius:12px;margin:13px 0;color:var(--g)}
+.ks-area-result strong{font-size:30px}
+.ks-area-muted{font-size:12px;color:#5b6d60;line-height:1.45;margin:8px 0}
+#ksAreaMap{height:325px;width:100%;border-radius:12px;background:#e0e7e0;border:1px solid #c6d6ca}
+.ks-area-map-buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.ks-area-map-buttons button{min-height:44px}
+.ks-area-map-buttons input{min-width:110px;flex:1;height:44px;border:1px solid #bed1c1;border-radius:8px;padding:9px}
+.ks-area-saved{font-size:13px;padding:10px 0;color:#245b36}
+@media(max-width:480px){.ks-area-grid{grid-template-columns:1fr}.ks-area-grid .ks-span-all{grid-column:auto}#ksAreaMap{height:290px}}
+
 </style>
 </head>
 <body>
@@ -160,12 +190,13 @@ html,body{min-height:100%;background:#f6f8f6}
     <button type="button" class="ks-tile ks-tile-featured" id="ksQuickAdd"><span class="ks-tile-icon" aria-hidden="true">✚</span><strong>New enquiry</strong><small>Add a customer or new job</small></button>
     <button type="button" class="ks-tile" id="ksQuickSendForm"><span class="ks-tile-icon" aria-hidden="true">📨</span><strong>Send customer form</strong><small>WhatsApp, text or email</small></button>
     <button type="button" class="ks-tile" id="ksQuickCustomers"><span class="ks-tile-icon" aria-hidden="true">👥</span><strong>Customers</strong><small>Find and update records</small></button>
-    <button type="button" class="ks-tile" id="ksQuickCRM"><span class="ks-tile-icon" aria-hidden="true">📊</span><strong>CRM Dashboard</strong><small>All enquiries, quotes and figures</small></button>
+    <button type="button" class="ks-tile" id="ksQuickCRM"><span class="ks-tile-icon" aria-hidden="true">📊</span><strong>CRM Dashboard</strong><small>All enquiries, quotes and figures</small><span class="ks-count" id="ksNewCount" hidden aria-label="New enquiries"></span></button>
     <button type="button" class="ks-tile" id="ksQuickQuote"><span class="ks-tile-icon" aria-hidden="true">📋</span><strong>Quote visit</strong><small>Book a garden assessment</small></button>
     <button type="button" class="ks-tile ks-tile-featured" id="ksQuickBook"><span class="ks-tile-icon" aria-hidden="true">📅</span><strong>Book a job</strong><small>One-off or regular maintenance</small></button>
     <button type="button" class="ks-tile" id="ksQuickCheckin"><span class="ks-tile-icon" aria-hidden="true">📍</span><strong>GPS check-in</strong><small>Confirm the garden you're at</small></button>
     <button type="button" class="ks-tile" id="ksQuickPlant"><span class="ks-tile-icon" aria-hidden="true">🌿</span><strong>Plant ID</strong><small>Identify and save garden plants</small></button>
-    <button type="button" class="ks-tile" id="ksQuickFollow"><span class="ks-tile-icon" aria-hidden="true">🔔</span><strong>Follow-ups</strong><small>See customers to contact</small></button>
+    <button type="button" class="ks-tile" id="ksQuickFollow"><span class="ks-tile-icon" aria-hidden="true">🔔</span><strong>Follow-ups</strong><small>See customers to contact</small><span class="ks-count" id="ksDueCount" hidden aria-label="Due follow-ups"></span></button>
+    <button type="button" class="ks-tile" id="ksQuickMeasure"><span class="ks-tile-icon" aria-hidden="true">📐</span><strong>Measure Area</strong><small>Driveways, patios and lawns</small></button>
     <button type="button" class="ks-tile" id="ksQuickCalendar"><span class="ks-tile-icon" aria-hidden="true">🗓️</span><strong>Calendar</strong><small>Open your Google diary</small></button>
     <button type="button" class="ks-tile" id="ksQuickNotify"><span class="ks-tile-icon" aria-hidden="true">⏰</span><strong>Alerts</strong><small>Enable browser reminders</small></button>
   </div>
@@ -182,6 +213,51 @@ html,body{min-height:100%;background:#f6f8f6}
 </main></div>
 
 
+
+
+<div class="modalback" id="ksAreaModal" aria-hidden="true" style="z-index:76">
+ <div class="modal ks-area-modal" role="dialog" aria-modal="true" aria-labelledby="ksAreaTitle">
+  <div class="ks-plant-inline"><h2 id="ksAreaTitle">📐 Measure Area</h2><button type="button" class="btn" id="ksAreaClose">Close ×</button></div>
+  <p class="ks-area-muted">Measure for a quotation. Map outlines are approximate; check on site before ordering materials or agreeing a final price.</p>
+  <div class="ks-area-grid">
+   <label>Customer (optional)
+    <select id="ksAreaCustomer"><option value="">Not assigned to a customer</option></select>
+   </label>
+   <label>Surface
+    <select id="ksAreaSurface"><option value="driveway">Driveway</option><option value="patio">Patio</option><option value="lawn">Lawn</option><option value="other">Other garden area</option></select>
+   </label>
+  </div>
+  <div class="ks-area-tabs">
+   <button type="button" class="btn ks-is-active" id="ksAreaManualTab" aria-pressed="true">📏 Length × width</button>
+   <button type="button" class="btn" id="ksAreaMapTab" aria-pressed="false">🛰 Satellite outline</button>
+  </div>
+  <div id="ksAreaManualPanel" class="ks-area-grid">
+   <label>Length (metres)<input id="ksAreaLength" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="e.g. 9.5"></label>
+   <label>Width (metres)<input id="ksAreaWidth" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="e.g. 4"></label>
+   <p class="ks-area-muted ks-span-all">For an L-shaped driveway, measure each rectangle separately and add the areas together.</p>
+  </div>
+  <div id="ksAreaMapPanel" hidden>
+   <p class="ks-area-muted">Move and zoom the map to the property, then tap each corner of the surface. Tap at least 3 points. You can also centre the map using a UK postcode.</p>
+   <div class="ks-area-map-buttons">
+    <input id="ksAreaPostcode" type="text" placeholder="Customer postcode" aria-label="Find customer postcode">
+    <button type="button" class="btn" id="ksAreaFindPostcode">Find postcode</button>
+    <button type="button" class="btn" id="ksAreaLocate">📍 My location</button>
+   </div>
+   <div id="ksAreaMap" aria-label="Map for outlining the measured area"></div>
+   <div class="ks-area-map-buttons">
+    <button type="button" class="btn" id="ksAreaUndo">↶ Undo point</button>
+    <button type="button" class="btn" id="ksAreaClear">Clear outline</button>
+   </div>
+   <p class="ks-area-muted" id="ksAreaMapHint">Tap three or more corners to measure an area.</p>
+   <p class="ks-area-muted">Satellite images © Esri and imagery contributors. Map data and imagery may be out of date.</p>
+  </div>
+  <div class="ks-area-result" aria-live="polite">Estimated area: <strong id="ksAreaResult">—</strong> m²</div>
+  <label class="field" for="ksAreaNotes">Site notes (optional)</label>
+  <textarea id="ksAreaNotes" class="ks-area-notes" rows="2" placeholder="E.g. block paving, curved edge, confirm width on site"></textarea>
+  <p id="ksAreaSaved" class="ks-area-saved" role="status" aria-live="polite"></p>
+  <div class="modalactions"><button type="button" class="btn" id="ksAreaCancel">Back</button><button type="button" class="btn primary" id="ksAreaSave">Save to CRM Measurements</button></div>
+ </div>
+</div>
 
 <div id="ksShareFormModal" class="modalback" aria-hidden="true" style="z-index:76">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ksShareFormTitle">
@@ -311,6 +387,17 @@ function gbp(v){return v!==''&&v!=null&&!isNaN(Number(v))?new Intl.NumberFormat(
 function d(v){if(!v)return '—';const x=new Date(v);return isNaN(x)?'—':x.toLocaleDateString('en-GB')}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function due(x){if(!x.follow||['Won','Lost'].includes(x.status))return false;const a=new Date(x.follow+'T23:59:59'),b=new Date();return a<=b}
+
+function ksUpdateCount_(id,count,label) {
+  const node=$(id),n=Number(count)||0;
+  node.hidden=n<=0;
+  node.textContent=n>99?"99+":String(n);
+  node.setAttribute("aria-label",n+" "+label);
+}
+function ksUpdateHomeCounts(){
+  ksUpdateCount_("ksNewCount",DATA.filter(x=>x.status==="New Enquiry").length,"new enquiries");
+  ksUpdateCount_("ksDueCount",DATA.filter(due).length,"due follow-ups");
+}
 function load(){google.script.run.withSuccessHandler(x=>{DATA=x||[];render();browserDue()}).withFailureHandler(err=>toast(err.message||err)).getLeads()}
 function render(){
  const q=$('search').value.toLowerCase().trim(),sf=$('status').value;
@@ -323,6 +410,7 @@ function render(){
    '<button type="button" class="btn primary" data-ks-lead="'+esc(x.id)+'">Open customer</button></article>'
  ).join(""):'<div class="empty">No matching customers or enquiries.</div>';
  $('empty').style.display=rows.length?'none':'block';$('empty').innerHTML='<b>No matching enquiries</b>Nothing needs showing in this view.';
+ ksUpdateHomeCounts();
  const won=DATA.filter(x=>x.status==='Won'),lost=DATA.filter(x=>x.status==='Lost');$('kNew').textContent=DATA.filter(x=>x.status==='New Enquiry').length;$('kOpen').textContent=DATA.filter(x=>['Quote Sent','Follow-up'].includes(x.status)).length;$('kWon').textContent=won.length;$('kConv').textContent=(won.length+lost.length?Math.round(won.length/(won.length+lost.length)*100):0)+'%';$('kVal').textContent=gbp(won.reduce((a,x)=>a+Number(x.actual||0),0)).replace('—','£0')
 }
 function browserDue(){if(notified||Notification.permission!=='granted')return;const n=DATA.filter(due).length;if(n)new Notification('KS Garden Services CRM',{body:`${n} follow-up${n===1?'':'s'} due or overdue.`});notified=true}
