@@ -303,14 +303,14 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
       <a class="btn primary" id="ksShareWhatsApp" href="#" target="_blank" rel="noopener noreferrer">💬 WhatsApp</a>
       <a class="btn" id="ksShareSMS" href="#">💬 Text message</a>
       <a class="btn" id="ksShareEmail" href="#">✉ Email</a>
-      <button type="button" class="btn" id="ksShareCopy">📋 Copy link</button>
+      <button type="button" class="btn" id="ksShareCopy">📋 Copy branded link</button>
     </div>
     <div class="ks-share-named-link">
-      <a href="https://script.google.com/macros/s/AKfycbzCH8enyUGVzX0aL0pX-r1UP25zmv6P75g2kXeQmfFZsLZt9gHUi70lrstMUNwRr_XZ/exec" target="_blank" rel="noopener noreferrer" aria-label="Open KS Garden Services New Customer Details Form">🔗 New Customer Details Form ↗</a>
+      <a href="https://ksgardenservices.co.uk/new-customer" target="_blank" rel="noopener noreferrer" aria-label="Open KS Garden Services New Customer Details Form">🔗 New Customer Details Form ↗</a>
       <p>Tap the title to open the form or choose how to send it.</p>
     </div>
     <p id="ksShareStatus" role="status" aria-live="polite" style="font-size:13px;color:#4d6d55">No message is sent unless you choose how to share it.</p>
-    <div class="modalactions"><button type="button" class="btn" id="ksShareCancel">Close</button><a class="btn" href="https://script.google.com/macros/s/AKfycbzCH8enyUGVzX0aL0pX-r1UP25zmv6P75g2kXeQmfFZsLZt9gHUi70lrstMUNwRr_XZ/exec" target="_blank" rel="noopener noreferrer">View form ↗</a></div>
+    <div class="modalactions"><button type="button" class="btn" id="ksShareCancel">Close</button><a class="btn" href="https://ksgardenservices.co.uk/new-customer" target="_blank" rel="noopener noreferrer">View form ↗</a></div>
   </div>
 </div>
 
@@ -649,7 +649,7 @@ $("ksMobileLeads").addEventListener("click",e=>{
 
 
 /* Send a customer-only form link; never share the private CRM web app URL. */
-const KS_CUSTOMER_FORM_URL="https://script.google.com/macros/s/AKfycbzCH8enyUGVzX0aL0pX-r1UP25zmv6P75g2kXeQmfFZsLZt9gHUi70lrstMUNwRr_XZ/exec";
+const KS_CUSTOMER_FORM_URL="https://ksgardenservices.co.uk/new-customer";
 const KS_CUSTOMER_FORM_MESSAGE="Hi, thanks for your interest in KS Garden Services. Please complete the form below when you get a chance:\n\nNew Customer Details Form:\n"+KS_CUSTOMER_FORM_URL+"\n\nThanks, KS Garden Services";
 function ksShareOpenForm(){
   $("ksShareFormModal").classList.add("show");
