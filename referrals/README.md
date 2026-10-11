@@ -2,6 +2,12 @@
 
 **STATUS: Draft source only. Not deployed; there is no working customer link yet.** This feature deliberately runs as a **standalone Google Apps Script web app**, so the customer can use it on their phone without making an account, even if the Cloudflare/GitHub preview build is failing. It is not a general website signup page or customer portal.
 
+## Desktop and mobile use
+
+The **same web-app /exec URL** works on desktop, laptop, iPad and phone, without a customer app install. On desktop the form has a centred two-column layout; on phones it collapses to a single column. The exact KS Garden Services round logo is embedded in the form, so there is no external logo link to break. Once deployed, each submitted record is stored in the same central Google Sheet and owner notification email is sent regardless of customer device. Only the form, not the private CRM dashboard, is public.
+
+The owner can open their separate private CRM URL on desktop and mobile using their signed-in Google account. The future unified admin dashboard has its own separate Cloudflare password and is not automatically connected to the private CRM until rollout.
+
 ## Customer experience
 
 Send the published **private-by-link** form via text, WhatsApp or email to a prospective customer who has been recommended to KS Garden Services. They provide:
