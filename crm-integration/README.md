@@ -68,3 +68,30 @@ Both one-off quotation visits and confirmed one-off/regular jobs get two popup r
 - Select optional daytime ETA tracking on one customer's record: check it remains saved without enabling after-visit reports.
 - Check the private morning diary and Google Calendar owner alerts still work for Minimal customers, but routine day-before customer call reminders are skipped.
 - A customer selecting full communication does **not** imply automatic consent to marketing emails or automatic post-visit reports; use express choices and comply with applicable contact preferences.
+
+
+## Private Plant ID on mobile and desktop — draft
+
+**Status: source is in GitHub, not deployed or connected.** Plant identification will NOT work until the private CRM is deployed with a real Pl@ntNet API key.
+
+- In the private CRM's top bar tap **🌿 Plant ID**, then **Take a photo** on iPhone or **Choose from photos** on desktop.
+- Camera input requests the rear-facing phone camera when supported; normal gallery selection is also available.
+- Select **Auto / Flower / Leaf / Fruit / Bark** and tap **Identify plant**. The browser scales and converts the photo into a compressed JPEG (up to 1,600px wide/tall, under 4MB) before sending it, which also strips original EXIF location metadata. Clear, bright leaf/flower close-ups give better results.
+- The **private owner-only** Apps Script function \`identifyKsPlant()\` sends the image to Pl@ntNet using a secret script property \`KS_PLANTNET_API_KEY\`. The key is never embedded in HTML, GitHub files or client-facing endpoints. It requires \`ksBookingOwnerOnly_()\` and must NOT be installed in the public customer referral form/intake project.
+- The app shows up to **five probable species**, their Pl@ntNet confidence scores, common English names (where available) and botanical names. English-language API common names are not always the preferred UK names: use the RHS links to confirm.
+- Each result includes a link to the RHS plant search for species-specific details and pruning advice. Pruning months and instructions are **not fabricated** from AI image matches.
+- Nothing is automatically sent to customers or saved to customer records. The photograph is sent to Pl@ntNet for recognition but is not stored by this CRM feature.
+- **Never** use image-ID alone for toxic/edible plant decisions, pesticides, or precise species-dependent pruning.
+
+### Owner activation steps
+
+1. Sign up for a Pl@ntNet developer API key at [my.plantnet.org](https://my.plantnet.org/).
+2. In the **private** Google Apps Script CRM project (not its public intake deployment), add \`PlantIdAddon.gs\` from this directory and the latest \`Index.html\`.
+3. Under **Project Settings → Script Properties**, add \`KS_PLANTNET_API_KEY\` with the real key. Do not put the key into the website JavaScript.
+4. Authorise the script's \`UrlFetchApp\` external-request permission and re-deploy the private CRM /exec as required.
+5. Test with a clear photo of a familiar garden plant on iPhone and desktop. Verify common/Latin names and RHS links. Check Pl@ntNet subscription, daily quota and any usage charges.
+6. In the owner Cloudflare admin dashboard, the Plant ID tab opens your private CRM shortcut. Save that device's private CRM /exec link under Appointments first. The private CRM and Cloudflare admin remain separate sign-ins in this draft.
+
+Relevant API reference: https://my.plantnet.org/doc/api/identify
+
+**Important security note:** The original CRM can be configured with both public and private deployments of one script project. Do **not** deploy this plant-ID module in a project that is accessible to anonymous customers. Split the public lead-intake and private owner application into separate Apps Script projects before installing a private API key.
