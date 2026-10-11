@@ -55,7 +55,7 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 </nav>
 </aside>
 <main>
-<header><div><h1>Quote Dashboard</h1><p>Every enquiry, quote and follow-up in one place.</p></div><div class="actions"><button class="btn" type="button" id="ksPlantOpen">🌿 Plant ID</button><button class="btn" id="notify">🔔 Enable browser alerts</button><button class="btn primary" id="add">+ New Enquiry</button></div></header>
+<header><div><h1>Quote Dashboard</h1><p>Every enquiry, quote and follow-up in one place.</p></div><div class="actions"><button class="btn" type="button" id="ksCheckinOpen">📍 Check in</button><button class="btn" type="button" id="ksPlantOpen">🌿 Plant ID</button><button class="btn" id="notify">🔔 Enable browser alerts</button><button class="btn primary" id="add">+ New Enquiry</button></div></header>
 <section class="cards">
 <div class="kpi"><span>New enquiries</span><strong id="kNew">0</strong></div><div class="kpi"><span>Open quotes</span><strong id="kOpen">0</strong></div><div class="kpi"><span>Won</span><strong id="kWon">0</strong></div><div class="kpi"><span>Conversion</span><strong id="kConv">0%</strong></div><div class="kpi"><span>Won value</span><strong id="kVal">£0</strong></div>
 </section>
@@ -314,6 +314,7 @@ function ksPlantClose(){
   ksPlantModal.setAttribute("aria-hidden","true");
 }
 $("ksPlantOpen").addEventListener("click",ksPlantOpen);
+$("ksCheckinOpen").addEventListener("click",ksPlantOpen);
 $("ksPlantClose").addEventListener("click",ksPlantClose);
 $("ksPlantUseCamera").addEventListener("click",()=>$("ksPlantCamera").click());
 $("ksPlantChoosePhoto").addEventListener("click",()=>$("ksPlantGallery").click());
