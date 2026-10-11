@@ -166,6 +166,39 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 .ks-area-saved{font-size:13px;padding:10px 0;color:#245b36}
 @media(max-width:480px){.ks-area-grid{grid-template-columns:1fr}.ks-area-grid .ks-span-all{grid-column:auto}#ksAreaMap{height:290px}}
 
+
+/* v2026-10-12 — real iPhone and small tablet touch layout.
+   IMPORTANT: Apps Script doGet must call .addMetaTag('viewport','width=device-width, initial-scale=1').
+   Google ignores viewport tags authored inside Index.html itself.
+*/
+@media(max-width:800px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+  .app main{width:100%;max-width:100%;padding:22px 14px 44px}
+  .ks-home-header{margin:0 auto 22px}
+  .ks-home-header .brand img{width:98px;height:98px}
+  .ks-home-header .brand b{font-size:24px;line-height:1.15}
+  .ks-home-header .brand small{font-size:16px}
+  .ks-home-subtitle{font-size:14px;line-height:1.4}
+  .ks-quick-header{margin-bottom:16px}
+  .ks-quick h2{font-size:20px}
+  .ks-tiles{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;row-gap:12px}
+  .ks-tile{min-height:148px;padding:18px 10px;gap:10px;border-radius:16px;touch-action:manipulation}
+  .ks-tile .ks-tile-icon{font-size:36px}
+  .ks-tile strong{font-size:17px;line-height:1.25}
+  .ks-tile small{font-size:13px;line-height:1.35}
+  .ks-count{min-width:25px;height:25px;font-size:13px;top:8px;right:8px}
+  .ks-crm-back,.ks-list-heading .btn,.modalactions .btn{min-height:48px}
+  .modal input,.modal select,.modal textarea,.toolbar input,.toolbar select{font-size:16px}
+}
+@media(max-width:380px){
+  .app main{padding:18px 10px 38px}
+  .ks-tiles{gap:9px}
+  .ks-tile{min-height:139px;padding:13px 8px}
+  .ks-tile .ks-tile-icon{font-size:33px}
+  .ks-tile strong{font-size:16px}
+  .ks-tile small{font-size:12px}
+}
+
 </style>
 </head>
 <body>
