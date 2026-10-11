@@ -41,6 +41,7 @@
       <button type="button" data-tab="photos" aria-selected="false"> <span aria-hidden="true">▧</span> Photos</button>
       <button type="button" data-tab="news" aria-selected="false"> <span aria-hidden="true">✎</span> News & advice</button>
       <button type="button" data-tab="appointments" aria-selected="false"> <span aria-hidden="true">▦</span> Appointments</button>
+      <button type="button" data-tab="plantid" aria-selected="false"> <span aria-hidden="true">🌿</span> Plant ID</button>
       <button type="button" data-tab="quotes" aria-selected="false"> <span aria-hidden="true">▤</span> Quotes & measuring</button>
     </nav>
     <p id="globalStatus" class="ks-admin-status" role="status" aria-live="polite"></p>
@@ -82,6 +83,17 @@
         <p class="ks-admin-muted">The link stays on this device only; it does not store CRM passwords or customer details. Access still requires your Google account. Do not enter the public website enquiry URL.</p>
       </div>
       <iframe id="ksAppointmentFrame" title="KS Garden Services appointments and customer calendar invitations" src="appointment-calendar.html" loading="lazy" style="width:100%;min-height:1500px;border:0;border-radius:16px;background:#f6f8f5"></iframe>
+    </div>
+    <div id="tab-plantid" class="ks-admin-section" hidden>
+      <div class="ks-admin-section-head"><div><h2>🌿 Plant ID — on-site camera</h2>
+      <p>Take a photo on your phone or choose a photo on desktop. Your private CRM offers likely plant names and RHS reference links.</p></div></div>
+      <div class="ks-admin-panel">
+        <h3>Identify an unfamiliar plant</h3>
+        <p>Open your private CRM Plant ID camera. On iPhone, tap <strong>Take a photo</strong>; on desktop you can upload an existing photograph.</p>
+        <div class="ks-admin-actions"><button type="button" id="ksOpenPlantId" class="btn">Open Plant ID in private CRM ↗</button></div>
+        <p id="ksPlantShortcutStatus" class="ks-admin-status" role="status"></p>
+        <p class="ks-admin-muted">If you haven't saved your private CRM link yet, open the Appointments tab and save it there first. Plant recognition requires a private Pl@ntNet API key before it can work.</p>
+      </div>
     </div>
     <div id="tab-news" class="ks-admin-section" hidden>
       <div class="ks-admin-section-head"><div><h2>Garden news & advice</h2><p>Create, edit, publish or unpublish stories, seasonal tips and business updates.</p></div><a href="news.html" target="_blank" rel="noopener">View news page ↗</a></div>
