@@ -414,7 +414,7 @@ function render(){
  ksUpdateHomeCounts();
  const won=DATA.filter(x=>x.status==='Won'),lost=DATA.filter(x=>x.status==='Lost');$('kNew').textContent=DATA.filter(x=>x.status==='New Enquiry').length;$('kOpen').textContent=DATA.filter(x=>['Quote Sent','Follow-up'].includes(x.status)).length;$('kWon').textContent=won.length;$('kConv').textContent=(won.length+lost.length?Math.round(won.length/(won.length+lost.length)*100):0)+'%';$('kVal').textContent=gbp(won.reduce((a,x)=>a+Number(x.actual||0),0)).replace('—','£0')
 }
-function browserDue(){if(notified||Notification.permission!=='granted')return;const n=DATA.filter(due).length;if(n)new Notification('KS Garden Services CRM',{body:`${n} follow-up${n===1?'':'s'} due or overdue.`});notified=true}
+function browserDue(){if(notified||typeof Notification==='undefined'||Notification.permission!=='granted')return;const n=DATA.filter(due).length;if(n)new Notification('KS Garden Services CRM',{body:`${n} follow-up${n===1?'':'s'} due or overdue.`});notified=true}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2500)}
 function ksApplyCustomerPreferences(pref){
   $('prefLevel').value=pref?.communicationLevel||'minimal';
@@ -1034,6 +1034,13 @@ ksPlantIdentify.addEventListener("click",()=>{
 if(location.hash==="#plant-id"){
   ksPlantOpen();
 }
-
+// Update in-app counts after returning to the page; no background monitoring or iPhone badge.
+let ksLastActiveRefresh=0;
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState==="visible"&&Date.now()-ksLastActiveRefresh>60*1000){
+   ksLastActiveRefresh=Date.now();
+   load();
+ }
+});
 load();
 </script></body></html>
