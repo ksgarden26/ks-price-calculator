@@ -16,7 +16,23 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 .tablewrap{overflow:auto}table{width:100%;min-width:1080px;border-collapse:collapse}th,td{padding:12px 13px;border-bottom:1px solid #edf1ed;text-align:left;font-size:13px}th{background:#f8faf8;color:#536158;font-size:11px;text-transform:uppercase}tr:hover td{background:#fbfcfb}.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-weight:700;font-size:11px;background:#edf4ee;color:var(--g2)}.won{background:#e2f5e6;color:#1b6c31}.lost{background:#fde8e8;color:#993434}.follow-up{background:#fff1cc;color:#805c00}.quote-sent{background:#e8f1ff;color:#315d99}
 .empty{padding:42px;text-align:center;color:var(--muted)}.empty b{display:block;color:var(--g);font-size:18px;margin-bottom:7px}
 .modalback{display:none;position:fixed;inset:0;background:#07170eaa;z-index:50;align-items:center;justify-content:center;padding:16px}.modalback.show{display:flex}.modal{background:white;width:min(800px,100%);max-height:92vh;overflow:auto;border-radius:17px;padding:22px}.modal h2{margin-top:0;color:var(--g)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:#536158;font-weight:700;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #ccd8ce;border-radius:9px}.full{grid-column:1/-1}.modalactions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}.right{display:flex;gap:9px}
-.toast{display:none;position:fixed;right:18px;bottom:18px;background:#173d25;color:white;padding:12px 16px;border-radius:10px;z-index:80}.toast.show{display:block}
+.toast{display:none;position:fixed;right:18px;bottom:18px;background:#173d25;color:white;padding:12px 16px;border-radius:10px;z-index:80}
+.ks-plant-panel{width:min(760px,100%);max-height:94dvh}
+.ks-plant-form{display:grid;gap:14px}
+.ks-plant-file-row{display:flex;gap:10px;flex-wrap:wrap}
+.ks-plant-file-row button{flex:1;min-width:135px}
+.ks-plant-preview{display:block;max-width:100%;height:auto;max-height:280px;margin:0 auto;border:1px solid var(--line);border-radius:13px;object-fit:contain;background:#f7faf7}
+.ks-plant-caption{font-size:12px;color:var(--muted);line-height:1.5}
+.ks-plant-result{border:1px solid var(--line);border-radius:12px;background:white;padding:14px;margin:10px 0}
+.ks-plant-result h3{margin:2px 0 5px;font-size:18px}
+.ks-plant-result small{display:block;color:var(--muted);font-size:12px}
+.ks-plant-result a{display:inline-block;margin-top:8px;font-size:13px;color:#174e2a}
+.ks-plant-score{font-weight:700;color:var(--g2);font-size:13px}
+.ks-plant-inline{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.ks-plant-warning{padding:12px 14px;background:#fff8e6;border:1px solid #e5d5a4;border-radius:9px;color:#66531f;font-size:13px;line-height:1.55}
+.ks-plant-status{font-size:14px;font-weight:650;color:var(--g2);min-height:1.4em}
+@media(max-width:740px){.ks-plant-panel{padding:18px 15px}.ks-plant-file-row{display:grid;grid-template-columns:1fr 1fr}.ks-plant-file-row button{min-width:0}}
+.toast.show{display:block}
 @media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:740px){.app{grid-template-columns:1fr}aside{position:relative;height:auto;padding:12px}.brand{padding-bottom:10px}.brand img{width:50px;height:50px}nav{display:flex;overflow:auto;margin-top:10px}nav button{white-space:nowrap}main{padding:14px}header{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
 </style>
 </head>
@@ -29,7 +45,7 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 </nav>
 </aside>
 <main>
-<header><div><h1>Quote Dashboard</h1><p>Every enquiry, quote and follow-up in one place.</p></div><div class="actions"><button class="btn" id="notify">🔔 Enable browser alerts</button><button class="btn primary" id="add">+ New Enquiry</button></div></header>
+<header><div><h1>Quote Dashboard</h1><p>Every enquiry, quote and follow-up in one place.</p></div><div class="actions"><button class="btn" type="button" id="ksPlantOpen">🌿 Plant ID</button><button class="btn" id="notify">🔔 Enable browser alerts</button><button class="btn primary" id="add">+ New Enquiry</button></div></header>
 <section class="cards">
 <div class="kpi"><span>New enquiries</span><strong id="kNew">0</strong></div><div class="kpi"><span>Open quotes</span><strong id="kOpen">0</strong></div><div class="kpi"><span>Won</span><strong id="kWon">0</strong></div><div class="kpi"><span>Conversion</span><strong id="kConv">0%</strong></div><div class="kpi"><span>Won value</span><strong id="kVal">£0</strong></div>
 </section>
@@ -84,7 +100,40 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 </div>
 <div class="modalactions"><button class="btn" id="bookCancel" type="button">Back</button><button class="btn primary" id="bookConfirm" type="button">Confirm & add to Google Calendar</button></div>
 <p id="bookStatus" role="status" style="color:#245c38;font-weight:700;font-size:14px"></p>
-</div></div><div id="toast" class="toast"></div>
+</div></div>
+<div id="ksPlantModal" class="modalback" aria-hidden="true" style="z-index:90">
+  <section class="modal ks-plant-panel" role="dialog" aria-modal="true" aria-labelledby="ksPlantTitle">
+    <div class="ks-plant-inline">
+      <div><h2 id="ksPlantTitle">🌿 Identify a plant</h2>
+      <p class="ks-plant-caption">On-site identification for KS Garden Services — private owner tool.</p></div>
+      <button type="button" class="btn" id="ksPlantClose" aria-label="Close Plant ID">Close ×</button>
+    </div>
+    <div class="ks-plant-form">
+      <div class="ks-plant-file-row">
+        <button class="btn primary" type="button" id="ksPlantUseCamera">📷 Take a photo</button>
+        <button class="btn" type="button" id="ksPlantChoosePhoto">▤ Choose from photos</button>
+      </div>
+      <input id="ksPlantCamera" type="file" accept="image/*" capture="environment" hidden>
+      <input id="ksPlantGallery" type="file" accept="image/*" hidden>
+      <img id="ksPlantPreview" class="ks-plant-preview" alt="Selected plant photograph" hidden>
+      <label class="field">What's in the photo?
+        <select id="ksPlantOrgan" style="display:block;width:100%;margin-top:6px;padding:11px;border:1px solid #ccd8ce;border-radius:9px">
+          <option value="auto">Not sure — identify automatically</option>
+          <option value="flower">Flower</option>
+          <option value="leaf">Leaf</option>
+          <option value="fruit">Fruit / berries</option>
+          <option value="bark">Bark / stem</option>
+        </select>
+      </label>
+      <p class="ks-plant-caption">Take a clear close-up of a leaf or flower, preferably in natural light. Identification sends this photo to Pl@ntNet. We don't save it to your customer records. Avoid faces, house numbers and other personal details.</p>
+      <button type="button" class="btn primary" id="ksPlantIdentify" disabled>Identify plant</button>
+      <div id="ksPlantStatus" class="ks-plant-status" role="status" aria-live="polite">Take a picture or choose one to begin.</div>
+      <div id="ksPlantResults" aria-live="polite"></div>
+      <div class="ks-plant-warning"><strong>Field guide reminder:</strong> results are suggestions, not certain IDs. Check distinguishing features, especially before species-specific pruning or handling unfamiliar plants. Never use photo ID alone to decide whether a plant or berry is edible or poisonous.</div>
+    </div>
+  </section>
+</div>
+<div id="toast" class="toast"></div>
 
 <script>
 let DATA=[], EDIT=null, NAV='', notified=false; const $=x=>document.getElementById(x);
@@ -222,5 +271,116 @@ $('save').onclick=()=>{
 $('del').onclick=()=>{if(!EDIT||!confirm('Delete this enquiry?'))return;google.script.run.withSuccessHandler(()=>{$('modal').classList.remove('show');toast('Deleted');load()}).deleteLead(EDIT)};
 $('notify').onclick=async()=>{if(!('Notification'in window))return alert('Browser notifications are not available here.');const p=await Notification.requestPermission();toast(p==='granted'?'Browser alerts enabled':'Browser alerts not enabled');browserDue()};
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');NAV=b.dataset.filter;render()});
+
+/* KS Garden Services mobile & desktop private Plant ID. */
+let ksPlantBlobData="",ksPlantObjectUrl="",ksPlantBusy=false;
+const ksPlantModal=$("ksPlantModal"),ksPlantPreview=$("ksPlantPreview"),
+  ksPlantIdentify=$("ksPlantIdentify"),ksPlantStatus=$("ksPlantStatus"),
+  ksPlantResults=$("ksPlantResults");
+function ksPlantOpen(){
+  ksPlantModal.classList.add("show");
+  ksPlantModal.setAttribute("aria-hidden","false");
+}
+function ksPlantClose(){
+  ksPlantModal.classList.remove("show");
+  ksPlantModal.setAttribute("aria-hidden","true");
+}
+$("ksPlantOpen").addEventListener("click",ksPlantOpen);
+$("ksPlantClose").addEventListener("click",ksPlantClose);
+$("ksPlantUseCamera").addEventListener("click",()=>$("ksPlantCamera").click());
+$("ksPlantChoosePhoto").addEventListener("click",()=>$("ksPlantGallery").click());
+$("ksPlantCamera").addEventListener("change",e=>ksPlantPick(e.target.files?.[0]));
+$("ksPlantGallery").addEventListener("change",e=>ksPlantPick(e.target.files?.[0]));
+ksPlantModal.addEventListener("click",e=>{if(e.target===ksPlantModal&&!ksPlantBusy)ksPlantClose()});
+window.addEventListener("keydown",e=>{if(e.key==="Escape"&&ksPlantModal.classList.contains("show")&&!ksPlantBusy)ksPlantClose()});
+async function ksPlantPick(file){
+  ksPlantBlobData="";
+  ksPlantResults.replaceChildren();
+  ksPlantIdentify.disabled=true;
+  if(!file)return;
+  if(!file.type.startsWith("image/")){
+    ksPlantStatus.textContent="Choose a picture of a plant.";return;
+  }
+  if(file.size>20*1024*1024){
+    ksPlantStatus.textContent="Choose a smaller photograph (under 20 MB).";return;
+  }
+  ksPlantStatus.textContent="Preparing photo…";
+  if(ksPlantObjectUrl)URL.revokeObjectURL(ksPlantObjectUrl);
+  ksPlantObjectUrl=URL.createObjectURL(file);
+  try {
+    const im=new Image();
+    im.src=ksPlantObjectUrl;
+    await new Promise((resolve,reject)=>{im.onload=resolve;im.onerror=()=>reject(Error("This image format cannot be read. Take a new photo or choose a JPEG."));});
+    const scale=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight));
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.max(1,Math.round(im.naturalWidth*scale));
+    canvas.height=Math.max(1,Math.round(im.naturalHeight*scale));
+    const context=canvas.getContext("2d");
+    if(!context)throw Error("Image processing unavailable. Please try a different picture.");
+    context.fillStyle="#ffffff";
+    context.fillRect(0,0,canvas.width,canvas.height);
+    context.drawImage(im,0,0,canvas.width,canvas.height);
+    const encoded=canvas.toDataURL("image/jpeg",.8);
+    ksPlantBlobData=encoded.split(",")[1]||"";
+    if(!ksPlantBlobData||ksPlantBlobData.length>5*1024*1024)
+      throw Error("Photograph is too large. Try a closer picture.");
+    ksPlantPreview.src=encoded;
+    ksPlantPreview.hidden=false;
+    ksPlantIdentify.disabled=false;
+    ksPlantStatus.textContent="Photo ready. Tap Identify plant.";
+  } catch(error){
+    ksPlantPreview.hidden=true;
+    ksPlantStatus.textContent=error.message||"Unable to read the image.";
+  } finally {
+    if(ksPlantObjectUrl){URL.revokeObjectURL(ksPlantObjectUrl);ksPlantObjectUrl="";}
+  }
+}
+function ksPlantDisplay(result){
+  ksPlantResults.replaceChildren();
+  const choices=Array.isArray(result?.results)?result.results:[];
+  if(!choices.length){
+    ksPlantStatus.textContent="No likely species found. Try another photograph showing a leaf or flower.";
+    return;
+  }
+  ksPlantStatus.textContent="Likely matches — confirm the plant yourself before acting.";
+  const fragment=document.createDocumentFragment();
+  choices.forEach((item,index)=>{
+    const card=document.createElement("article");
+    card.className="ks-plant-result";
+    const score=document.createElement("span");
+    score.className="ks-plant-score";
+    score.textContent=(index===0?"Best match • ":"Alternative "+(index+1)+" • ")+Math.round(item.score*100)+"% confidence";
+    const title=document.createElement("h3");
+    title.textContent=item.commonName||item.scientificName;
+    const latin=document.createElement("em");
+    latin.textContent=item.scientificName;
+    const family=document.createElement("small");
+    family.textContent=item.family?"Family: "+item.family:"";
+    const link=document.createElement("a");
+    link.href="https://www.rhs.org.uk/plants/search-results?nm="+encodeURIComponent(item.scientificName);
+    link.target="_blank";link.rel="noopener noreferrer";
+    link.textContent="Check RHS plant details & pruning guidance ↗";
+    card.append(score,title,latin,family,link);
+    fragment.append(card);
+  });
+  ksPlantResults.append(fragment);
+}
+ksPlantIdentify.addEventListener("click",()=>{
+  if(ksPlantBusy||!ksPlantBlobData)return;
+  ksPlantBusy=true;ksPlantIdentify.disabled=true;
+  ksPlantResults.replaceChildren();
+  ksPlantStatus.textContent="Identifying your plant…";
+  google.script.run.withSuccessHandler(result=>{
+    ksPlantBusy=false;ksPlantIdentify.disabled=false;
+    ksPlantDisplay(result);
+  }).withFailureHandler(error=>{
+    ksPlantBusy=false;ksPlantIdentify.disabled=false;
+    ksPlantStatus.textContent=error.message||"Plant ID failed. Please try again.";
+  }).identifyKsPlant({photoBase64:ksPlantBlobData,organ:$("ksPlantOrgan").value});
+});
+if(location.hash==="#plant-id"){
+  ksPlantOpen();
+}
+
 load();
 </script></body></html>
