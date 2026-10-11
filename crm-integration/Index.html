@@ -381,6 +381,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 </div>
 <div id="toast" class="toast"></div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 let DATA=[], EDIT=null, NAV='', notified=false; const $=x=>document.getElementById(x);
 function gbp(v){return v!==''&&v!=null&&!isNaN(Number(v))?new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(Number(v)):'—'}
@@ -640,6 +641,152 @@ $("ksShareCopy").onclick=async()=>{
     try{success=document.execCommand("copy");}catch(error){}
   }
   $("ksShareStatus").textContent=success?"Customer form link copied — paste into a message.":"Select and copy the link in the box above.";
+};
+
+
+/* KS Area Measure. Both methods are estimates; saved to owner-only CRM Measurements tab. */
+let ksAreaMode="manual",ksAreaMapObj=null,ksAreaMapLine=null,ksAreaMapPolygon=null,ksAreaMapPoints=[];
+function ksAreaOpen(){
+  ksAreaMode="manual";
+  $("ksAreaLength").value="";$("ksAreaWidth").value="";
+  $("ksAreaNotes").value="";$("ksAreaSaved").textContent="";
+  $("ksAreaSurface").value="driveway";
+  const customer=$("ksAreaCustomer");
+  customer.replaceChildren();
+  const unassigned=document.createElement("option");
+  unassigned.value="";unassigned.textContent="Not assigned to a customer";
+  customer.append(unassigned);
+  DATA.filter(x=>x.id&&x.name).sort((a,b)=>String(a.name).localeCompare(String(b.name),"en-GB")).forEach(x=>{
+    const option=document.createElement("option");
+    option.value=String(x.id);
+    option.textContent=String(x.name)+(x.postcode?" — "+x.postcode:"");
+    customer.append(option);
+  });
+  $("ksAreaPostcode").value="";
+  ksAreaMapPoints=[];
+  ksAreaUpdatePolygon();
+  $("ksAreaModal").classList.add("show");
+  $("ksAreaModal").setAttribute("aria-hidden","false");
+  ksAreaSelectMode("manual");
+}
+function ksAreaClose(){
+  $("ksAreaModal").classList.remove("show");
+  $("ksAreaModal").setAttribute("aria-hidden","true");
+}
+function ksAreaSelectMode(mode){
+  ksAreaMode=mode;
+  $("ksAreaManualPanel").hidden=mode!=="manual";
+  $("ksAreaMapPanel").hidden=mode!=="map";
+  $("ksAreaManualTab").classList.toggle("ks-is-active",mode==="manual");
+  $("ksAreaMapTab").classList.toggle("ks-is-active",mode==="map");
+  $("ksAreaManualTab").setAttribute("aria-pressed",String(mode==="manual"));
+  $("ksAreaMapTab").setAttribute("aria-pressed",String(mode==="map"));
+  $("ksAreaSaved").textContent="";
+  if(mode==="map") {
+    if(typeof L!=="undefined" && !ksAreaMapObj){
+      ksAreaMapObj=L.map("ksAreaMap",{zoomControl:true}).setView([53.4527,-2.6405],17);
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{
+        maxZoom:20,
+        attribution:"Imagery © Esri, Maxar, Earthstar Geographics & contributors"
+      }).addTo(ksAreaMapObj);
+      ksAreaMapObj.on("click",event=>{
+        if(ksAreaMapPoints.length>=60){$("ksAreaMapHint").textContent="Maximum 60 outline corners.";return;}
+        ksAreaMapPoints.push({lat:event.latlng.lat,lng:event.latlng.lng});
+        ksAreaUpdatePolygon();ksAreaRefresh();
+      });
+    }
+    if(ksAreaMapObj)setTimeout(()=>ksAreaMapObj.invalidateSize(),60);
+    else $("ksAreaMapHint").textContent="Satellite map unavailable. Check your connection or use length × width.";
+  }
+  ksAreaRefresh();
+}
+function ksAreaMapArea(){
+  if(ksAreaMapPoints.length<3)return 0;
+  const rad=Math.PI/180,R=6371008.8,origin=ksAreaMapPoints[0],cos=Math.cos(origin.lat*rad);
+  const p=ksAreaMapPoints.map(x=>[(x.lng-origin.lng)*rad*cos*R,(x.lat-origin.lat)*rad*R]);
+  let twice=0;
+  for(let i=0;i<p.length;i++){
+    const a=p[i],b=p[(i+1)%p.length];twice+=a[0]*b[1]-b[0]*a[1];
+  }
+  return Math.abs(twice)/2;
+}
+function ksAreaUpdatePolygon(){
+  if(!ksAreaMapObj||typeof L==="undefined")return;
+  if(ksAreaMapLine){ksAreaMapObj.removeLayer(ksAreaMapLine);ksAreaMapLine=null;}
+  if(ksAreaMapPolygon){ksAreaMapObj.removeLayer(ksAreaMapPolygon);ksAreaMapPolygon=null;}
+  if(ksAreaMapPoints.length>=3){
+    ksAreaMapPolygon=L.polygon(ksAreaMapPoints,{color:"#ebd156",weight:3,fillColor:"#f2d769",fillOpacity:.2}).addTo(ksAreaMapObj);
+  }else if(ksAreaMapPoints.length>=1){
+    ksAreaMapLine=L.polyline(ksAreaMapPoints,{color:"#ffd65a",weight:4}).addTo(ksAreaMapObj);
+  }
+  $("ksAreaMapHint").textContent=ksAreaMapPoints.length+" corners selected. Tap each corner in order; you can undo or clear.";
+}
+function ksAreaDimensions(){
+  const length=Number($("ksAreaLength").value),width=Number($("ksAreaWidth").value);
+  return {length,width,valid:$("ksAreaLength").value!==""&&$("ksAreaWidth").value!==""&&
+    Number.isFinite(length)&&Number.isFinite(width)&&length>0&&width>0&&
+    length<=10000&&width<=10000};
+}
+function ksAreaCurrentArea(){
+  if(ksAreaMode==="map")return ksAreaMapArea();
+  const d=ksAreaDimensions();
+  return d.valid?d.length*d.width:0;
+}
+function ksAreaRefresh(){
+  const area=ksAreaCurrentArea();
+  $("ksAreaResult").textContent=area>0?area.toFixed(2):"—";
+}
+$("ksQuickMeasure").onclick=ksAreaOpen;
+$("ksAreaClose").onclick=ksAreaClose;
+$("ksAreaCancel").onclick=ksAreaClose;
+$("ksAreaManualTab").onclick=()=>ksAreaSelectMode("manual");
+$("ksAreaMapTab").onclick=()=>ksAreaSelectMode("map");
+$("ksAreaLength").addEventListener("input",ksAreaRefresh);
+$("ksAreaWidth").addEventListener("input",ksAreaRefresh);
+$("ksAreaCustomer").addEventListener("change",()=>{
+  const lead=DATA.find(x=>String(x.id)===$("ksAreaCustomer").value);
+  if(lead&&lead.postcode)$("ksAreaPostcode").value=lead.postcode;
+});
+$("ksAreaUndo").onclick=()=>{ksAreaMapPoints.pop();ksAreaUpdatePolygon();ksAreaRefresh()};
+$("ksAreaClear").onclick=()=>{ksAreaMapPoints=[];ksAreaUpdatePolygon();ksAreaRefresh()};
+$("ksAreaFindPostcode").onclick=async()=>{
+  const postcode=$("ksAreaPostcode").value.trim().toUpperCase();
+  if(!postcode){$("ksAreaMapHint").textContent="Enter the customer's postcode.";return;}
+  $("ksAreaMapHint").textContent="Finding postcode…";
+  try{
+    const response=await fetch("https://api.postcodes.io/postcodes/"+encodeURIComponent(postcode));
+    const data=await response.json();
+    if(!response.ok||!data.result)throw Error("Postcode not found.");
+    if(!ksAreaMapObj)throw Error("Satellite map has not loaded.");
+    ksAreaMapObj.setView([data.result.latitude,data.result.longitude],19);
+    $("ksAreaMapHint").textContent="Postcode centred. Zoom and tap the surface corners.";
+  }catch(error){$("ksAreaMapHint").textContent="Could not find the postcode. Pan the map manually or use length × width.";}
+};
+$("ksAreaLocate").onclick=()=>{
+  if(!navigator.geolocation||!ksAreaMapObj){$("ksAreaMapHint").textContent="Location unavailable. Pan to the property manually.";return;}
+  $("ksAreaMapHint").textContent="Checking your location…";
+  navigator.geolocation.getCurrentPosition(
+    p=>{ksAreaMapObj.setView([p.coords.latitude,p.coords.longitude],19);
+      $("ksAreaMapHint").textContent="Location shown. Tap the surface corners.";},
+    ()=>{$("ksAreaMapHint").textContent="Location permission unavailable. Use postcode or move the map.";},
+    {enableHighAccuracy:true,timeout:12000,maximumAge:0});
+};
+$("ksAreaSave").onclick=()=>{
+  const area=ksAreaCurrentArea(),d=ksAreaDimensions(),button=$("ksAreaSave");
+  if(area<=0||area>1000000){$("ksAreaSaved").textContent="Enter a positive length and width, or outline at least 3 map corners.";return;}
+  const payload={leadId:$("ksAreaCustomer").value,surface:$("ksAreaSurface").value,
+    method:ksAreaMode,length:ksAreaMode==="manual"?d.length:0,width:ksAreaMode==="manual"?d.width:0,
+    area,notes:$("ksAreaNotes").value.trim(),
+    points:ksAreaMode==="map"?ksAreaMapPoints.map(x=>({lat:x.lat,lng:x.lng})):[]};
+  button.disabled=true;$("ksAreaSaved").textContent="Saving measurement to your private CRM…";
+  google.script.run.withSuccessHandler(result=>{
+    button.disabled=false;
+    $("ksAreaSaved").textContent="✓ "+result.area.toFixed(2)+" m² saved for "+result.customer+" in your Measurements sheet.";
+  }).withFailureHandler(err=>{
+    button.disabled=false;
+    $("ksAreaSaved").textContent="Could not save measurement: "+(err.message||String(err))+
+      ". Check that AreaMeasureAddon.gs has been installed and your private app redeployed.";
+  }).ksSaveAreaMeasurement(payload);
 };
 
 /* KS Garden Services mobile & desktop private Plant ID. */
