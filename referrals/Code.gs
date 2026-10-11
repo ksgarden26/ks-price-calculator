@@ -268,12 +268,12 @@ function ksSubmitWebsiteLead_(data) {
   const cache=CacheService.getScriptCache(),key="ks-web-"+digest.slice(0,55);
   const lock=LockService.getScriptLock();
   if(!lock.tryLock(10000))throw Error("Form is busy.");
-  let id;
+  let id,notes="";
   try{
     const existing=cache.get(key);
     if(existing)return {ok:true,id:existing,duplicate:true};
     id=Utilities.getUuid();
-    const notes=[
+    notes=[
       details,
       size?"Garden size: "+size:"",
       condition?"Condition: "+condition:"",
