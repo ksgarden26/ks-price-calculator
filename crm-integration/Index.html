@@ -350,6 +350,20 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 </div>
 <div class="modalactions"><button class="btn danger" id="del">Delete</button><div class="right"><button class="btn" id="quoteVisitBtn" type="button">▦ Book quote visit</button><button class="btn primary" id="confirmBookingBtn" type="button">✓ Confirm agreed job</button><button class="btn" id="cancel">Cancel</button><button class="btn primary" id="save">Save</button></div></div>
 </div></div>
+
+<div id="ksDeleteModal" class="modalback" aria-hidden="true" style="z-index:78">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ksDeleteTitle" style="max-width:470px">
+    <h2 id="ksDeleteTitle">Delete enquiry?</h2>
+    <p id="ksDeleteExplanation">This permanently removes this enquiry and its linked customer details, notes, measurements and garden check-ins from the CRM. It cannot be undone in the app.</p>
+    <p style="color:#9c2c34;font-size:13px">A confirmed booking or registered customer key will block deletion until it has been dealt with.</p>
+    <p role="status" id="ksDeleteError" aria-live="polite" style="font-size:14px;color:#9c2c34;font-weight:700"></p>
+    <div class="modalactions">
+      <button type="button" class="btn" id="ksDeleteCancel">Keep enquiry</button>
+      <button type="button" class="btn" id="ksDeleteConfirm" style="background:#a52d39;border-color:#a52d39;color:white">Delete permanently</button>
+    </div>
+  </div>
+</div>
+
 <div id="bookingModal" class="modalback" style="z-index:75" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
 <h2 id="bookingTitle">Confirm garden booking</h2><p id="bookingCustomer" style="color:#58705f;margin:0 0 18px"></p>
 <p id="bookingHelp" style="background:#eef5ef;padding:12px;border-radius:9px;font-size:14px">This action adds an appointment to your Google Calendar.</p>
@@ -571,7 +585,53 @@ $('save').onclick=()=>{
     button.disabled=false;toast('Could not save preferences: '+(e.message||e));
   }).saveKsLeadWithPreferences(obj,ksCurrentCustomerPreferences());
 };
-$('del').onclick=()=>{if(!EDIT||!confirm('Delete this enquiry?'))return;google.script.run.withSuccessHandler(()=>{$('modal').classList.remove('show');toast('Deleted');load()}).deleteLead(EDIT)};
+
+/* Owner-only enquiry deletion with mobile-friendly confirmation and actual server result checking. */
+let KS_DELETE_SELECTED=null;
+$("del").onclick=()=>{
+  const lead=DATA.find(x=>String(x.id)===String(EDIT));
+  if(!lead){toast("Open a saved customer enquiry first.");return;}
+  KS_DELETE_SELECTED={id:String(lead.id),name:String(lead.name)};
+  $("ksDeleteTitle").textContent="Delete "+lead.name+"?";
+  $("ksDeleteExplanation").textContent="Permanently remove this enquiry and its linked customer details, preferences, check-ins, plant records and measurements? This cannot be undone in the app.";
+  $("ksDeleteError").textContent="";
+  $("ksDeleteConfirm").disabled=false;
+  $("ksDeleteModal").classList.add("show");
+  $("ksDeleteModal").setAttribute("aria-hidden","false");
+};
+$("ksDeleteCancel").onclick=()=>{
+  if($("ksDeleteConfirm").disabled)return;
+  $("ksDeleteModal").classList.remove("show");
+  $("ksDeleteModal").setAttribute("aria-hidden","true");
+  KS_DELETE_SELECTED=null;
+};
+$("ksDeleteConfirm").onclick=()=>{
+  const selected=KS_DELETE_SELECTED;
+  if(!selected)return;
+  const btn=$("ksDeleteConfirm");
+  btn.disabled=true;
+  $("ksDeleteError").textContent="Deleting "+selected.name+" from your private CRM…";
+  google.script.run.withSuccessHandler(result=>{
+    btn.disabled=false;
+    if(!result||result.ok!==true){
+      $("ksDeleteError").textContent="Not deleted: "+(result&&result.error||"The CRM did not confirm deletion.");
+      return;
+    }
+    $("ksDeleteModal").classList.remove("show");
+    $("ksDeleteModal").setAttribute("aria-hidden","true");
+    $("modal").classList.remove("show");
+    KS_DELETE_SELECTED=null;EDIT=null;
+    DATA=DATA.filter(x=>String(x.id)!==selected.id);
+    render();
+    toast(selected.name+" removed from CRM");
+    load();
+  }).withFailureHandler(error=>{
+    btn.disabled=false;
+    $("ksDeleteError").textContent="Not deleted: "+(error.message||String(error))+
+      ". Check that DeleteEnquiryAddon.gs is installed and the latest private deployment is live.";
+  }).ksDeleteEnquiryRecord(selected);
+};
+
 $('notify').onclick=async()=>{if(!('Notification'in window))return alert('Browser notifications are not available here.');const p=await Notification.requestPermission();toast(p==='granted'?'Browser alerts enabled':'Browser alerts not enabled');browserDue()};
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');NAV=b.dataset.filter;render()});
 
