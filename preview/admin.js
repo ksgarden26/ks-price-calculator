@@ -29,7 +29,7 @@ async function api(path,method="GET",payload){
 function tab(name){
   currentTab=name;
   document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===name)));
-  for(const t of ["reviews","photos","news","quotes","appointments"])$("tab-"+t).hidden=t!==name;
+  for(const t of ["reviews","photos","news","quotes","appointments","plantid"])$("tab-"+t).hidden=t!==name;
   window.location.hash=name;
 }
 async function session(){
@@ -248,6 +248,17 @@ try{crmInput.value=localStorage.getItem("ks-private-crm-url")||"";}catch{}
 $("ksSaveCRMUrl").addEventListener("click",()=>{
   try{const link=cleanCRMUrl();localStorage.setItem("ks-private-crm-url",link);crmStatus.textContent="Private CRM shortcut saved on this device.";}
   catch(e){alertStatus(e.message,true,crmStatus);}
+});
+$("ksOpenPlantId").addEventListener("click",()=>{
+  const status=$("ksPlantShortcutStatus");
+  try{
+    const url=new URL(cleanCRMUrl());
+    url.hash="plant-id";
+    window.open(url.toString(),"_blank","noopener,noreferrer");
+    status.textContent="Private CRM opened. Use Plant ID from its dashboard if the camera does not open automatically.";
+  }catch(error){
+    alertStatus("First open Appointments and save your private CRM link on this device.",true,status);
+  }
 });
 $("ksOpenCRM").addEventListener("click",()=>{
   try{const link=cleanCRMUrl();window.open(link,"_blank","noopener,noreferrer");crmStatus.textContent="Private CRM opened. Confirm the visit there once its booking update has been deployed.";}
