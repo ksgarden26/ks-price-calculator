@@ -31,6 +31,16 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 .ks-plant-inline{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
 .ks-plant-warning{padding:12px 14px;background:#fff8e6;border:1px solid #e5d5a4;border-radius:9px;color:#66531f;font-size:13px;line-height:1.55}
 .ks-plant-status{font-size:14px;font-weight:650;color:var(--g2);min-height:1.4em}
+.ks-plant-checkin{border:1px solid #dce7dd;background:#f3f8f4;border-radius:13px;padding:15px;display:grid;gap:11px}
+.ks-plant-checkin h3{margin:0;font-size:17px;color:var(--g)}
+.ks-plant-checkin label{display:block;font-size:13px;font-weight:700;color:#2a4731}
+.ks-plant-checkin select,.ks-plant-checkin input{width:100%;padding:12px;border:1px solid #bfd2c4;border-radius:9px;font:inherit;background:#fff}
+.ks-plant-gps-buttons{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.ks-plant-gps-buttons button{flex:1;min-width:160px}
+.ks-plant-saved{font-size:13px;font-weight:650;color:#246033}
+.ks-plant-result button{display:block;margin-top:10px}
+.ks-plant-checkin-msg{font-size:13px;line-height:1.5;color:#53655a;margin:0}
+
 @media(max-width:740px){.ks-plant-panel{padding:18px 15px}.ks-plant-file-row{display:grid;grid-template-columns:1fr 1fr}.ks-plant-file-row button{min-width:0}}
 .toast.show{display:block}
 @media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:740px){.app{grid-template-columns:1fr}aside{position:relative;height:auto;padding:12px}.brand{padding-bottom:10px}.brand img{width:50px;height:50px}nav{display:flex;overflow:auto;margin-top:10px}nav button{white-space:nowrap}main{padding:14px}header{align-items:flex-start;flex-direction:column}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
@@ -109,6 +119,19 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
       <button type="button" class="btn" id="ksPlantClose" aria-label="Close Plant ID">Close ×</button>
     </div>
     <div class="ks-plant-form">
+      <div class="ks-plant-checkin">
+        <h3>📍 Which customer's garden are you at?</h3>
+        <p class="ks-plant-checkin-msg">GPS is optional. Tap Find customer near me to check your position once. You'll always confirm the customer before saving a visit or plant.</p>
+        <button type="button" class="btn primary" id="ksPlantFindCustomer">Find customer near me</button>
+        <p id="ksPlantGpsStatus" class="ks-plant-checkin-msg" role="status" aria-live="polite">Or choose the customer manually if location isn't available.</p>
+        <label for="ksPlantCustomerSelect">Customer
+          <select id="ksPlantCustomerSelect"><option value="">Loading your customers…</option></select>
+        </label>
+        <div class="ks-plant-gps-buttons">
+          <button type="button" id="ksPlantCheckin" class="btn" disabled>✓ Confirm I'm at this garden</button>
+        </div>
+        <p id="ksPlantCheckinStatus" class="ks-plant-saved" role="status"></p>
+      </div>
       <div class="ks-plant-file-row">
         <button class="btn primary" type="button" id="ksPlantUseCamera">📷 Take a photo</button>
         <button class="btn" type="button" id="ksPlantChoosePhoto">▤ Choose from photos</button>
@@ -125,9 +148,12 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
           <option value="bark">Bark / stem</option>
         </select>
       </label>
-      <p class="ks-plant-caption">Take a clear close-up of a leaf or flower, preferably in natural light. Identification sends this photo to Pl@ntNet. We don't save it to your customer records. Avoid faces, house numbers and other personal details.</p>
+      <p class="ks-plant-caption">Take a clear close-up of a leaf or flower, preferably in natural light. Identification sends the photo to Pl@ntNet. You can save a plant name and note to this customer's Garden Passport; the photo is not stored. Avoid faces, house numbers and other personal details.</p>
       <button type="button" class="btn primary" id="ksPlantIdentify" disabled>Identify plant</button>
       <div id="ksPlantStatus" class="ks-plant-status" role="status" aria-live="polite">Take a picture or choose one to begin.</div>
+      <label class="field">Garden notes (optional)
+        <input id="ksPlantNotes" type="text" maxlength="700" placeholder="e.g. Under apple tree, left-hand border" style="width:100%;padding:11px;border:1px solid #ccd8ce;border-radius:9px;margin-top:5px">
+      </label>
       <div id="ksPlantResults" aria-live="polite"></div>
       <div class="ks-plant-warning"><strong>Field guide reminder:</strong> results are suggestions, not certain IDs. Check distinguishing features, especially before species-specific pruning or handling unfamiliar plants. Never use photo ID alone to decide whether a plant or berry is edible or poisonous.</div>
     </div>
@@ -274,12 +300,14 @@ document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.quer
 
 /* KS Garden Services mobile & desktop private Plant ID. */
 let ksPlantBlobData="",ksPlantObjectUrl="",ksPlantBusy=false;
+let ksPlantCustomers=[],ksPlantNearbyIds=[],ksGardenCheckinId="",ksGardenLeadId="";
 const ksPlantModal=$("ksPlantModal"),ksPlantPreview=$("ksPlantPreview"),
   ksPlantIdentify=$("ksPlantIdentify"),ksPlantStatus=$("ksPlantStatus"),
   ksPlantResults=$("ksPlantResults");
 function ksPlantOpen(){
   ksPlantModal.classList.add("show");
   ksPlantModal.setAttribute("aria-hidden","false");
+  ksPlantFetchCustomers();
 }
 function ksPlantClose(){
   ksPlantModal.classList.remove("show");
@@ -360,11 +388,144 @@ function ksPlantDisplay(result){
     link.href="https://www.rhs.org.uk/plants/search-results?nm="+encodeURIComponent(item.scientificName);
     link.target="_blank";link.rel="noopener noreferrer";
     link.textContent="Check RHS plant details & pruning guidance ↗";
-    card.append(score,title,latin,family,link);
+    const save=document.createElement("button");
+    save.type="button";save.className="btn";
+    save.textContent="Save this plant to customer's Garden Passport";
+    save.addEventListener("click",()=>ksPlantSaveForCustomer(item,save));
+    card.append(score,title,latin,family,link,save);
     fragment.append(card);
   });
   ksPlantResults.append(fragment);
 }
+
+/* On-site customer selection: GPS coordinates are used once, never stored. */
+const ksPlantSelect=$("ksPlantCustomerSelect");
+const ksGpsStatus=$("ksPlantGpsStatus");
+const ksCheckinStatus=$("ksPlantCheckinStatus");
+let ksPlantLoadingCustomers=false;
+function ksPlantResetCheckin(){
+  ksGardenCheckinId="";ksGardenLeadId="";
+  ksCheckinStatus.textContent="";
+  $("ksPlantCheckin").disabled=!ksPlantSelect.value;
+}
+function ksPlantPopulateCustomers(){
+  const value=ksPlantSelect.value;
+  ksPlantSelect.replaceChildren();
+  const first=document.createElement("option");
+  first.value="";first.textContent="Choose a customer…";
+  ksPlantSelect.append(first);
+  for(const c of ksPlantCustomers){
+    const option=document.createElement("option");
+    option.value=c.leadId;
+    const label=c.name+(c.postcode?" — "+c.postcode:"");
+    option.textContent=label;
+    ksPlantSelect.append(option);
+  }
+  if(ksPlantCustomers.some(c=>c.leadId===value))ksPlantSelect.value=value;
+  $("ksPlantCheckin").disabled=!ksPlantSelect.value;
+}
+function ksPlantFetchCustomers(){
+  if(ksPlantLoadingCustomers||ksPlantCustomers.length)return;
+  ksPlantLoadingCustomers=true;
+  google.script.run.withSuccessHandler(customers=>{
+    ksPlantLoadingCustomers=false;
+    ksPlantCustomers=Array.isArray(customers)?customers:[];
+    ksPlantPopulateCustomers();
+    if(!ksPlantCustomers.length)ksGpsStatus.textContent="Add the customer to your CRM first, then check in.";
+  }).withFailureHandler(e=>{
+    ksPlantLoadingCustomers=false;
+    ksGpsStatus.textContent="Could not load customers: "+(e.message||e);
+  }).ksGardenCustomers();
+}
+ksPlantSelect.addEventListener("change",ksPlantResetCheckin);
+$("ksPlantFindCustomer").addEventListener("click",()=>{
+  if(!navigator.geolocation){
+    ksGpsStatus.textContent="Location isn't available here. Choose the customer manually.";
+    return;
+  }
+  const button=$("ksPlantFindCustomer");
+  button.disabled=true;
+  ksGpsStatus.textContent="Checking your position once (no background tracking)…";
+  // Geolocation API permission must be granted by browser on a secure origin.
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const accuracy=Math.round(pos.coords.accuracy);
+    if(accuracy>250){
+      button.disabled=false;
+      ksGpsStatus.textContent="GPS accuracy is only about "+accuracy+" metres. Step outside or select the customer manually.";
+      return;
+    }
+    ksGpsStatus.textContent="GPS obtained; checking nearby customer addresses…";
+    google.script.run.withSuccessHandler(result=>{
+      button.disabled=false;
+      ksPlantNearbyIds=(result.nearby||[]).map(x=>x.leadId);
+      const near=result.nearby||[];
+      if(!near.length){
+        ksGpsStatus.textContent="No reliable nearby customer match. Select the garden manually.";
+        return;
+      }
+      const first=near[0];
+      const text=near.map(x=>x.name+" (~"+x.distanceMetres+"m)").join(", ");
+      ksGpsStatus.textContent="Possible nearby customer"+(near.length===1?"":"s")+": "+text+". Please confirm below.";
+      if(ksPlantCustomers.some(c=>c.leadId===first.leadId)){
+        ksPlantSelect.value=first.leadId;
+        ksPlantResetCheckin(); // Customer choice still needs explicit confirmation.
+      }
+    }).withFailureHandler(error=>{
+      button.disabled=false;
+      ksPlantNearbyIds=[];
+      ksGpsStatus.textContent="GPS customer lookup unavailable: "+(error.message||error)+". Choose manually.";
+    }).ksSuggestGardenCustomerAtGps({
+      latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracyMeters:pos.coords.accuracy
+    });
+  },error=>{
+    button.disabled=false;
+    ksPlantNearbyIds=[];
+    const reason=error.code===1?"Location permission was denied.":error.code===2?"Your location is unavailable.":"Location timed out.";
+    ksGpsStatus.textContent=reason+" Choose the customer manually.";
+  },{enableHighAccuracy:true,timeout:16000,maximumAge:0});
+});
+$("ksPlantCheckin").addEventListener("click",()=>{
+  const id=ksPlantSelect.value;
+  if(!id)return;
+  const customer=ksPlantCustomers.find(x=>x.leadId===id);
+  if(!customer)return;
+  if(!confirm("Check in to "+customer.name+"? Only the customer and time will be recorded; not your GPS coordinates."))return;
+  const button=$("ksPlantCheckin");
+  button.disabled=true;ksCheckinStatus.textContent="Saving your garden check-in…";
+  google.script.run.withSuccessHandler(result=>{
+    ksGardenCheckinId=result.checkinId;
+    ksGardenLeadId=result.leadId;
+    ksCheckinStatus.textContent="✓ Checked in: "+result.name+". Identified plants can now be saved to their Garden Passport.";
+    button.disabled=false;
+  }).withFailureHandler(error=>{
+    button.disabled=false;
+    ksCheckinStatus.textContent="Check-in failed: "+(error.message||error);
+  }).ksConfirmGardenCustomerCheckin({
+    leadId:id,method:ksPlantNearbyIds.includes(id)?"gps_suggested":"manual"
+  });
+});
+function ksPlantSaveForCustomer(plant,button){
+  if(!ksGardenLeadId||!ksGardenCheckinId||ksGardenLeadId!==ksPlantSelect.value){
+    ksPlantStatus.textContent="Confirm which customer's garden you're at before saving the plant.";
+    return;
+  }
+  const notes=$("ksPlantNotes").value.trim();
+  button.disabled=true;
+  button.textContent="Saving plant…";
+  google.script.run.withSuccessHandler(result=>{
+    button.textContent="✓ Saved to "+result.customer;
+    ksPlantStatus.textContent="Plant recorded in this customer's private Garden Passport.";
+  }).withFailureHandler(error=>{
+    button.disabled=false;
+    button.textContent="Save this plant to customer's Garden Passport";
+    ksPlantStatus.textContent="Could not save plant: "+(error.message||error);
+  }).ksSaveCustomerGardenPlant({
+    leadId:ksGardenLeadId,checkinId:ksGardenCheckinId,
+    commonName:plant.commonName,scientificName:plant.scientificName,
+    family:plant.family,score:plant.score,notes
+  });
+}
+
 ksPlantIdentify.addEventListener("click",()=>{
   if(ksPlantBusy||!ksPlantBlobData)return;
   ksPlantBusy=true;ksPlantIdentify.disabled=true;
