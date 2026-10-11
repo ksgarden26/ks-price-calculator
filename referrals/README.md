@@ -1,6 +1,6 @@
 # KS Garden Services — New Customer Details (word-of-mouth referrals)
 
-**STATUS: Draft source only. Not deployed; there is no working customer link yet.** This feature deliberately runs as a **standalone Google Apps Script web app**, so the customer can use it on their phone without making an account, even if the Cloudflare/GitHub preview build is failing. It is not a general website signup page or customer portal.
+**STATUS: Draft source only. Not deployed; there is no working customer link yet.** This is a **standalone, public submission-only Google Apps Script web app**. It supports (a) the recommended-customer details form using `doGet()` / `submitReferral()` and (b) general website Contact and Price Guide submissions using `doPost()`. It can append new enquiries to the existing Quotes sheet and email the owner; it cannot list/edit/delete the private CRM customers. It is not a general website signup page or customer portal.
 
 ## Desktop and mobile use
 
@@ -30,13 +30,22 @@ No marketing opt-in, routine post-visit reports, repeated customer texts or auto
 
 ## Deployment instructions (owner action required)
 
-1. Open [Google Apps Script](https://script.google.com/) and create a **new, independent project** e.g. `KS Referral Customer Form`. **Do not add these files to the existing private CRM project or its public website lead endpoint.** This separate project has a strictly submission-only public surface.
+1. Open [Google Apps Script](https://script.google.com/) and create a **new, independent project** e.g. `KS Garden Services – Public Enquiries`. **Do not add these files to the existing private CRM project or its public website lead endpoint.** This separate project has a strictly submission-only public surface.
 2. Paste `referrals/Code.gs` into **Code.gs**. Add an HTML file called **Index**, pasting `referrals/Index.html` into it.
 3. In Project Settings set timezone `Europe/London`. Confirm the script refers to the correct spreadsheet ID and business notification address. Do not add a login password or Xero OAuth token to a publicly deployed project.
 4. Under Deploy → New deployment → Web app: `Execute as: Me`, `Who has access: Anyone` (so recommended customers can submit without signing in). Authorise access to the existing private spreadsheet and sending owner emails with the business Google account.
 5. Copy the **new web app /exec URL**. This is the real customer form link to share directly by WhatsApp/text/email. Avoid listing it prominently on the public site unless you intend all visitors to use it. Anyone who obtains the link can submit a form; it is not an authentication mechanism.
 6. Test using **your own contact details**, with `Invoice by Email`, `Post`, and `No copy needed`. Confirm that email is required for emailed invoices, separate billing address fields are required if the checkbox is off, that the private Quotes tab receives Source = Recommendation, and Customer Details receives separate structured billing data. Confirm notification email is received; verify duplicate submits don't create duplicate leads. Delete test rows from the private spreadsheet after verifying.
 7. Turn on any anti-spam monitoring (Apps Script executions, quotas, and email delivery). The form includes a honeypot, minimum completion time and a 20-minute deduplication cache but doesn't include a CAPTCHA, so use a link-specific workflow and monitor for abuse.
+
+## Separate public website enquiry endpoint
+
+In the **same NEW standalone public-only project**, the `doPost(e)` function accepts an approved JSON submission from your website's Contact or Price Guide screen. It validates the name, phone and postcode, distinguishes `Website Contact` from `Website Price Guide`, appends a `New Enquiry` row to the original 22-column `Quotes` spreadsheet (with a next-working-day follow-up), and sends one owner notification email. It contains no private customer read/edit/delete/calendar functions.
+
+- **The website currently has its old submission disabled.** Only reconnect after this separate project is deployed and you've verified a test submission reaches both CRM and business inbox. Change the old public Apps Script deployment to **Only myself** first, as agreed, and do NOT turn it public again.
+- Paste the new `/exec` URL into the website app's permitted endpoint configuration when ready. Browser `no-cors` requests cannot confirm a response; do not show a false "received" confirmation unless the new service response can be verified. Customer can always email directly as a fallback.
+- This public form accepts untrusted internet submissions. Use a honeypot, input limits, temporary duplicate suppression and monitor quotas/spam; don't put Xero OAuth, Calendar scopes, Plant ID API keys or customer-list functions into it.
+- The included backend has passed source-level mock tests for website leads, price-guide leads, owner email alerts, deduplication, rejecting incomplete enquiries, formula escaping and 22-column compatibility. This **does not verify real Apps Script authorisation or real live website submissions**.
 
 ## Xero hand-off — not yet automatic
 
