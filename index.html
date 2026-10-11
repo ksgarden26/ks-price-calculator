@@ -690,7 +690,7 @@ td:last-child{
   <p class="note">
     Choose how you would like to open your email, with your quote details ready to review and send. Please include your name, full garden address and phone number — these are required to process your quote request.
     You can attach garden photos before sending.
-    If your email app does not open, <a href="https://ksgardenservices.co.uk/contact" target="_top">use our enquiry form</a>
+    If your email app does not open, <a href="mailto:info@ksgardenservices.co.uk" target="_top">email us directly</a>
     or email <a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a>.
   </p>
 
@@ -2533,34 +2533,8 @@ function buildCRMLead(){
   };
 }
 
-function sendLeadToCRM(){
-  if(wa.dataset.crmSent==="1") return;
-  try{
-    const payload=JSON.stringify(buildCRMLead());
-    const endpoint="https://script.google.com/macros/s/AKfycbwW8E1QVRoCPLFqN2S7zUKpFKoFJWqUneAJuwFyd-0nzwcAK4NFJm94W85aHrUGelOdiw/exec";
-    let sent=false;
-
-    if(navigator.sendBeacon){
-      sent=navigator.sendBeacon(
-        endpoint,
-        new Blob([payload],{type:"text/plain;charset=UTF-8"})
-      );
-    }
-
-    if(!sent){
-      fetch(endpoint,{
-        method:"POST",
-        mode:"no-cors",
-        headers:{"Content-Type":"text/plain;charset=UTF-8"},
-        body:payload
-      }).catch(()=>{});
-    }
-
-    wa.dataset.crmSent="1";
-  }catch(err){
-    console.warn("CRM submission skipped",err);
-  }
-}
+// Temporary protection: website CRM writes disabled while public Apps Script is secured.
+function sendLeadToCRM(){ /* Visitors can still send their enquiry directly by email. */ }
 
 wa.addEventListener("click",function(){
   const name=$("custName").value.trim();
