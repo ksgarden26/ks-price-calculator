@@ -82,6 +82,9 @@ display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:7p
 .ks-share-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
 .ks-share-actions .btn{min-height:54px;display:flex;justify-content:center;align-items:center;text-decoration:none;text-align:center;font-size:15px}
 .ks-share-link{display:block;width:100%;padding:12px;border:1px solid #ccd8ce;border-radius:10px;font-size:14px;overflow:hidden;text-overflow:ellipsis}
+.ks-share-named-link{padding:14px 16px;border-radius:12px;background:#f2f7f2;border:1px solid #d7e5d9}
+.ks-share-named-link a{display:inline-block;color:#174c2a;font-weight:700;text-decoration:underline;text-underline-offset:3px;font-size:16px}
+.ks-share-named-link p{margin:8px 0 0;color:#59705f;font-size:12px;line-height:1.4}
 @media(max-width:450px){.ks-share-actions{grid-template-columns:1fr 1fr}.ks-share-actions .btn{font-size:14px}}
 
 
@@ -302,8 +305,10 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
       <a class="btn" id="ksShareEmail" href="#">✉ Email</a>
       <button type="button" class="btn" id="ksShareCopy">📋 Copy link</button>
     </div>
-    <label for="ksShareFormLink" style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">Customer form link</label>
-    <input id="ksShareFormLink" class="ks-share-link" type="text" readonly value="https://script.google.com/macros/s/AKfycbzCH8enyUGVzX0aL0pX-r1UP25zmv6P75g2kXeQmfFZsLZt9gHUi70lrstMUNwRr_XZ/exec" aria-label="Customer form URL">
+    <div class="ks-share-named-link">
+      <a href="https://script.google.com/macros/s/AKfycbzCH8enyUGVzX0aL0pX-r1UP25zmv6P75g2kXeQmfFZsLZt9gHUi70lrstMUNwRr_XZ/exec" target="_blank" rel="noopener noreferrer" aria-label="Open KS Garden Services New Customer Details Form">🔗 New Customer Details Form ↗</a>
+      <p>Tap the title to open the form or choose how to send it.</p>
+    </div>
     <p id="ksShareStatus" role="status" aria-live="polite" style="font-size:13px;color:#4d6d55">No message is sent unless you choose how to share it.</p>
     <div class="modalactions"><button type="button" class="btn" id="ksShareCancel">Close</button><a class="btn" href="https://script.google.com/macros/s/AKfycbzCH8enyUGVzX0aL0pX-r1UP25zmv6P75g2kXeQmfFZsLZt9gHUi70lrstMUNwRr_XZ/exec" target="_blank" rel="noopener noreferrer">View form ↗</a></div>
   </div>
@@ -645,7 +650,7 @@ $("ksMobileLeads").addEventListener("click",e=>{
 
 /* Send a customer-only form link; never share the private CRM web app URL. */
 const KS_CUSTOMER_FORM_URL="https://script.google.com/macros/s/AKfycbzCH8enyUGVzX0aL0pX-r1UP25zmv6P75g2kXeQmfFZsLZt9gHUi70lrstMUNwRr_XZ/exec";
-const KS_CUSTOMER_FORM_MESSAGE="Hi, thanks for your interest in KS Garden Services. Please complete our new customer details form when you get a chance:\n\n"+KS_CUSTOMER_FORM_URL+"\n\nThanks, KS Garden Services";
+const KS_CUSTOMER_FORM_MESSAGE="Hi, thanks for your interest in KS Garden Services. Please complete the form below when you get a chance:\n\nNew Customer Details Form:\n"+KS_CUSTOMER_FORM_URL+"\n\nThanks, KS Garden Services";
 function ksShareOpenForm(){
   $("ksShareFormModal").classList.add("show");
   $("ksShareFormModal").setAttribute("aria-hidden","false");
@@ -669,11 +674,16 @@ $("ksShareCopy").onclick=async()=>{
     }
   }catch(error){}
   if(!success){
-    const field=$("ksShareFormLink");
-    field.focus();field.select();field.setSelectionRange(0,field.value.length);
+    const field=document.createElement("textarea");
+    field.value=KS_CUSTOMER_FORM_URL;
+    field.setAttribute("readonly","");
+    field.style.cssText="position:fixed;left:-9999px;top:0;opacity:0";
+    document.body.appendChild(field);
+    field.focus();field.select();
     try{success=document.execCommand("copy");}catch(error){}
+    field.remove();
   }
-  $("ksShareStatus").textContent=success?"Customer form link copied — paste into a message.":"Select and copy the link in the box above.";
+  $("ksShareStatus").textContent=success?"Customer form link copied — paste into a message.":"Copy failed. Open the form using its title and copy the address from your browser.";
 };
 
 
