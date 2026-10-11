@@ -727,9 +727,10 @@ function ksAreaSelectMode(mode){
   $("ksAreaSaved").textContent="";
   if(mode==="map") {
     if(typeof L!=="undefined" && !ksAreaMapObj){
-      ksAreaMapObj=L.map("ksAreaMap",{zoomControl:true}).setView([53.4527,-2.6405],17);
+      ksAreaMapObj=L.map("ksAreaMap",{zoomControl:true,maxZoom:23,zoomSnap:0.5,touchZoom:true}).setView([53.4527,-2.6405],17);
       L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{
-        maxZoom:20,
+        maxNativeZoom:20,
+        maxZoom:23,
         attribution:"Imagery © Esri, Maxar, Earthstar Geographics & contributors"
       }).addTo(ksAreaMapObj);
       ksAreaMapObj.on("click",event=>{
