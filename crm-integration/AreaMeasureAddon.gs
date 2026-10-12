@@ -1,12 +1,12 @@
 /**
  * KS Garden Services — private on-site area measuring add-on.
  * Install ONLY in the owner-only Apps Script CRM, not public enquiries.
- * Manual rectangle and approx. satellite outline measurement are both supported.
+ * Manual MULTIPLE rectangle and Google Maps outline estimates are both supported.
  * Entries save to a dedicated Measurements sheet. No customer is contacted.
  */
 const KS_AREA_COLUMNS_ = [
   "Measurement ID","Created At","Customer","Enquiry ID","Surface",
-  "Method","Length (m)","Width (m)","Area (m²)","Notes","Outline (Lat/Lng)"
+  "Method","Length (m)","Width (m)","Area (m²)","Notes","Outline (Lat/Lng)","Rectangles (JSON)"
 ];
 function ksAreaSheet_() {
   const ss=SpreadsheetApp.openById(CFG.SPREADSHEET_ID);
@@ -15,6 +15,12 @@ function ksAreaSheet_() {
     sheet=ss.insertSheet("Measurements");
     sheet.getRange(1,1,1,KS_AREA_COLUMNS_.length).setValues([KS_AREA_COLUMNS_]);
     sheet.setFrozenRows(1);
+  }else{
+    // One new column only; existing measurements remain in their original rows.
+    const existing=String(sheet.getRange(1,12).getValue()||"").trim();
+    if(existing&&existing!==KS_AREA_COLUMNS_[11])
+      throw Error("Measurements column L is already used. No records were changed.");
+    if(!existing)sheet.getRange(1,12).setValue(KS_AREA_COLUMNS_[11]);
   }
   return sheet;
 }
@@ -41,11 +47,33 @@ function ksSaveAreaMeasurement(input) {
   const length=Number(input.length);
   const width=Number(input.width);
   if(!Number.isFinite(area)||area<=0||area>1000000)throw Error("Enter a valid area in square metres.");
-  if(method==="manual"&&
-      (!Number.isFinite(length)||length<=0||length>10000||
-       !Number.isFinite(width)||width<=0||width>10000||
-       Math.abs((length*width)-area)>Math.max(.05,area*.002)))
-    throw Error("Length, width and area do not match.");
+  let rectangles="",rectangleCount=0;
+  if(method==="manual"){
+    if(Array.isArray(input.rectangles)&&input.rectangles.length){
+      if(input.rectangles.length>25)throw Error("You can add up to 25 rectangles.");
+      const dimensions=input.rectangles.map((r,i)=>{
+        const l=Number(r&&r.length),w=Number(r&&r.width);
+        if(!Number.isFinite(l)||!Number.isFinite(w)||l<=0||w<=0||l>10000||w>10000)
+          throw Error("Rectangle "+(i+1)+" requires positive length and width in metres.");
+        if(l*w>1000000)throw Error("Rectangle "+(i+1)+" is too large.");
+        return {length:Number(l.toFixed(3)),width:Number(w.toFixed(3))};
+      });
+      const calculated=dimensions.reduce((sum,r)=>sum+r.length*r.width,0);
+      if(calculated>1000000||Math.abs(calculated-area)>Math.max(.05,calculated*.002))
+        throw Error("Rectangle total does not match the submitted area.");
+      rectangles=JSON.stringify(dimensions);
+      rectangleCount=dimensions.length;
+    }else{
+      if(!Number.isFinite(length)||length<=0||length>10000||
+         !Number.isFinite(width)||width<=0||width>10000||
+         Math.abs((length*width)-area)>Math.max(.05,area*.002))
+        throw Error("Length, width and area do not match.");
+      rectangles=JSON.stringify([{length:Number(length.toFixed(3)),width:Number(width.toFixed(3))}]);
+      rectangleCount=1;
+    }
+  }else if(Array.isArray(input.rectangles)&&input.rectangles.length){
+    throw Error("Rectangles are supported in manual measuring mode only.");
+  }
   let outline="";
   if(method==="map"){
     const points=Array.isArray(input.points)?input.points:[];
@@ -78,16 +106,20 @@ function ksSaveAreaMeasurement(input) {
     lead.id,
     surface,
     method,
-    method==="manual"?length:"",
-    method==="manual"?width:"",
+    method==="manual"&&rectangleCount===1
+      ?JSON.parse(rectangles)[0].length:"",
+    method==="manual"&&rectangleCount===1
+      ?JSON.parse(rectangles)[0].width:"",
     Number(area.toFixed(2)),
     ksAreaSafeText_(input.notes,600),
-    outline
+    outline,
+    rectangles
   ];
   const lock=LockService.getScriptLock();
   if(!lock.tryLock(20000))throw Error("CRM is busy. Try again.");
   try{ksAreaSheet_().appendRow(record);}finally{lock.releaseLock();}
-  return {ok:true,id:record[0],area:record[8],customer:lead.name};
+  return {ok:true,id:record[0],area:record[8],customer:lead.name,
+    rectangles:rectangleCount};
 }
 /** Show up to 20 newest saved measurements for one selected CRM customer. */
 function ksListAreaMeasurements(leadId){
@@ -100,6 +132,12 @@ function ksListAreaMeasurements(leadId){
   return sh.getRange(2,1,n-1,KS_AREA_COLUMNS_.length).getValues()
     .filter(r=>String(r[3])===id).slice(-20).reverse().map(r=>({
       id:String(r[0]),date:Utilities.formatDate(new Date(r[1]),"Europe/London","dd MMM yyyy"),
-      surface:String(r[4]),method:String(r[5]),area:Number(r[8]),notes:String(r[9]||"")
+      surface:String(r[4]),method:String(r[5]),area:Number(r[8]),notes:String(r[9]||""),
+      rectangles:(()=>{
+        try{
+          const list=JSON.parse(String(r[11]||"[]"));
+          return Array.isArray(list)?list:[];
+        }catch(e){return [];}
+      })()
     }));
 }
