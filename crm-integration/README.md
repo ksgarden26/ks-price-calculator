@@ -1,3 +1,19 @@
+## New customer form: garden access and key register (prepared in private admin)
+
+The private CRM owner interface now includes a Garden access & customer keys section. The add-on is **prepared in this feature branch, not installed in the user's private Apps Script until they paste it and redeploy**.
+
+- Add `CustomerAccessAddon.gs` to the **PRIVATE** CRM Apps Script project alongside the existing owner-only booking/preference add-ons.
+- Copy the updated `Index.html` over the PRIVATE project's current `Index.html`, save and edit the **existing** Only-myself deployment → New version → Deploy.
+- Opening or creating a CRM enquiry lets the owner select Customer home, Side/rear gate, Key held, Key safe, Coded gate or Other. Details include quantity of physical keys, storage location, entry notes and pet restrictions. A code can optionally be saved to the private Customer Keys sheet and explicitly revealed for only 15 seconds inside the owner interface.
+- The private backend validates the Quotes **Enquiry ID** in column V, writes one dedicated `KS-ACCESS-<Enquiry ID>` record into the **existing Customer Keys tab**, leaves other manually entered key records untouched, uses the existing original 12 columns, and appends separate columns M–O for entry instructions, restrictions and access code.
+- The form does **not** send these details to Xero or notification emails. Never put access combinations in normal customer notes.
+- **Security limitations:** customer access codes are stored as regular spreadsheet cells. They are not end-to-end encrypted, so every editor/viewer with rights to the Customer Keys sheet can potentially see them; protect the spreadsheet and business Google account with restricted access and strong 2FA. Do not put the private add-on, customer codes or a readable code endpoint into the public customer form.
+- The add-on was tested in a mock sheet for create, update, reveal/hide, code clearing, association with the correct CRM enquiry ID and non-interference with other keys; the **live owner app and sheet have not been changed**.
+
+**Website form still pending:** `https://ksgardenservices.co.uk/new-customer` currently redirects to a separate PUBLIC Apps Script HTML form, not to the owner CRM app or this GitHub `Index.html`. Its current `Code.gs` and `Index.html` are not present in the GitHub repository/accessible Drive. To avoid breaking the live lead intake, obtain those two public project files first, then add the same title/first name/surname/access fields and a safe, write-only handler to register access after the customer has been assigned an enquiry ID. Test with a dummy form enquiry. Do **not** claim that the website form has been updated merely because these private files exist.
+
+---
+
 ## Google Maps satellite measuring (private app)
 
 The area-measuring screen can now use **Google Maps satellite imagery** as its first choice. Tapping driveway/patio corners still calculates and saves area in square metres in the existing Measurements sheet. If the Google Maps key is missing or the library cannot load, the earlier Esri satellite-outline map remains available as a fallback.
