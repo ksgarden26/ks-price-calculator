@@ -66,7 +66,11 @@ button{font:inherit}
     <div class="card">
       <h2>Customer</h2>
       <div class="grid2">
-        <div><label>Name</label><input id="name" placeholder="Customer name"></div>
+        <div><label>Title</label><select id="nameTitle"><option value="">Select</option><option>Mr</option><option>Mrs</option><option>Miss</option><option>Ms</option><option>Mx</option><option>Dr</option><option>Prof</option></select></div>
+        <div><label>First name</label><input id="firstName" autocomplete="given-name" placeholder="John"></div>
+        <div><label>Surname</label><input id="surname" autocomplete="family-name" placeholder="Smith"></div>
+        <div><label>Xero invoice name</label><div class="row"><input id="invoiceName" readonly aria-label="Xero invoice name" style="flex:1;min-width:110px"><button class="secondary" type="button" id="copyInvoice">Copy</button></div></div>
+        <input id="name" type="hidden">
         <div><label>Phone</label><input id="phone" type="tel" placeholder="Phone number"></div>
         <div><label>Address</label><input id="address" placeholder="House / street"></div>
         <div><label>Postcode</label><input id="postcode" placeholder="WA12..."></div>
@@ -226,8 +230,23 @@ const PRICE={
 const MULT={normal:1,needs:1.15,overgrown:1.30};
 const $=id=>document.getElementById(id);
 let areaCounter=0,totalArea=0;
-const fields=["name","phone","address","postcode","service","condition","frequency","waste","work","size","extras","travel","finalPrice","deposit","internal"];
+const fields=["name","nameTitle","firstName","surname","phone","address","postcode","service","condition","frequency","waste","work","size","extras","travel","finalPrice","deposit","internal"];
 
+function syncCustomerName(){
+ const title=$("nameTitle").value, first=$("firstName").value.trim(), last=$("surname").value.trim();
+ const full=[title,first,last].filter(Boolean).join(" ");
+ if(full) $("name").value=full;
+ $("invoiceName").value=[title,first?first.charAt(0).toUpperCase():"",last].filter(Boolean).join(" ");
+}
+function syncLegacyCustomerName(){
+ if($("firstName").value.trim() || $("surname").value.trim()) {syncCustomerName();return;}
+ const original=$("name").value.trim();if(!original){$("invoiceName").value="";return;}
+ const words=original.split(/\s+/);
+ const titleWords=["Mr","Mrs","Miss","Ms","Mx","Dr","Prof"];
+ if(titleWords.includes(words[0]))$("nameTitle").value=words.shift();
+ if(words.length>=2){$("firstName").value=words.shift();$("surname").value=words.join(" ");syncCustomerName();}
+ else $("invoiceName").value=original;
+}
 function money(n){return "£"+Math.round(Number(n)||0)}
 function recalc(){
  const s=$("service").value, band=Number($("size").value), cond=$("condition").value;
@@ -319,12 +338,12 @@ function saveDraft(){
 function loadDraft(){
  try{
   const d=JSON.parse(localStorage.getItem("ksQuoteDraft")||"null"); if(!d)return;
-  fields.forEach(id=>{if(d[id]!=null)$(id).value=d[id]});
+  fields.forEach(id=>{if(d[id]!=null)$(id).value=d[id]});syncLegacyCustomerName();
   $("areas").innerHTML="";areaCounter=0;(d.areas?.length?d.areas:[{}]).forEach(addArea);calcAreas();recalc();
  }catch(e){}
 }
 function resetQuote(){
- fields.forEach(id=>{if(["extras","travel","deposit"].includes(id))$(id).value=0;else if(["name","phone","address","postcode","work","internal","finalPrice"].includes(id))$(id).value=""});
+ fields.forEach(id=>{if(["extras","travel","deposit"].includes(id))$(id).value=0;else if(["name","nameTitle","firstName","surname","phone","address","postcode","work","internal","finalPrice"].includes(id))$(id).value=""});$("invoiceName").value="";
  $("service").value="maintenance";$("condition").value="normal";$("frequency").value="Fortnightly";$("waste").value="0";$("size").value="1";$("finalPrice").dataset.edited="";
  $("areas").innerHTML="";areaCounter=0;addArea();calcAreas();recalc();
 }
@@ -342,7 +361,7 @@ function renderHistory(){
 }
 function loadSaved(id){
  const arr=JSON.parse(localStorage.getItem("ksSavedQuotes")||"[]"),q=arr.find(x=>x.id===id);if(!q)return;
- fields.forEach(k=>{if(q.data[k]!=null)$(k).value=q.data[k]});
+ fields.forEach(k=>{if(q.data[k]!=null)$(k).value=q.data[k]});syncLegacyCustomerName();
  $("areas").innerHTML="";areaCounter=0;(q.areas?.length?q.areas:[{}]).forEach(addArea);calcAreas();$("finalPrice").dataset.edited="1";buildQuote();showTab("quote");
 }
 function showTab(id){
@@ -354,6 +373,8 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>showTab(b.dataset.tab
 document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>showTab(b.dataset.goto));
 $("addArea").onclick=()=>addArea();
 $("clearAreas").onclick=()=>{$("areas").innerHTML="";areaCounter=0;addArea();calcAreas()};
+["nameTitle","firstName","surname"].forEach(id=>$(id).addEventListener("input",syncCustomerName));
+$("copyInvoice").addEventListener("click",async()=>{const value=$("invoiceName").value;if(!value)return;try{await navigator.clipboard.writeText(value);$("copyInvoice").textContent="Copied ✓";setTimeout(()=>$("copyInvoice").textContent="Copy",1300)}catch(e){$("invoiceName").focus();$("invoiceName").select();}});
 fields.forEach(id=>$(id).addEventListener("input",()=>{if(id==="finalPrice")$(id).dataset.edited="1";recalc()}));
 $("service").addEventListener("change",()=>{bandFromArea();recalc()});
 $("finalPrice").addEventListener("input",buildQuote);$("deposit").addEventListener("input",buildQuote);
