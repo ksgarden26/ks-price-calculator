@@ -162,10 +162,6 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 .ks-area-result{padding:15px 18px;background:#eef6ee;border-radius:12px;margin:13px 0;color:var(--g)}
 .ks-area-result strong{font-size:30px}
 .ks-area-muted{font-size:12px;color:#5b6d60;line-height:1.45;margin:8px 0}
-#ksAreaMap{height:325px;width:100%;border-radius:12px;background:#e0e7e0;border:1px solid #c6d6ca}
-.ks-area-map-buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.ks-area-map-buttons button{min-height:44px}
-.ks-area-map-buttons input{min-width:110px;flex:1;height:44px;border:1px solid #bed1c1;border-radius:8px;padding:9px}
 .ks-area-saved{font-size:13px;padding:10px 0;color:#245b36}
 .ks-area-manual{display:grid;gap:11px}
 #ksAreaRectangles{display:grid;gap:12px}
@@ -178,14 +174,10 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 .ks-area-rectangle-remove{min-height:43px;align-self:start}
 .ks-area-rectangle-total{padding:16px;background:#e4f1e6;border:1px solid #bfd9c5;border-radius:12px;color:#20462c;font-size:17px;font-weight:700}
 .ks-area-rectangle-total strong{font-size:26px}
-#ksAreaRetryMap{min-height:45px;margin:3px 0 11px}
 @media(max-width:480px){.ks-area-rectangle{padding:11px}.ks-area-rectangle-title strong{font-size:15px}.ks-area-rectangle-actions .btn{flex-basis:100%}}
-@media(max-width:480px){.ks-area-grid{grid-template-columns:1fr}.ks-area-grid .ks-span-all{grid-column:auto}#ksAreaMap{height:350px}}
-#ksAreaMap.ks-area-map-expanded{height:min(67dvh,710px);min-height:440px}
+@media(max-width:480px){.ks-area-grid{grid-template-columns:1fr}.ks-area-grid .ks-span-all{grid-column:auto}}
 .ks-area-zoom-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .ks-area-zoom-buttons .btn{min-height:48px;padding:10px 7px;font-size:14px}
-#ksAreaTileStatus{margin:6px 0 10px}
-@media(max-width:480px){#ksAreaMap.ks-area-map-expanded{height:65dvh;min-height:410px}}
 
 
 /* v2026-10-12 — real iPhone and small tablet touch layout.
@@ -298,7 +290,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 <div class="modalback" id="ksAreaModal" aria-hidden="true" style="z-index:76">
  <div class="modal ks-area-modal" role="dialog" aria-modal="true" aria-labelledby="ksAreaTitle">
   <div class="ks-plant-inline"><h2 id="ksAreaTitle">📐 Measure Area</h2><button type="button" class="btn" id="ksAreaClose">Close ×</button></div>
-  <p class="ks-area-muted">Measure for a quotation. Map outlines are approximate; check on site before ordering materials or agreeing a final price.</p>
+  <p class="ks-area-muted">Measure driveways, patios and lawns in sections. Check dimensions on site before ordering materials or agreeing a final price.</p>
   <div class="ks-area-grid">
    <label>Customer (optional)
     <select id="ksAreaCustomer"><option value="">Not assigned to a customer</option></select>
@@ -307,12 +299,8 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
     <select id="ksAreaSurface"><option value="driveway">Driveway</option><option value="patio">Patio</option><option value="lawn">Lawn</option><option value="other">Other garden area</option></select>
    </label>
   </div>
-  <div class="ks-area-tabs">
-   <button type="button" class="btn ks-is-active" id="ksAreaManualTab" aria-pressed="true">📏 Length × width</button>
-   <button type="button" class="btn" id="ksAreaMapTab" aria-pressed="false">🗺️ Google Maps</button>
-  </div>
   <div id="ksAreaManualPanel" class="ks-area-manual">
-   <p class="ks-area-muted">For an L-shaped driveway, split it into rectangles without overlapping. Add as many sections as you need, then save one combined area.</p>
+   <p class="ks-area-muted">For an L-shaped driveway or irregular lawn, split the surface into non-overlapping rectangles. Add more sections to calculate one combined total.</p>
    <div id="ksAreaRectangles">
     <section class="ks-area-rectangle" id="ksAreaFirstRectangle">
      <div class="ks-area-rectangle-title"><strong>Area 1</strong><span class="ks-area-rectangle-subtotal" id="ksAreaFirstSubtotal">— m²</span></div>
@@ -329,29 +317,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
    <p class="ks-area-muted" id="ksAreaRectangleHelp" role="status" aria-live="polite">Enter both measurements for Area 1.</p>
    <div class="ks-area-rectangle-total" aria-live="polite">Combined total: <strong id="ksAreaManualTotal">—</strong> m²</div>
   </div>
-  <div id="ksAreaMapPanel" hidden>
-   <p class="ks-area-muted">Find the property in Google Maps, zoom in and tap each corner of the driveway, patio or lawn. Tap at least 3 points or find it using a UK postcode.</p>
-   <div class="ks-area-map-buttons">
-    <input id="ksAreaPostcode" type="text" placeholder="Customer postcode" aria-label="Find customer postcode">
-    <button type="button" class="btn" id="ksAreaFindPostcode">Find postcode</button>
-    <button type="button" class="btn" id="ksAreaLocate">📍 My location</button>
-   </div>
-   <div class="ks-area-map-buttons ks-area-zoom-buttons">
-    <button type="button" class="btn" id="ksAreaZoomIn">＋ Zoom in</button>
-    <button type="button" class="btn" id="ksAreaZoomOut">－ Zoom out</button>
-    <button type="button" class="btn" id="ksAreaExpand" aria-pressed="false">⛶ Larger map</button>
-   </div>
-   <p class="ks-area-muted" id="ksAreaTileStatus" role="status" aria-live="polite">Google Maps requires its API key to be connected. Manual length × width works without a map.</p>
-   <button type="button" class="btn" id="ksAreaRetryMap" hidden>↻ Retry Google Maps</button>
-   <div id="ksAreaMap" aria-label="Map for outlining the measured area"></div>
-   <div class="ks-area-map-buttons">
-    <button type="button" class="btn" id="ksAreaUndo">↶ Undo point</button>
-    <button type="button" class="btn" id="ksAreaClear">Clear outline</button>
-   </div>
-   <p class="ks-area-muted" id="ksAreaMapHint">Tap three or more corners to measure an area.</p>
-   <p class="ks-area-muted">Imagery credits are displayed on the map. All mapped areas are estimates; confirm critical dimensions on site.</p>
-  </div>
-  <div class="ks-area-result" aria-live="polite">Estimated area: <strong id="ksAreaResult">—</strong> m²</div>
+  <div class="ks-area-result" aria-live="polite">Total measured area: <strong id="ksAreaResult">—</strong> m²</div>
   <label class="field" for="ksAreaNotes">Site notes (optional)</label>
   <textarea id="ksAreaNotes" class="ks-area-notes" rows="2" placeholder="E.g. block paving, curved edge, confirm width on site"></textarea>
   <p id="ksAreaSaved" class="ks-area-saved" role="status" aria-live="polite"></p>
@@ -1060,125 +1026,9 @@ $("ksShareCopy").onclick=async()=>{
 };
 
 
-/* KS Area Measure. Both methods are estimates; saved to owner-only CRM Measurements tab. */
-let ksAreaMode="manual",ksAreaMapPoints=[],ksAreaMapExpanded=false;
-let ksAreaGoogleMapObj=null,ksAreaGooglePolygon=null,ksAreaGoogleLine=null;
-let ksAreaLoadingStarted=false,ksAreaGoogleScriptPromise=null;
-let ksAreaMapRequest=0,ksAreaMapTimer=null,ksAreaScriptAttempt=0;
-function ksAreaMapReady_(){return !!ksAreaGoogleMapObj}
-function ksAreaMoveMap_(lat,lng,zoom){
-  if(ksAreaGoogleMapObj){
-    ksAreaGoogleMapObj.setCenter({lat,lng});
-    if(Number.isFinite(zoom))ksAreaGoogleMapObj.setZoom(zoom);
-  }
-}
-function ksAreaResizeMap_(){
-  if(ksAreaGoogleMapObj&&window.google?.maps?.event)
-    google.maps.event.trigger(ksAreaGoogleMapObj,"resize");
-}
-function ksAreaLoadGoogleJavascript_(apiKey){
-  if(window.google?.maps?.Map)return Promise.resolve();
-  if(ksAreaGoogleScriptPromise)return ksAreaGoogleScriptPromise;
-  ksAreaGoogleScriptPromise=new Promise((resolve,reject)=>{
-    const callbackName="ksAreaGoogleMapsLoaded_"+(++ksAreaScriptAttempt);
-    window[callbackName]=()=>{delete window[callbackName];resolve()};
-    const script=document.createElement("script");
-    script.async=true;
-    script.src="https://maps.googleapis.com/maps/api/js?key="+
-      encodeURIComponent(apiKey)+"&v=weekly&loading=async&callback="+callbackName;
-    script.onerror=()=>{
-      delete window[callbackName];
-      script.remove();
-      ksAreaGoogleScriptPromise=null;
-      reject(Error("Google Maps JavaScript could not download."));
-    };
-    document.head.append(script);
-  });
-  return ksAreaGoogleScriptPromise;
-}
-function ksAreaInitGoogle_(){
-  if(!window.google?.maps?.Map)throw Error("Google Maps JavaScript service unavailable.");
-  ksAreaGoogleMapObj=new google.maps.Map($("ksAreaMap"),{
-    center:{lat:53.4527,lng:-2.6405},
-    zoom:19,maxZoom:22,
-    mapTypeId:"satellite",
-    tilt:0,gestureHandling:"greedy",
-    zoomControl:true,mapTypeControl:false,
-    streetViewControl:false,fullscreenControl:false
-  });
-  ksAreaLoadingStarted=false;
-  if(ksAreaMapTimer){clearTimeout(ksAreaMapTimer);ksAreaMapTimer=null;}
-  $("ksAreaRetryMap").hidden=true;
-  $("ksAreaTileStatus").textContent="Google Maps loaded. Zoom in and tap the surface corners to measure in m². Imagery detail varies by area.";
-  ksAreaGoogleMapObj.addListener("click",event=>{
-    if(!event.latLng)return;
-    if(ksAreaMapPoints.length>=60){
-      $("ksAreaMapHint").textContent="Maximum 60 outline corners.";return;
-    }
-    ksAreaMapPoints.push({lat:event.latLng.lat(),lng:event.latLng.lng()});
-    ksAreaUpdatePolygon();ksAreaRefresh();
-  });
-  ksAreaUpdatePolygon();
-  setTimeout(ksAreaResizeMap_,100);
-}
-function ksAreaShowGoogleError_(message){
-  if(ksAreaMapTimer){clearTimeout(ksAreaMapTimer);ksAreaMapTimer=null;}
-  ksAreaLoadingStarted=false;
-  $("ksAreaRetryMap").hidden=false;
-  $("ksAreaTileStatus").textContent=message+" Manual rectangles remain available.";
-}
-function ksAreaStartPreferredMap_(){
-  if(ksAreaMapReady_()||ksAreaLoadingStarted)return;
-  const request=++ksAreaMapRequest;
-  ksAreaLoadingStarted=true;
-  $("ksAreaRetryMap").hidden=true;
-  $("ksAreaTileStatus").textContent="Connecting Google Maps…";
-  ksAreaMapTimer=setTimeout(()=>{
-    if(request!==ksAreaMapRequest||ksAreaMapReady_())return;
-    ++ksAreaMapRequest;
-    ksAreaGoogleScriptPromise=null;
-    ksAreaShowGoogleError_("Google Maps timed out after 18 seconds. Check that GoogleMapsAddon.gs is installed, KS_GOOGLE_MAPS_API_KEY is saved, billing is enabled, and the private app was redeployed.");
-  },18000);
-  google.script.run.withSuccessHandler(config=>{
-    if(request!==ksAreaMapRequest)return;
-    if(!config||!config.available||!config.key){
-      ksAreaShowGoogleError_("Google Maps is not configured yet. Add KS_GOOGLE_MAPS_API_KEY in private Script Properties and install GoogleMapsAddon.gs.");
-      return;
-    }
-    ksAreaLoadGoogleJavascript_(config.key)
-      .then(()=>{
-        if(request!==ksAreaMapRequest)return;
-        try{ksAreaInitGoogle_();}
-        catch(err){ksAreaShowGoogleError_("Google Maps could not start: "+err.message+".");}
-      })
-      .catch(err=>{
-        if(request!==ksAreaMapRequest)return;
-        ksAreaGoogleScriptPromise=null;
-        ksAreaShowGoogleError_("Google Maps could not load: "+err.message+". Check your API key, billing and website restrictions.");
-      });
-  }).withFailureHandler(err=>{
-    if(request!==ksAreaMapRequest)return;
-    ksAreaShowGoogleError_("Google Maps setup could not be read: "+(err.message||"Server error")+". Ensure GoogleMapsAddon.gs is in the private Apps Script project and redeployed.");
-  }).ksAreaGoogleMapsConfiguration();
-}
-$("ksAreaRetryMap").onclick=()=>{
-  if(ksAreaMapReady_())return;
-  ++ksAreaMapRequest;
-  if(ksAreaMapTimer){clearTimeout(ksAreaMapTimer);ksAreaMapTimer=null;}
-  ksAreaLoadingStarted=false;
-  ksAreaGoogleScriptPromise=null;
-  ksAreaStartPreferredMap_();
-};
-// Google's authentication callback runs after script load if referrer, billing or
-// API restriction rejects this key. Never hide a failed map behind a success message.
-window.gm_authFailure=()=>{
-  ++ksAreaMapRequest;
-  ksAreaGoogleMapObj=null;
-  ksAreaGoogleScriptPromise=null;
-  ksAreaShowGoogleError_("Google Maps rejected the API key. Check Google Cloud billing, Maps JavaScript API and authorised website referrers.");
-};
+/* KS Area Measure — manual rectangles only. Each section and its
+   combined total are saved in the owner's CRM Measurements tab. */
 function ksAreaOpen(){
-  ksAreaMode="manual";
   $("ksAreaLength").value="";$("ksAreaWidth").value="";
   $("ksAreaRectangles").querySelectorAll(".ks-area-rectangle-extra").forEach(node=>node.remove());
   $("ksAreaNotes").value="";$("ksAreaSaved").textContent="";
@@ -1188,71 +1038,21 @@ function ksAreaOpen(){
   const unassigned=document.createElement("option");
   unassigned.value="";unassigned.textContent="Not assigned to a customer";
   customer.append(unassigned);
-  DATA.filter(x=>x.id&&x.name).sort((a,b)=>String(a.name).localeCompare(String(b.name),"en-GB")).forEach(x=>{
-    const option=document.createElement("option");
-    option.value=String(x.id);
-    option.textContent=String(x.name)+(x.postcode?" — "+x.postcode:"");
-    customer.append(option);
-  });
-  $("ksAreaPostcode").value="";
-  ksAreaMapPoints=[];
-  ksAreaUpdatePolygon();
-  ksAreaMapExpanded=false;
-  $("ksAreaMap").classList.remove("ks-area-map-expanded");
-  $("ksAreaExpand").textContent="⛶ Larger map";
-  $("ksAreaExpand").setAttribute("aria-pressed","false");
+  DATA.filter(x=>x.id&&x.name)
+    .sort((a,b)=>String(a.name).localeCompare(String(b.name),"en-GB"))
+    .forEach(x=>{
+      const option=document.createElement("option");
+      option.value=String(x.id);
+      option.textContent=String(x.name)+(x.postcode?" — "+x.postcode:"");
+      customer.append(option);
+    });
   $("ksAreaModal").classList.add("show");
   $("ksAreaModal").setAttribute("aria-hidden","false");
-  ksAreaSelectMode("manual");
+  ksAreaRefresh();
 }
 function ksAreaClose(){
   $("ksAreaModal").classList.remove("show");
   $("ksAreaModal").setAttribute("aria-hidden","true");
-}
-function ksAreaSelectMode(mode){
-  ksAreaMode=mode;
-  $("ksAreaManualPanel").hidden=mode!=="manual";
-  $("ksAreaMapPanel").hidden=mode!=="map";
-  $("ksAreaManualTab").classList.toggle("ks-is-active",mode==="manual");
-  $("ksAreaMapTab").classList.toggle("ks-is-active",mode==="map");
-  $("ksAreaManualTab").setAttribute("aria-pressed",String(mode==="manual"));
-  $("ksAreaMapTab").setAttribute("aria-pressed",String(mode==="map"));
-  $("ksAreaSaved").textContent="";
-  if(mode==="map") {
-    ksAreaStartPreferredMap_();
-    if(ksAreaMapReady_())setTimeout(ksAreaResizeMap_,75);
-    else $("ksAreaMapHint").textContent="Connecting Google Maps…";
-  }
-  ksAreaRefresh();
-}
-function ksAreaMapArea(){
-  if(ksAreaMapPoints.length<3)return 0;
-  const rad=Math.PI/180,R=6371008.8,origin=ksAreaMapPoints[0],cos=Math.cos(origin.lat*rad);
-  const p=ksAreaMapPoints.map(x=>[(x.lng-origin.lng)*rad*cos*R,(x.lat-origin.lat)*rad*R]);
-  let twice=0;
-  for(let i=0;i<p.length;i++){
-    const a=p[i],b=p[(i+1)%p.length];twice+=a[0]*b[1]-b[0]*a[1];
-  }
-  return Math.abs(twice)/2;
-}
-function ksAreaUpdatePolygon(){
-  if(ksAreaGoogleMapObj){
-    if(ksAreaGooglePolygon){ksAreaGooglePolygon.setMap(null);ksAreaGooglePolygon=null}
-    if(ksAreaGoogleLine){ksAreaGoogleLine.setMap(null);ksAreaGoogleLine=null}
-    if(ksAreaMapPoints.length>=3){
-      ksAreaGooglePolygon=new google.maps.Polygon({
-        paths:ksAreaMapPoints,strokeColor:"#ebd156",strokeWeight:3,
-        fillColor:"#f2d769",fillOpacity:.25,clickable:false,
-        map:ksAreaGoogleMapObj
-      });
-    }else if(ksAreaMapPoints.length){
-      ksAreaGoogleLine=new google.maps.Polyline({
-        path:ksAreaMapPoints,strokeColor:"#ffd65a",strokeWeight:4,
-        clickable:false,map:ksAreaGoogleMapObj
-      });
-    }
-  }
-  $("ksAreaMapHint").textContent=ksAreaMapPoints.length+" corners selected. Tap each corner in order; you can undo or clear.";
 }
 function ksAreaGetRectangles_(){
   const sections=[...$("ksAreaRectangles").querySelectorAll(".ks-area-rectangle")];
@@ -1320,25 +1120,14 @@ function ksAreaAddRectangle_(){
   ksAreaRefresh();
   section.querySelector("input").focus();
 }
-function ksAreaDimensions(){
-  const first=ksAreaGetRectangles_().rows[0];
-  return {length:first.length,width:first.width,valid:first.valid};
-}
-function ksAreaCurrentArea(){
-  if(ksAreaMode==="map")return ksAreaMapArea();
-  const data=ksAreaGetRectangles_();
-  return data.complete?data.total:0;
-}
+
 function ksAreaRefresh(){
   const data=ksAreaRenderManual_();
-  const area=ksAreaMode==="map"?ksAreaMapArea():(data.complete?data.total:0);
-  $("ksAreaResult").textContent=area>0?area.toFixed(2):"—";
+  $("ksAreaResult").textContent=data.complete?data.total.toFixed(2):"—";
 }
 $("ksQuickMeasure").onclick=ksAreaOpen;
 $("ksAreaClose").onclick=ksAreaClose;
 $("ksAreaCancel").onclick=ksAreaClose;
-$("ksAreaManualTab").onclick=()=>ksAreaSelectMode("manual");
-$("ksAreaMapTab").onclick=()=>ksAreaSelectMode("map");
 $("ksAreaLength").addEventListener("input",ksAreaRefresh);
 $("ksAreaWidth").addEventListener("input",ksAreaRefresh);
 $("ksAreaAddRectangle").onclick=ksAreaAddRectangle_;
@@ -1348,78 +1137,32 @@ $("ksAreaClearRectangles").onclick=()=>{
   ksAreaRefresh();
   $("ksAreaLength").focus();
 };
-$("ksAreaCustomer").addEventListener("change",()=>{
-  const lead=DATA.find(x=>String(x.id)===$("ksAreaCustomer").value);
-  if(lead&&lead.postcode)$("ksAreaPostcode").value=lead.postcode;
-});
-$("ksAreaZoomIn").onclick=()=>{
-  if(ksAreaGoogleMapObj)ksAreaGoogleMapObj.setZoom(Math.min(22,(ksAreaGoogleMapObj.getZoom()||18)+1));
-};
-$("ksAreaZoomOut").onclick=()=>{
-  if(ksAreaGoogleMapObj)ksAreaGoogleMapObj.setZoom(Math.max(1,(ksAreaGoogleMapObj.getZoom()||18)-1));
-};
-$("ksAreaExpand").onclick=()=>{
-  ksAreaMapExpanded=!ksAreaMapExpanded;
-  $("ksAreaMap").classList.toggle("ks-area-map-expanded",ksAreaMapExpanded);
-  $("ksAreaExpand").textContent=ksAreaMapExpanded?"⛶ Smaller map":"⛶ Larger map";
-  $("ksAreaExpand").setAttribute("aria-pressed",String(ksAreaMapExpanded));
-  if(ksAreaMapReady_())setTimeout(ksAreaResizeMap_,100);
-};
-$("ksAreaUndo").onclick=()=>{ksAreaMapPoints.pop();ksAreaUpdatePolygon();ksAreaRefresh()};
-$("ksAreaClear").onclick=()=>{ksAreaMapPoints=[];ksAreaUpdatePolygon();ksAreaRefresh()};
-$("ksAreaFindPostcode").onclick=async()=>{
-  const postcode=$("ksAreaPostcode").value.trim().toUpperCase();
-  if(!postcode){$("ksAreaMapHint").textContent="Enter the customer's postcode.";return;}
-  $("ksAreaMapHint").textContent="Finding postcode…";
-  try{
-    const response=await fetch("https://api.postcodes.io/postcodes/"+encodeURIComponent(postcode));
-    const data=await response.json();
-    if(!response.ok||!data.result)throw Error("Postcode not found.");
-    if(!ksAreaMapReady_())throw Error("Satellite map has not loaded.");
-    ksAreaMoveMap_(data.result.latitude,data.result.longitude,19);
-    $("ksAreaMapHint").textContent="Postcode centred. Zoom and tap the surface corners.";
-  }catch(error){$("ksAreaMapHint").textContent="Could not find the postcode. Pan the map manually or use length × width.";}
-};
-$("ksAreaLocate").onclick=()=>{
-  if(!navigator.geolocation||!ksAreaMapReady_()){$("ksAreaMapHint").textContent="Location or map not ready. Pan to the property manually.";return;}
-  $("ksAreaMapHint").textContent="Checking your location…";
-  navigator.geolocation.getCurrentPosition(
-    p=>{ksAreaMoveMap_(p.coords.latitude,p.coords.longitude,19);
-      $("ksAreaMapHint").textContent="Location shown. Tap the surface corners.";},
-    ()=>{$("ksAreaMapHint").textContent="Location permission unavailable. Use postcode or move the map.";},
-    {enableHighAccuracy:true,timeout:12000,maximumAge:0});
-};
 $("ksAreaSave").onclick=()=>{
-  const area=ksAreaCurrentArea(),rectData=ksAreaGetRectangles_(),button=$("ksAreaSave");
-  if(ksAreaMode==="manual"&&!rectData.complete){
-    $("ksAreaSaved").textContent="Complete the length and width for every rectangle before saving.";
+  const data=ksAreaGetRectangles_(),button=$("ksAreaSave");
+  if(!data.complete){
+    $("ksAreaSaved").textContent="Enter valid length and width for every rectangle before saving.";
     return;
   }
-  if(area<=0||area>1000000){
-    $("ksAreaSaved").textContent="Enter valid rectangle measurements or outline at least 3 map corners.";
-    return;
-  }
-  const rectangles=ksAreaMode==="manual"
-    ?rectData.rows.map(r=>({length:r.length,width:r.width})):[];
+  const rectangles=data.rows.map(r=>({length:r.length,width:r.width}));
   const payload={
     leadId:$("ksAreaCustomer").value,
     surface:$("ksAreaSurface").value,
-    method:ksAreaMode,
+    method:"manual",
     length:rectangles.length===1?rectangles[0].length:0,
     width:rectangles.length===1?rectangles[0].width:0,
-    rectangles,area,notes:$("ksAreaNotes").value.trim(),
-    points:ksAreaMode==="map"?ksAreaMapPoints.map(x=>({lat:x.lat,lng:x.lng})):[]
+    rectangles,area:data.total,notes:$("ksAreaNotes").value.trim(),points:[]
   };
-  button.disabled=true;$("ksAreaSaved").textContent="Saving measurement to your private CRM…";
+  button.disabled=true;
+  $("ksAreaSaved").textContent="Saving measurements to your private CRM…";
   google.script.run.withSuccessHandler(result=>{
     button.disabled=false;
-    $("ksAreaSaved").textContent="✓ "+result.area.toFixed(2)+" m² saved for "+result.customer+
-      " in your Measurements sheet"+(result.rectangles?" ("+result.rectangles+" rectangle"+
-      (result.rectangles===1?"":"s")+")":"")+".";
-  }).withFailureHandler(err=>{
+    $("ksAreaSaved").textContent="✓ "+result.area.toFixed(2)+" m² saved for "+
+      result.customer+" in your Measurements sheet"+
+      (result.rectangles?" ("+result.rectangles+" rectangles)":"")+".";
+  }).withFailureHandler(error=>{
     button.disabled=false;
-    $("ksAreaSaved").textContent="Could not save measurement: "+(err.message||String(err))+
-      ". Ensure the updated AreaMeasureAddon.gs is installed and the latest private app deployed.";
+    $("ksAreaSaved").textContent="Could not save: "+(error.message||String(error))+
+      ". Check that the updated AreaMeasureAddon.gs is installed and the private app redeployed.";
   }).ksSaveAreaMeasurement(payload);
 };
 
