@@ -29,6 +29,8 @@ function ksSyncAssess_(values, quotes) {
  });
  if(matches.length>1)return {status:'REVIEW: multiple CRM matches'};
  if(matches.length===1){
+   if(ksSyncNormal_(matches[0].name)!==ksSyncNormal_(full))
+     return {status:'REVIEW: contact matches but customer name differs'};
    // Do not overwrite current CRM contact details, quotes, schedules or statuses.
    return {status:'LINKED: existing CRM record',id:matches[0].id};
  }
