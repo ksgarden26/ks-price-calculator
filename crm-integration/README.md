@@ -1,3 +1,20 @@
+## Google Maps satellite measuring (private app)
+
+The area-measuring screen can now use **Google Maps satellite imagery** as its first choice. Tapping driveway/patio corners still calculates and saves area in square metres in the existing Measurements sheet. If the Google Maps key is missing or the library cannot load, the earlier Esri satellite-outline map remains available as a fallback.
+
+To activate Google Maps on the private Apps Script admin deployment:
+
+1. Set up a separate Google Cloud project with billing and **Maps JavaScript API** enabled, then create a **browser/websites** API key. See https://developers.google.com/maps/documentation/javascript/get-api-key .
+2. Restrict the key to **Maps JavaScript API** and allowed **HTTPS website referrers** determined by the actual Google Apps Script iframe URL (inspect errors like RefererNotAllowedMapError). Do not use an unrestricted key. Set Google Cloud quotas and billing alerts to control spend. Google Apps Script HTMLService may use a shared `script.googleusercontent.com` origin, so website-referrer restrictions can be coarser than on a private website domain; consider a dedicated map page hosted on a KS-owned Cloudflare domain if stronger restrictions are necessary.
+3. Add `GoogleMapsAddon.gs` from this feature branch **only to the private CRM Apps Script project** (never the public customer form).
+4. In the private Apps Script project, **Project Settings → Script Properties → Add property** `KS_GOOGLE_MAPS_API_KEY` with the Maps JavaScript API browser key. Do not paste keys into GitHub or Index.html.
+5. Paste the latest `Index.html` into the same private project, save, then edit the **existing** private deployment → **New version** → Deploy. Keep access **Only myself**.
+6. On iPhone Chrome (signed into the KS business Google account), go to Measure Area → Satellite outline. Expect a Google satellite map (and Google imagery credits). Tap points, undo/clear, find postcode and save as usual.
+
+Google Maps JS uses its own key that is necessarily visible in browser network requests; storing it as a script property keeps it out of the GitHub source but **does not make it secret**. Apply API + website restrictions and quotas. The Maps JavaScript API is not the same as the free Google Maps consumer app and requires billing for production use, with monthly free-tier limits. Google satellite imagery resolution differs by address; no software can guarantee property-level detail or survey accuracy.
+
+---
+
 # KS Garden Services — CRM booking + Google Calendar integration (draft)
 
 **Not deployed or linked to live CRM yet.** This is an implementation package prepared against the copy of the CRM source from the user's Drive (`KS_Garden_Services_CRM_AppScript/Code.gs` and `Index.html`, dated 1 October 2026). The current deployed Apps Script may differ. Do not paste over newer work without comparing.
