@@ -20,6 +20,11 @@ const KS_CUSTOMER_INTAKE_HEADERS = [
 function ksIntakeClean_(value, max) {
  return value == null ? '' : String(value).trim().slice(0,max || 500);
 }
+function ksSheetSafe_(v) {
+ // Protect Google Sheets from interpreting untrusted customer text as formulas.
+ const text=String(v == null ? '' : v);
+ return /^[\\s]*[=+@-]/.test(text) ? "'"+text : text;
+}
 function ksIntakeRecord_(p) {
  p = p || {};
  const first=ksIntakeClean_(p.firstName,100);
@@ -89,7 +94,7 @@ function ksSaveCustomerIntake_(raw) {
    p.waste,p.garden,p.access,p.codeRequired,
    p.spare,p.lock,p.pets,p.hazards,p.accessNotes,
    'Yes','Yes',p.source
-  ]);
+  ].map((cell)=>cell instanceof Date ? cell : ksSheetSafe_(cell)));
  } finally {lock.releaseLock();}
  // Never include any access codes or security secrets in notification emails.
  MailApp.sendEmail({
