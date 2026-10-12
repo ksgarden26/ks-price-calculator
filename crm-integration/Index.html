@@ -167,6 +167,19 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 .ks-area-map-buttons button{min-height:44px}
 .ks-area-map-buttons input{min-width:110px;flex:1;height:44px;border:1px solid #bed1c1;border-radius:8px;padding:9px}
 .ks-area-saved{font-size:13px;padding:10px 0;color:#245b36}
+.ks-area-manual{display:grid;gap:11px}
+#ksAreaRectangles{display:grid;gap:12px}
+.ks-area-rectangle{border:1px solid #cbdccf;background:#f9fcf9;border-radius:12px;padding:13px;display:grid;gap:9px}
+.ks-area-rectangle-title{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ks-area-rectangle-title strong{font-size:16px;color:#20462c}
+.ks-area-rectangle-subtotal{font-size:15px;font-weight:700;color:#245b36}
+.ks-area-rectangle-actions{display:flex;flex-wrap:wrap;gap:9px}
+.ks-area-rectangle-actions .btn{min-height:48px;flex:1 1 175px}
+.ks-area-rectangle-remove{min-height:43px;align-self:start}
+.ks-area-rectangle-total{padding:16px;background:#e4f1e6;border:1px solid #bfd9c5;border-radius:12px;color:#20462c;font-size:17px;font-weight:700}
+.ks-area-rectangle-total strong{font-size:26px}
+#ksAreaRetryMap{min-height:45px;margin:3px 0 11px}
+@media(max-width:480px){.ks-area-rectangle{padding:11px}.ks-area-rectangle-title strong{font-size:15px}.ks-area-rectangle-actions .btn{flex-basis:100%}}
 @media(max-width:480px){.ks-area-grid{grid-template-columns:1fr}.ks-area-grid .ks-span-all{grid-column:auto}#ksAreaMap{height:350px}}
 #ksAreaMap.ks-area-map-expanded{height:min(67dvh,710px);min-height:440px}
 .ks-area-zoom-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -298,10 +311,23 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
    <button type="button" class="btn ks-is-active" id="ksAreaManualTab" aria-pressed="true">📏 Length × width</button>
    <button type="button" class="btn" id="ksAreaMapTab" aria-pressed="false">🗺️ Google Maps</button>
   </div>
-  <div id="ksAreaManualPanel" class="ks-area-grid">
-   <label>Length (metres)<input id="ksAreaLength" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="e.g. 9.5"></label>
-   <label>Width (metres)<input id="ksAreaWidth" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="e.g. 4"></label>
-   <p class="ks-area-muted ks-span-all">For an L-shaped driveway, measure each rectangle separately and add the areas together.</p>
+  <div id="ksAreaManualPanel" class="ks-area-manual">
+   <p class="ks-area-muted">For an L-shaped driveway, split it into rectangles without overlapping. Add as many sections as you need, then save one combined area.</p>
+   <div id="ksAreaRectangles">
+    <section class="ks-area-rectangle" id="ksAreaFirstRectangle">
+     <div class="ks-area-rectangle-title"><strong>Area 1</strong><span class="ks-area-rectangle-subtotal" id="ksAreaFirstSubtotal">— m²</span></div>
+     <div class="ks-area-grid">
+      <label>Length (metres)<input id="ksAreaLength" data-dimension="length" type="number" min="0.01" max="10000" step="0.01" inputmode="decimal" placeholder="e.g. 9.5"></label>
+      <label>Width (metres)<input id="ksAreaWidth" data-dimension="width" type="number" min="0.01" max="10000" step="0.01" inputmode="decimal" placeholder="e.g. 4"></label>
+     </div>
+    </section>
+   </div>
+   <div class="ks-area-rectangle-actions">
+    <button type="button" class="btn primary" id="ksAreaAddRectangle">＋ Add another rectangle</button>
+    <button type="button" class="btn" id="ksAreaClearRectangles">↻ Start again</button>
+   </div>
+   <p class="ks-area-muted" id="ksAreaRectangleHelp" role="status" aria-live="polite">Enter both measurements for Area 1.</p>
+   <div class="ks-area-rectangle-total" aria-live="polite">Combined total: <strong id="ksAreaManualTotal">—</strong> m²</div>
   </div>
   <div id="ksAreaMapPanel" hidden>
    <p class="ks-area-muted">Find the property in Google Maps, zoom in and tap each corner of the driveway, patio or lawn. Tap at least 3 points or find it using a UK postcode.</p>
@@ -316,6 +342,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
     <button type="button" class="btn" id="ksAreaExpand" aria-pressed="false">⛶ Larger map</button>
    </div>
    <p class="ks-area-muted" id="ksAreaTileStatus" role="status" aria-live="polite">Google Maps requires its API key to be connected. Manual length × width works without a map.</p>
+   <button type="button" class="btn" id="ksAreaRetryMap" hidden>↻ Retry Google Maps</button>
    <div id="ksAreaMap" aria-label="Map for outlining the measured area"></div>
    <div class="ks-area-map-buttons">
     <button type="button" class="btn" id="ksAreaUndo">↶ Undo point</button>
