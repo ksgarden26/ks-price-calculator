@@ -223,6 +223,13 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 .ks-plant-id-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
 .ks-plant-id-actions .btn{min-height:48px;flex:1 1 160px}
 @media(max-width:430px){.ks-plant-id-actions{display:grid;grid-template-columns:1fr 1fr}.ks-plant-id-actions .btn{font-size:14px;padding:12px 7px}}
+.ks-access-heading{border-top:1px solid #dae7dc;padding-top:15px;margin-top:6px}
+.ks-access-heading h3{font-size:18px;margin:0 0 7px;color:var(--g)}
+.ks-access-heading p{font-size:13px;color:#536158;line-height:1.4;margin:0}
+.ks-access-clear{display:flex;align-items:center}
+.ks-access-clear label{font-size:13px;display:flex;align-items:center;gap:8px}
+.ks-access-caution{color:#7b4c19;background:#fff7e8;border:1px solid #f3dfb3;border-radius:8px;padding:10px 12px;margin:0;font-size:12px;line-height:1.5}
+.ks-access-status{font-size:13px;color:#245b36;line-height:1.5;margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -356,6 +363,41 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 <div class="field"><label>Guide price</label><input id="guide" type="number"></div><div class="field"><label>Actual quote</label><input id="actual" type="number"></div><div class="field"><label>Status</label><select id="leadStatus"><option>New Enquiry</option><option>Contacted</option><option>Site Visit / Photos Needed</option><option>Quote Sent</option><option>Follow-up</option><option>Won</option><option>Lost</option><option>On Hold</option></select></div><div class="field"><label>Follow-up date</label><input id="follow" type="date"></div>
 <div class="field"><label>Source</label><select id="source"><option>Website</option><option>Facebook</option><option>Recommendation</option><option>Existing Customer</option><option>Leaflet</option><option>Google</option><option>Other</option></select></div><div class="field"><label>Lost reason</label><select id="lostReason"><option value="">—</option><option>Price</option><option>No response</option><option>Timing</option><option>Went elsewhere</option><option>Outside budget</option><option>Outside service area</option><option>Job changed/cancelled</option><option>Other</option></select></div>
 <div class="field full"><label>Notes</label><textarea id="notes" rows="4"></textarea></div>
+<div class="field full ks-access-heading">
+  <h3>🔐 Garden access &amp; customer keys</h3>
+  <p>Linked to this customer's record in the Customer Keys tab of your private CRM. Only enter access details the customer has authorised you to use.</p>
+</div>
+<div class="field"><label for="ksAccessType">Garden entry arrangement</label>
+  <select id="ksAccessType">
+    <option value="">Not recorded</option>
+    <option value="Customer home">Customer will be home</option>
+    <option value="Side/rear gate">Side/rear gate</option>
+    <option value="Key held">Physical key supplied</option>
+    <option value="Key safe">Key safe</option>
+    <option value="Coded gate">Coded gate/keypad</option>
+    <option value="Other">Other arrangement</option>
+  </select>
+</div>
+<div class="field"><label for="ksAccessKeyQty">Number of physical keys held</label>
+  <input type="number" id="ksAccessKeyQty" min="0" max="20" step="1" value="0">
+</div>
+<div class="field"><label for="ksAccessStorage">Where the physical key is stored</label>
+  <input type="text" id="ksAccessStorage" maxlength="150" placeholder="E.g. locked key cabinet, ref KS-12">
+</div>
+<div class="field full"><label for="ksAccessNotes">Entry instructions</label>
+  <textarea id="ksAccessNotes" rows="2" maxlength="500" placeholder="E.g. side gate on the left; securely close it when leaving"></textarea>
+</div>
+<div class="field full"><label for="ksAccessPets">Pets and access restrictions</label>
+  <textarea id="ksAccessPets" rows="2" maxlength="350" placeholder="E.g. dog may be in garden; contact the customer before opening the gate"></textarea>
+</div>
+<div class="field"><label for="ksAccessCode">Gate/key-safe code (optional)</label>
+  <input type="password" id="ksAccessCode" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="90" placeholder="Leave empty to keep current code">
+  <small id="ksAccessCodeStatus">No code saved</small>
+</div>
+<div class="field ks-access-clear"><label><input type="checkbox" id="ksAccessClearCode"> Remove previously saved code</label></div>
+<div class="field full"><p class="ks-access-caution">Security: access codes are stored in your restricted Customer Keys spreadsheet, not encrypted end-to-end. Anyone with access to that sheet may be able to read them. Never include codes in general CRM notes, messages or Xero invoices.</p>
+  <p class="ks-access-status" id="ksAccessSaveStatus" role="status" aria-live="polite"></p>
+</div>
 <div class="field full" style="border-top:1px solid #dae7dc;padding-top:16px;margin-top:4px">
   <h3 style="font-size:18px;margin:0 0 8px">Customer communication</h3>
   <p style="font-size:13px;color:#536158;margin:0 0 12px">Minimal is the default. Your own calendar reminders and morning diary stay on regardless of these choices.</p>
@@ -528,6 +570,68 @@ function ksCurrentCustomerPreferences(){
   return {communicationLevel:$('prefLevel').value,preferredContact:$('prefContact').value,
     daytimeTracking:$('prefTracking').checked,postVisitReports:$('prefReports').checked};
 }
+let ksAccessLinked=false,ksAccessLoaded=true;
+function ksAccessFromForm_(){
+ return {
+   type:$("ksAccessType").value,
+   quantity:Number($("ksAccessKeyQty").value||0),
+   storage:$("ksAccessStorage").value.trim(),
+   notes:$("ksAccessNotes").value.trim(),
+   pets:$("ksAccessPets").value.trim(),
+   code:$("ksAccessCode").value.trim(),
+   clearCode:$("ksAccessClearCode").checked
+ };
+}
+function ksAccessFormReset_(){
+ ksAccessLinked=false;
+ ksAccessLoaded=true;
+ $("ksAccessType").value="";
+ $("ksAccessKeyQty").value="0";
+ $("ksAccessStorage").value="";
+ $("ksAccessNotes").value="";
+ $("ksAccessPets").value="";
+ $("ksAccessCode").value="";
+ $("ksAccessCodeStatus").textContent="No code saved";
+ $("ksAccessClearCode").checked=false;
+ $("ksAccessSaveStatus").textContent="";
+ ksAccessToggleKeyQty_();
+}
+function ksAccessToggleKeyQty_(){
+ const held=$("ksAccessType").value==="Key held";
+ $("ksAccessKeyQty").disabled=!held;
+ if(!held)$("ksAccessKeyQty").value="0";
+ $("ksAccessStorage").disabled=!held;
+ if(!held)$("ksAccessStorage").value="";
+}
+$("ksAccessType").addEventListener("change",ksAccessToggleKeyQty_);
+function ksAccessShouldSave_(){
+ const x=ksAccessFromForm_();
+ return ksAccessLinked||!!x.type||!!x.notes||!!x.pets||!!x.code||x.clearCode;
+}
+function ksAccessFetch_(leadId){
+ if(!leadId)return;
+ ksAccessLoaded=false;
+ $("ksAccessSaveStatus").textContent="Loading key and access details…";
+ google.script.run.withSuccessHandler(details=>{
+   if(String(EDIT)!==String(leadId))return;
+   ksAccessLoaded=true;
+   ksAccessLinked=details?.linked===true;
+   $("ksAccessType").value=details?.type||"";
+   $("ksAccessKeyQty").value=String(details?.quantity||0);
+   $("ksAccessStorage").value=details?.storage||"";
+   $("ksAccessNotes").value=details?.notes||"";
+   $("ksAccessPets").value=details?.pets||"";
+   $("ksAccessCode").value="";
+   $("ksAccessCodeStatus").textContent=details?.hasCode?"Code saved in private Customer Keys register":"No code saved";
+   $("ksAccessClearCode").checked=false;
+   ksAccessToggleKeyQty_();
+   $("ksAccessSaveStatus").textContent=details?.linked?"Linked to Customer Keys: "+details.reference:"No garden access arrangements recorded yet.";
+ }).withFailureHandler(err=>{
+   if(String(EDIT)!==String(leadId))return;
+   ksAccessLoaded=true;
+   $("ksAccessSaveStatus").textContent="Key register could not load: "+(err.message||String(err))+". Install CustomerAccessAddon.gs in your private Apps Script.";
+ }).ksGetCustomerAccess(leadId);
+}
 function openLead(id){
   const x=DATA.find(a=>a.id===id)||{};EDIT=id||null;
   $('mtitle').textContent=id?'Edit enquiry':'New enquiry';
@@ -539,6 +643,8 @@ function openLead(id){
   $('confirmBookingBtn').style.display=id?'inline-flex':'none';
   $('quoteVisitBtn').style.display=id?'inline-flex':'none';
   ksApplyCustomerPreferences(null);
+  ksAccessFormReset_();
+  if(id)ksAccessFetch_(id);
   $('save').disabled=!!id;
   $('modal').classList.add('show');
   if(id)google.script.run.withSuccessHandler(prefs=>{
@@ -627,12 +733,36 @@ $('save').onclick=()=>{
     guide:$('guide').value,actual:$('actual').value,status:$('leadStatus').value,follow:$('follow').value,
     source:$('source').value,lostReason:$('lostReason').value,notes:$('notes').value.trim()};
   if(!obj.name){alert('Please enter the customer name.');return;}
+  if(!ksAccessLoaded){
+    $("ksAccessSaveStatus").textContent="Wait for the existing access details to finish loading before saving.";
+    return;
+  }
+  const access=ksAccessFromForm_(),saveAccess=ksAccessShouldSave_();
+  if(saveAccess&&!access.type){
+    $("ksAccessSaveStatus").textContent="Choose an entry arrangement before saving garden access details.";
+    return;
+  }
   const button=$('save');
   button.disabled=true;
-  google.script.run.withSuccessHandler(()=>{
-    button.disabled=false;$('modal').classList.remove('show');toast('Customer and communication preferences saved');load();
+  google.script.run.withSuccessHandler(result=>{
+    const id=String(result?.id||obj.id||"");
+    if(!saveAccess){
+      button.disabled=false;$('modal').classList.remove('show');
+      toast('Customer and communication preferences saved');load();return;
+    }
+    $("ksAccessSaveStatus").textContent="Customer saved; linking garden access details to Customer Keys…";
+    google.script.run.withSuccessHandler(saved=>{
+      button.disabled=false;$('modal').classList.remove('show');
+      toast('Customer and garden access saved');load();
+    }).withFailureHandler(err=>{
+      button.disabled=false;
+      EDIT=id;
+      $("ksAccessSaveStatus").textContent="Customer was saved, but garden access was NOT saved: "+
+       (err.message||String(err))+". Check the private CustomerAccessAddon.gs installation and try saving again.";
+      load();
+    }).ksSaveCustomerAccess({...access,leadId:id});
   }).withFailureHandler(e=>{
-    button.disabled=false;toast('Could not save preferences: '+(e.message||e));
+    button.disabled=false;toast('Could not save customer: '+(e.message||e));
   }).saveKsLeadWithPreferences(obj,ksCurrentCustomerPreferences());
 };
 
