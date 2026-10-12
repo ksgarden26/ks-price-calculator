@@ -167,7 +167,12 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 .ks-area-map-buttons button{min-height:44px}
 .ks-area-map-buttons input{min-width:110px;flex:1;height:44px;border:1px solid #bed1c1;border-radius:8px;padding:9px}
 .ks-area-saved{font-size:13px;padding:10px 0;color:#245b36}
-@media(max-width:480px){.ks-area-grid{grid-template-columns:1fr}.ks-area-grid .ks-span-all{grid-column:auto}#ksAreaMap{height:290px}}
+@media(max-width:480px){.ks-area-grid{grid-template-columns:1fr}.ks-area-grid .ks-span-all{grid-column:auto}#ksAreaMap{height:350px}}
+#ksAreaMap.ks-area-map-expanded{height:min(67dvh,710px);min-height:440px}
+.ks-area-zoom-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ks-area-zoom-buttons .btn{min-height:48px;padding:10px 7px;font-size:14px}
+#ksAreaTileStatus{margin:6px 0 10px}
+@media(max-width:480px){#ksAreaMap.ks-area-map-expanded{height:65dvh;min-height:410px}}
 
 
 /* v2026-10-12 — real iPhone and small tablet touch layout.
@@ -295,6 +300,13 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
     <button type="button" class="btn" id="ksAreaFindPostcode">Find postcode</button>
     <button type="button" class="btn" id="ksAreaLocate">📍 My location</button>
    </div>
+   <div class="ks-area-map-buttons ks-area-zoom-buttons">
+    <button type="button" class="btn" id="ksAreaZoomIn">＋ Zoom in</button>
+    <button type="button" class="btn" id="ksAreaZoomOut">－ Zoom out</button>
+    <button type="button" class="btn" id="ksAreaExpand" aria-pressed="false">⛶ Larger map</button>
+    <button type="button" class="btn" id="ksAreaFallback">↻ Fix missing imagery</button>
+   </div>
+   <p class="ks-area-muted" id="ksAreaTileStatus" role="status" aria-live="polite">Satellite zoom available. Deep zoom enlarges the best imagery available; it cannot add missing detail.</p>
    <div id="ksAreaMap" aria-label="Map for outlining the measured area"></div>
    <div class="ks-area-map-buttons">
     <button type="button" class="btn" id="ksAreaUndo">↶ Undo point</button>
@@ -852,6 +864,25 @@ $("ksShareCopy").onclick=async()=>{
 
 /* KS Area Measure. Both methods are estimates; saved to owner-only CRM Measurements tab. */
 let ksAreaMode="manual",ksAreaMapObj=null,ksAreaMapLine=null,ksAreaMapPolygon=null,ksAreaMapPoints=[];
+let ksAreaImageryLayer=null,ksAreaNativeZoom=19,ksAreaMapExpanded=false;
+const ksAreaImageryUrl="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+function ksAreaSetSatelliteDetail(nativeZoom){
+  // Esri has empty cache levels above ~19 in many UK locations. Leaflet must
+  // enlarge the last real tile rather than requesting a missing z20+ image.
+  ksAreaNativeZoom=nativeZoom;
+  if(!ksAreaMapObj||typeof L==="undefined")return;
+  if(ksAreaImageryLayer)ksAreaMapObj.removeLayer(ksAreaImageryLayer);
+  ksAreaImageryLayer=L.tileLayer(ksAreaImageryUrl,{
+    maxNativeZoom:ksAreaNativeZoom,
+    maxZoom:23,
+    attribution:"Imagery © Esri, Maxar, Earthstar Geographics & contributors",
+    updateWhenIdle:true
+  }).addTo(ksAreaMapObj);
+  $("ksAreaFallback").textContent=nativeZoom===18?"↻ Try sharper imagery":"↻ Fix missing imagery";
+  $("ksAreaTileStatus").textContent=nativeZoom===18
+    ?"Reliable imagery mode: zooms in using the available level-18 satellite image. This may look softer, but avoids unavailable detailed tiles."
+    :"Detailed imagery mode: zoom in freely. Above level 19 the map magnifies existing imagery instead of showing unavailable tiles. If you still see missing imagery, tap Fix missing imagery.";
+}
 function ksAreaOpen(){
   ksAreaMode="manual";
   $("ksAreaLength").value="";$("ksAreaWidth").value="";
@@ -871,6 +902,10 @@ function ksAreaOpen(){
   $("ksAreaPostcode").value="";
   ksAreaMapPoints=[];
   ksAreaUpdatePolygon();
+  ksAreaMapExpanded=false;
+  $("ksAreaMap").classList.remove("ks-area-map-expanded");
+  $("ksAreaExpand").textContent="⛶ Larger map";
+  $("ksAreaExpand").setAttribute("aria-pressed","false");
   $("ksAreaModal").classList.add("show");
   $("ksAreaModal").setAttribute("aria-hidden","false");
   ksAreaSelectMode("manual");
@@ -890,12 +925,10 @@ function ksAreaSelectMode(mode){
   $("ksAreaSaved").textContent="";
   if(mode==="map") {
     if(typeof L!=="undefined" && !ksAreaMapObj){
-      ksAreaMapObj=L.map("ksAreaMap",{zoomControl:true,maxZoom:23,zoomSnap:0.5,touchZoom:true}).setView([53.4527,-2.6405],17);
-      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{
-        maxNativeZoom:20,
-        maxZoom:23,
-        attribution:"Imagery © Esri, Maxar, Earthstar Geographics & contributors"
-      }).addTo(ksAreaMapObj);
+      ksAreaMapObj=L.map("ksAreaMap",{
+        zoomControl:true,maxZoom:23,zoomSnap:0.5,touchZoom:true,scrollWheelZoom:true
+      }).setView([53.4527,-2.6405],17);
+      ksAreaSetSatelliteDetail(ksAreaNativeZoom);
       ksAreaMapObj.on("click",event=>{
         if(ksAreaMapPoints.length>=60){$("ksAreaMapHint").textContent="Maximum 60 outline corners.";return;}
         ksAreaMapPoints.push({lat:event.latlng.lat,lng:event.latlng.lng});
@@ -954,6 +987,19 @@ $("ksAreaCustomer").addEventListener("change",()=>{
   const lead=DATA.find(x=>String(x.id)===$("ksAreaCustomer").value);
   if(lead&&lead.postcode)$("ksAreaPostcode").value=lead.postcode;
 });
+$("ksAreaZoomIn").onclick=()=>{if(ksAreaMapObj)ksAreaMapObj.zoomIn(1)};
+$("ksAreaZoomOut").onclick=()=>{if(ksAreaMapObj)ksAreaMapObj.zoomOut(1)};
+$("ksAreaExpand").onclick=()=>{
+  ksAreaMapExpanded=!ksAreaMapExpanded;
+  $("ksAreaMap").classList.toggle("ks-area-map-expanded",ksAreaMapExpanded);
+  $("ksAreaExpand").textContent=ksAreaMapExpanded?"⛶ Smaller map":"⛶ Larger map";
+  $("ksAreaExpand").setAttribute("aria-pressed",String(ksAreaMapExpanded));
+  if(ksAreaMapObj)setTimeout(()=>ksAreaMapObj.invalidateSize({pan:false}),100);
+};
+$("ksAreaFallback").onclick=()=>{
+  if(!ksAreaMapObj){$("ksAreaTileStatus").textContent="Switch to Satellite outline first.";return;}
+  ksAreaSetSatelliteDetail(ksAreaNativeZoom===19?18:19);
+};
 $("ksAreaUndo").onclick=()=>{ksAreaMapPoints.pop();ksAreaUpdatePolygon();ksAreaRefresh()};
 $("ksAreaClear").onclick=()=>{ksAreaMapPoints=[];ksAreaUpdatePolygon();ksAreaRefresh()};
 $("ksAreaFindPostcode").onclick=async()=>{
