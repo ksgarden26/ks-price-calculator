@@ -1064,6 +1064,7 @@ $("ksShareCopy").onclick=async()=>{
 let ksAreaMode="manual",ksAreaMapPoints=[],ksAreaMapExpanded=false;
 let ksAreaGoogleMapObj=null,ksAreaGooglePolygon=null,ksAreaGoogleLine=null;
 let ksAreaLoadingStarted=false,ksAreaGoogleScriptPromise=null;
+let ksAreaMapRequest=0,ksAreaMapTimer=null,ksAreaScriptAttempt=0;
 function ksAreaMapReady_(){return !!ksAreaGoogleMapObj}
 function ksAreaMoveMap_(lat,lng,zoom){
   if(ksAreaGoogleMapObj){
@@ -1079,13 +1080,18 @@ function ksAreaLoadGoogleJavascript_(apiKey){
   if(window.google?.maps?.Map)return Promise.resolve();
   if(ksAreaGoogleScriptPromise)return ksAreaGoogleScriptPromise;
   ksAreaGoogleScriptPromise=new Promise((resolve,reject)=>{
-    const callbackName="ksAreaGoogleMapsLoaded";
+    const callbackName="ksAreaGoogleMapsLoaded_"+(++ksAreaScriptAttempt);
     window[callbackName]=()=>{delete window[callbackName];resolve()};
     const script=document.createElement("script");
     script.async=true;
     script.src="https://maps.googleapis.com/maps/api/js?key="+
       encodeURIComponent(apiKey)+"&v=weekly&loading=async&callback="+callbackName;
-    script.onerror=()=>{delete window[callbackName];reject(Error("Google Maps could not load."))};
+    script.onerror=()=>{
+      delete window[callbackName];
+      script.remove();
+      ksAreaGoogleScriptPromise=null;
+      reject(Error("Google Maps JavaScript could not download."));
+    };
     document.head.append(script);
   });
   return ksAreaGoogleScriptPromise;
@@ -1100,7 +1106,10 @@ function ksAreaInitGoogle_(){
     zoomControl:true,mapTypeControl:false,
     streetViewControl:false,fullscreenControl:false
   });
-  $("ksAreaTileStatus").textContent="Google Maps ready. Zoom in and tap the surface corners to measure your area in m². Imagery detail varies by area.";
+  ksAreaLoadingStarted=false;
+  if(ksAreaMapTimer){clearTimeout(ksAreaMapTimer);ksAreaMapTimer=null;}
+  $("ksAreaRetryMap").hidden=true;
+  $("ksAreaTileStatus").textContent="Google Maps loaded. Zoom in and tap the surface corners to measure in m². Imagery detail varies by area.";
   ksAreaGoogleMapObj.addListener("click",event=>{
     if(!event.latLng)return;
     if(ksAreaMapPoints.length>=60){
@@ -1113,35 +1122,60 @@ function ksAreaInitGoogle_(){
   setTimeout(ksAreaResizeMap_,100);
 }
 function ksAreaShowGoogleError_(message){
+  if(ksAreaMapTimer){clearTimeout(ksAreaMapTimer);ksAreaMapTimer=null;}
   ksAreaLoadingStarted=false;
-  $("ksAreaTileStatus").textContent=message+" You can still measure manually using length × width.";
+  $("ksAreaRetryMap").hidden=false;
+  $("ksAreaTileStatus").textContent=message+" Manual rectangles remain available.";
 }
 function ksAreaStartPreferredMap_(){
   if(ksAreaMapReady_()||ksAreaLoadingStarted)return;
+  const request=++ksAreaMapRequest;
   ksAreaLoadingStarted=true;
+  $("ksAreaRetryMap").hidden=true;
   $("ksAreaTileStatus").textContent="Connecting Google Maps…";
+  ksAreaMapTimer=setTimeout(()=>{
+    if(request!==ksAreaMapRequest||ksAreaMapReady_())return;
+    ++ksAreaMapRequest;
+    ksAreaGoogleScriptPromise=null;
+    ksAreaShowGoogleError_("Google Maps timed out after 18 seconds. Check that GoogleMapsAddon.gs is installed, KS_GOOGLE_MAPS_API_KEY is saved, billing is enabled, and the private app was redeployed.");
+  },18000);
   google.script.run.withSuccessHandler(config=>{
-    if(!config?.available||!config.key){
-      ksAreaShowGoogleError_("Google Maps is not connected yet. Add your Google Maps API key to the private Script Properties.");
+    if(request!==ksAreaMapRequest)return;
+    if(!config||!config.available||!config.key){
+      ksAreaShowGoogleError_("Google Maps is not configured yet. Add KS_GOOGLE_MAPS_API_KEY in private Script Properties and install GoogleMapsAddon.gs.");
       return;
     }
     ksAreaLoadGoogleJavascript_(config.key)
       .then(()=>{
-        try {ksAreaInitGoogle_()}
-        catch(err){ksAreaShowGoogleError_("Google Maps could not start: "+err.message+".")}
+        if(request!==ksAreaMapRequest)return;
+        try{ksAreaInitGoogle_();}
+        catch(err){ksAreaShowGoogleError_("Google Maps could not start: "+err.message+".");}
       })
       .catch(err=>{
+        if(request!==ksAreaMapRequest)return;
         ksAreaGoogleScriptPromise=null;
-        ksAreaShowGoogleError_("Google Maps could not load: "+err.message+".");
+        ksAreaShowGoogleError_("Google Maps could not load: "+err.message+". Check your API key, billing and website restrictions.");
       });
   }).withFailureHandler(err=>{
-    ksAreaShowGoogleError_("Google Maps configuration is unavailable: "+(err.message||"Server error")+".");
+    if(request!==ksAreaMapRequest)return;
+    ksAreaShowGoogleError_("Google Maps setup could not be read: "+(err.message||"Server error")+". Ensure GoogleMapsAddon.gs is in the private Apps Script project and redeployed.");
   }).ksAreaGoogleMapsConfiguration();
 }
+$("ksAreaRetryMap").onclick=()=>{
+  if(ksAreaMapReady_())return;
+  ++ksAreaMapRequest;
+  if(ksAreaMapTimer){clearTimeout(ksAreaMapTimer);ksAreaMapTimer=null;}
+  ksAreaLoadingStarted=false;
+  ksAreaGoogleScriptPromise=null;
+  ksAreaStartPreferredMap_();
+};
 // Google's authentication callback runs after script load if referrer, billing or
 // API restriction rejects this key. Never hide a failed map behind a success message.
 window.gm_authFailure=()=>{
-  $("ksAreaTileStatus").textContent="Google Maps rejected the API key. Check billing, Maps JavaScript API and allowed website restrictions in Google Cloud.";
+  ++ksAreaMapRequest;
+  ksAreaGoogleMapObj=null;
+  ksAreaGoogleScriptPromise=null;
+  ksAreaShowGoogleError_("Google Maps rejected the API key. Check Google Cloud billing, Maps JavaScript API and authorised website referrers.");
 };
 function ksAreaOpen(){
   ksAreaMode="manual";
