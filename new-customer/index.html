@@ -22,7 +22,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:13px}
 @media(max-width:600px){main{margin:0 auto}header{border-radius:0;gap:11px;padding:18px}header img{width:58px;height:58px}h1{font-size:21px}.grid,.three{grid-template-columns:1fr}section{padding:18px 15px}.choices{display:grid;gap:10px}}
 </style></head><body><main>
 <header><img src="/KS%20Garden%20Services%20Logo.png" alt="KS Garden Services"><div><h1>New Customer Details</h1><p>Keeping Gardens Looking Their Best.</p></div></header>
-<div class="banner">PREVIEW ONLY — Not connected to the live CRM. Please do not enter real customer details here.</div>
+<div class="banner">TEST PREVIEW — Not connected to the live CRM. Use fictitious details only.</div>
 <form id="customerForm">
 <section><h2>1. Your details</h2>
 <div class="grid three">
@@ -64,7 +64,7 @@ footer{padding:22px;text-align:center;color:var(--muted);font-size:13px}
 <p class="hint">We use your details to respond to your enquiry and manage agreed garden services. Access instructions are for staff use only. This is a draft; submission is disabled until secure CRM handling is connected and tested.</p>
 <label class="choice"><input id="privacy" type="checkbox" required> I confirm these details are accurate and have read the privacy information. *</label>
 <div class="preview" aria-live="polite"><div><strong>CRM full name:</strong> <span id="crmName">—</span></div><div><strong>Private Xero invoice name:</strong> <span id="invoiceName">—</span></div><p class="hint">This preview is shown for testing. The Xero format will be hidden on the customer-facing live form.</p></div>
-<div class="row" style="margin-top:15px"><button type="button" disabled title="Backend not connected">Send my details (not active in draft)</button><button class="secondary" type="reset">Clear form</button></div>
+<div class="row" style="margin-top:15px"><button type="button" id="testPayload">Validate test details</button><button class="secondary" type="reset">Clear form</button></div><p id="testStatus" class="hint" role="status" aria-live="polite">Testing only: nothing is submitted or saved.</p>
 </section>
 </form><footer>KS Garden Services — Newton-le-Willows and surrounding areas</footer>
 </main>
@@ -80,6 +80,32 @@ function update(){
  const method=document.getElementById('accessMethod').value;
  document.getElementById('codeInfo').hidden=!(code==='Yes'||method==='Key safe'||method==='Coded gate or keypad');
 }
-form.addEventListener('input',update);form.addEventListener('change',update);form.addEventListener('reset',()=>setTimeout(update,0));form.addEventListener('submit',e=>e.preventDefault());update();
+function buildSafePayload(){
+ const data=new FormData(form);
+ const txt=k=>String(data.get(k)||'').trim();
+ const full=name();
+ return {
+  source:'New Customer Details',
+  title:txt('title'),firstName:txt('firstName'),surname:txt('surname'),
+  name:full, customer:full, xeroInvoiceName:[txt('title'),txt('firstName').charAt(0).toUpperCase(),txt('surname')].filter(Boolean).join(' '),
+  phone:txt('phone'),email:txt('email'),contactPreference:txt('contactPreference'),
+  address:txt('address'),town:txt('town'),postcode:txt('postcode').toUpperCase(),
+  invoiceDelivery:txt('invoiceDelivery'),paymentMethod:txt('paymentMethod'),
+  billingNotes:txt('billingNotes'),services:txt('services'),frequency:txt('frequency'),
+  waste:txt('waste'),gardenNotes:txt('gardenNotes'),
+  accessMethod:txt('accessMethod'),codeRequired:txt('codeRequired'),
+  spareKey:txt('spareKey'),lockGate:txt('lockGate'),pets:txt('pets'),
+  hazards:txt('hazards'),accessNotes:txt('accessNotes'),
+  animalWasteAcknowledged:txt('animalWasteAcknowledged')==='yes',
+  privacyAccepted:document.getElementById('privacy').checked
+ };
+}
+document.getElementById('testPayload').addEventListener('click',()=>{
+ if(!form.reportValidity())return;
+ const p=buildSafePayload();
+ const result=document.getElementById('testStatus');
+ result.textContent='Test passed for '+p.name+'. CRM fields, billing preferences and access answers are ready for connection. No information was sent or saved.';
+});
+form.addEventListener('input',update);form.addEventListener('change',update);form.addEventListener('reset',()=>setTimeout(()=>{update();document.getElementById('testStatus').textContent='Testing only: nothing is submitted or saved.'},0));form.addEventListener('submit',e=>e.preventDefault());update();
 })();
 </script></body></html>
