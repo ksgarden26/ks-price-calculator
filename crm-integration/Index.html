@@ -718,18 +718,18 @@ function ksAccessFetch_(leadId){
    owner a separate Xero-friendly salutation + first initial + surname. */
 let ksNameLegacyMode=false;
 function ksNameClean_(value){
-  return String(value||"").replace(/\\s+/g," ").trim();
+  return String(value||"").replace(/\s+/g," ").trim();
 }
 function ksNameParse_(name){
   const original=ksNameClean_(name);
   if(!original)return {title:"",first:"",surname:"",legacy:false};
-  if(/[&/+()]|\\b(?:and|estate|company|ltd|limited)\\b/i.test(original))
+  if(/[&/+()]|\b(?:and|estate|company|ltd|limited)\b/i.test(original))
     return {legacy:true,full:original};
   const chunks=original.split(" ");
   const titles=["Mr","Mrs","Miss","Ms","Mx","Dr","Prof","Rev"];
   let title="";
-  if(chunks.length&&titles.some(t=>t.toLowerCase()===chunks[0].replace(/\\.$/,"").toLowerCase())){
-    title=titles.find(t=>t.toLowerCase()===chunks[0].replace(/\\.$/,"").toLowerCase());
+  if(chunks.length&&titles.some(t=>t.toLowerCase()===chunks[0].replace(/\.$/,"").toLowerCase())){
+    title=titles.find(t=>t.toLowerCase()===chunks[0].replace(/\.$/,"").toLowerCase());
     chunks.shift();
   }
   if(chunks.length<2)return {legacy:true,full:original};
