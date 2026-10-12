@@ -14,20 +14,27 @@ The private CRM owner interface now includes a Garden access & customer keys sec
 
 ---
 
-## Google Maps satellite measuring (private app)
+## Area measuring — manual rectangles only (private app)
 
-The area-measuring screen now offers **Length × width** and **Google Maps**. The previous Esri **Satellite outline** option, its imagery fallback button and the Leaflet dependency have been removed. Tapping corners on Google Maps calculates an estimated area in square metres and the existing Measurements sheet still saves it. Google Maps requires its own API key; without that connection, manual Length × width remains available.
+Measure Area deliberately has no map or satellite imagery. Enter length and width
+for an unlimited-looking series up to 25 separate non-overlapping rectangles, see
+each rectangle's area in m², then save the combined total as a single CRM
+measurement alongside the full rectangle breakdown.
 
-To activate Google Maps on the private Apps Script admin deployment:
+To install:
 
-1. Set up a separate Google Cloud project with billing and **Maps JavaScript API** enabled, then create a **browser/websites** API key. See https://developers.google.com/maps/documentation/javascript/get-api-key .
-2. Restrict the key to **Maps JavaScript API** and allowed **HTTPS website referrers** determined by the actual Google Apps Script iframe URL (inspect errors like RefererNotAllowedMapError). Do not use an unrestricted key. Set Google Cloud quotas and billing alerts to control spend. Google Apps Script HTMLService may use a shared `script.googleusercontent.com` origin, so website-referrer restrictions can be coarser than on a private website domain; consider a dedicated map page hosted on a KS-owned Cloudflare domain if stronger restrictions are necessary.
-3. Add `GoogleMapsAddon.gs` from this feature branch **only to the private CRM Apps Script project** (never the public customer form).
-4. In the private Apps Script project, **Project Settings → Script Properties → Add property** `KS_GOOGLE_MAPS_API_KEY` with the Maps JavaScript API browser key. Do not paste keys into GitHub or Index.html.
-5. Paste the latest `Index.html` into the same private project, save, then edit the **existing** private deployment → **New version** → Deploy. Keep access **Only myself**.
-6. On iPhone Chrome (signed into the KS business Google account), go to Measure Area → Satellite outline. Expect a Google satellite map (and Google imagery credits). Tap points, undo/clear, find postcode and save as usual.
+1. Copy the latest `crm-integration/Index.html` into the PRIVATE Apps Script CRM project.
+2. Copy the latest `crm-integration/AreaMeasureAddon.gs` into that same project. This
+   adds rectangle validation and the `Rectangles (JSON)` column L to Measurements
+   without changing prior records.
+3. Save, edit the EXISTING owner-only web deployment, select New version and Deploy.
+4. Test with an L-shaped drive: e.g. 10×4 and 3×2 returns 46m² and is saved as
+   one combined measurement with both sections recorded.
 
-Google Maps JS uses its own key that is necessarily visible in browser network requests; storing it as a script property keeps it out of the GitHub source but **does not make it secret**. Apply API + website restrictions and quotas. The Maps JavaScript API is not the same as the free Google Maps consumer app and requires billing for production use, with monthly free-tier limits. Google satellite imagery resolution differs by address; no software can guarantee property-level detail or survey accuracy.
+`GoogleMapsAddon.gs` is no longer called by Index.html and is not required.
+No Maps JavaScript API key, Cloud billing setup, website restriction or
+mobile connection is necessary for manual measurements.
+
 
 ---
 
