@@ -1356,20 +1356,36 @@ $("ksAreaLocate").onclick=()=>{
     {enableHighAccuracy:true,timeout:12000,maximumAge:0});
 };
 $("ksAreaSave").onclick=()=>{
-  const area=ksAreaCurrentArea(),d=ksAreaDimensions(),button=$("ksAreaSave");
-  if(area<=0||area>1000000){$("ksAreaSaved").textContent="Enter a positive length and width, or outline at least 3 map corners.";return;}
-  const payload={leadId:$("ksAreaCustomer").value,surface:$("ksAreaSurface").value,
-    method:ksAreaMode,length:ksAreaMode==="manual"?d.length:0,width:ksAreaMode==="manual"?d.width:0,
-    area,notes:$("ksAreaNotes").value.trim(),
-    points:ksAreaMode==="map"?ksAreaMapPoints.map(x=>({lat:x.lat,lng:x.lng})):[]};
+  const area=ksAreaCurrentArea(),rectData=ksAreaGetRectangles_(),button=$("ksAreaSave");
+  if(ksAreaMode==="manual"&&!rectData.complete){
+    $("ksAreaSaved").textContent="Complete the length and width for every rectangle before saving.";
+    return;
+  }
+  if(area<=0||area>1000000){
+    $("ksAreaSaved").textContent="Enter valid rectangle measurements or outline at least 3 map corners.";
+    return;
+  }
+  const rectangles=ksAreaMode==="manual"
+    ?rectData.rows.map(r=>({length:r.length,width:r.width})):[];
+  const payload={
+    leadId:$("ksAreaCustomer").value,
+    surface:$("ksAreaSurface").value,
+    method:ksAreaMode,
+    length:rectangles.length===1?rectangles[0].length:0,
+    width:rectangles.length===1?rectangles[0].width:0,
+    rectangles,area,notes:$("ksAreaNotes").value.trim(),
+    points:ksAreaMode==="map"?ksAreaMapPoints.map(x=>({lat:x.lat,lng:x.lng})):[]
+  };
   button.disabled=true;$("ksAreaSaved").textContent="Saving measurement to your private CRM…";
   google.script.run.withSuccessHandler(result=>{
     button.disabled=false;
-    $("ksAreaSaved").textContent="✓ "+result.area.toFixed(2)+" m² saved for "+result.customer+" in your Measurements sheet.";
+    $("ksAreaSaved").textContent="✓ "+result.area.toFixed(2)+" m² saved for "+result.customer+
+      " in your Measurements sheet"+(result.rectangles?" ("+result.rectangles+" rectangle"+
+      (result.rectangles===1?"":"s")+")":"")+".";
   }).withFailureHandler(err=>{
     button.disabled=false;
     $("ksAreaSaved").textContent="Could not save measurement: "+(err.message||String(err))+
-      ". Check that AreaMeasureAddon.gs has been installed and your private app redeployed.";
+      ". Ensure the updated AreaMeasureAddon.gs is installed and the latest private app deployed.";
   }).ksSaveAreaMeasurement(payload);
 };
 
