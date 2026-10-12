@@ -18,7 +18,20 @@ main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;
 .panel{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 7px 20px #173d2510}.toolbar{padding:14px;display:flex;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap}.toolbar input,.toolbar select{padding:10px 11px;border:1px solid #ccd8ce;border-radius:9px}
 .tablewrap{overflow:auto}table{width:100%;min-width:1080px;border-collapse:collapse}th,td{padding:12px 13px;border-bottom:1px solid #edf1ed;text-align:left;font-size:13px}th{background:#f8faf8;color:#536158;font-size:11px;text-transform:uppercase}tr:hover td{background:#fbfcfb}.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-weight:700;font-size:11px;background:#edf4ee;color:var(--g2)}.won{background:#e2f5e6;color:#1b6c31}.lost{background:#fde8e8;color:#993434}.follow-up{background:#fff1cc;color:#805c00}.quote-sent{background:#e8f1ff;color:#315d99}
 .empty{padding:42px;text-align:center;color:var(--muted)}.empty b{display:block;color:var(--g);font-size:18px;margin-bottom:7px}
-.modalback{display:none;position:fixed;inset:0;background:#07170eaa;z-index:50;align-items:center;justify-content:center;padding:16px}.modalback.show{display:flex}.modal{background:white;width:min(800px,100%);max-height:92vh;overflow:auto;border-radius:17px;padding:22px}.modal h2{margin-top:0;color:var(--g)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:#536158;font-weight:700;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #ccd8ce;border-radius:9px}.full{grid-column:1/-1}.modalactions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}.right{display:flex;gap:9px}
+.modalback{display:none;position:fixed;inset:0;background:#07170eaa;z-index:50;align-items:center;justify-content:center;padding:16px}.modalback.show{display:flex}.modal{background:white;width:min(800px,100%);max-height:92vh;overflow:auto;border-radius:17px;padding:22px}.modal h2{margin-top:0;color:var(--g)}.ks-name-section{border:1px solid #dce7dd;border-radius:12px;padding:14px;background:#f9fcf9}
+.ks-name-heading{font-size:17px;margin:0 0 10px;color:#20462c}
+.ks-name-fields{display:grid;grid-template-columns:minmax(0,105px) minmax(0,1fr) minmax(0,1fr);gap:10px}
+.ks-name-section label{display:block;font-size:12px;color:#536158;font-weight:700}
+.ks-name-section input,.ks-name-section select{display:block;width:100%;min-height:45px;margin-top:6px;padding:10px;border:1px solid #ccd8ce;border-radius:9px;background:#fff}
+.ks-name-section label input:disabled,.ks-name-section label select:disabled{background:#ecf0ed;color:#8a918c}
+.ks-name-legacy{margin-top:11px;padding:11px;border:1px dashed #b9cbbd;border-radius:9px}
+.ks-name-legacy p,.ks-name-help{font-size:12px;color:#66756b;line-height:1.45;margin:8px 0}
+.ks-invoice-line{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:12px;padding:11px;border-radius:10px;background:#edf5ed;border:1px solid #d3e2d5}
+.ks-invoice-line small{display:block;font-size:12px;color:#536158;margin-bottom:5px}
+.ks-invoice-line strong{display:block;font-size:18px;color:#20462c;overflow-wrap:anywhere}
+.ks-invoice-line .btn{min-height:43px}
+@media(max-width:600px){.ks-name-fields{grid-template-columns:minmax(0,90px) 1fr}.ks-name-fields label:last-child{grid-column:1/-1}.ks-invoice-line .btn{width:100%}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:12px;color:#536158;font-weight:700;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #ccd8ce;border-radius:9px}.full{grid-column:1/-1}.modalactions{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}.right{display:flex;gap:9px}
 .toast{display:none;position:fixed;right:18px;bottom:18px;background:#173d25;color:white;padding:12px 16px;border-radius:10px;z-index:80}
 .ks-plant-panel{width:min(760px,100%);max-height:94dvh}
 .ks-plant-form{display:grid;gap:14px}
@@ -354,7 +367,42 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 </div>
 
 <div id="modal" class="modalback"><div class="modal"><h2 id="mtitle">Enquiry</h2><div class="grid">
-<div class="field"><label>Customer *</label><input id="name"></div><div class="field"><label>Phone</label><input id="phone"></div><div class="field"><label>Email</label><input id="email" type="email"></div><div class="field"><label>Postcode</label><input id="postcode"></div><div class="field"><label>Address</label><input id="address"></div><div class="field"><label>Service</label><input id="service"></div>
+<div class="field full ks-name-section">
+  <h3 class="ks-name-heading">Customer name</h3>
+  <div class="ks-name-fields">
+    <label>Title (optional)
+      <select id="ksNameTitle">
+        <option value="">No title</option>
+        <option value="Mr">Mr</option><option value="Mrs">Mrs</option>
+        <option value="Miss">Miss</option><option value="Ms">Ms</option>
+        <option value="Mx">Mx</option><option value="Dr">Dr</option>
+        <option value="Prof">Prof</option><option value="Rev">Rev</option>
+      </select>
+    </label>
+    <label>First name *
+      <input id="ksNameFirst" type="text" autocomplete="given-name" maxlength="100" placeholder="e.g. John">
+    </label>
+    <label>Surname *
+      <input id="ksNameSurname" type="text" autocomplete="family-name" maxlength="140" placeholder="e.g. Smith">
+    </label>
+  </div>
+  <div id="ksNameLegacyPanel" class="ks-name-legacy" hidden>
+    <label>Existing customer name
+      <input type="text" id="ksNameLegacyInput" maxlength="220" placeholder="Customer / business name">
+    </label>
+    <p>This older CRM entry has an unusual name format. It will be preserved as written unless you switch to the separate name fields.</p>
+    <button class="btn" id="ksNameConvert" type="button">Use separate name fields</button>
+  </div>
+  <input id="name" type="hidden" value="">
+  <div class="ks-invoice-line">
+    <div>
+      <small>Copy into Xero as the invoice contact name</small>
+      <strong id="ksInvoicePreview">Enter a customer name</strong>
+    </div>
+    <button class="btn" id="ksInvoiceCopy" type="button" disabled>Copy invoice name</button>
+  </div>
+  <p id="ksNameHelp" class="ks-name-help" role="status" aria-live="polite">The CRM keeps the full name; Xero uses the title, first initial and surname.</p>
+</div><div class="field"><label>Phone</label><input id="phone"></div><div class="field"><label>Email</label><input id="email" type="email"></div><div class="field"><label>Postcode</label><input id="postcode"></div><div class="field"><label>Address</label><input id="address"></div><div class="field"><label>Service</label><input id="service"></div>
 <div class="field"><label>Guide price</label><input id="guide" type="number"></div><div class="field"><label>Actual quote</label><input id="actual" type="number"></div><div class="field"><label>Status</label><select id="leadStatus"><option>New Enquiry</option><option>Contacted</option><option>Site Visit / Photos Needed</option><option>Quote Sent</option><option>Follow-up</option><option>Won</option><option>Lost</option><option>On Hold</option></select></div><div class="field"><label>Follow-up date</label><input id="follow" type="date"></div>
 <div class="field"><label>Source</label><select id="source"><option>Website</option><option>Facebook</option><option>Recommendation</option><option>Existing Customer</option><option>Leaflet</option><option>Google</option><option>Other</option></select></div><div class="field"><label>Lost reason</label><select id="lostReason"><option value="">—</option><option>Price</option><option>No response</option><option>Timing</option><option>Went elsewhere</option><option>Outside budget</option><option>Outside service area</option><option>Job changed/cancelled</option><option>Other</option></select></div>
 <div class="field full"><label>Notes</label><textarea id="notes" rows="4"></textarea></div>
@@ -666,11 +714,106 @@ function ksAccessFetch_(leadId){
    $("ksAccessSaveStatus").textContent="Key register could not load: "+(err.message||String(err))+". Install CustomerAccessAddon.gs in your private Apps Script.";
  }).ksGetCustomerAccess(leadId);
 }
+/* Keep the full CRM name for existing booking/search logic, but give the
+   owner a separate Xero-friendly salutation + first initial + surname. */
+let ksNameLegacyMode=false;
+function ksNameClean_(value){
+  return String(value||"").replace(/\\s+/g," ").trim();
+}
+function ksNameParse_(name){
+  const original=ksNameClean_(name);
+  if(!original)return {title:"",first:"",surname:"",legacy:false};
+  if(/[&/+()]|\\b(?:and|estate|company|ltd|limited)\\b/i.test(original))
+    return {legacy:true,full:original};
+  const chunks=original.split(" ");
+  const titles=["Mr","Mrs","Miss","Ms","Mx","Dr","Prof","Rev"];
+  let title="";
+  if(chunks.length&&titles.some(t=>t.toLowerCase()===chunks[0].replace(/\\.$/,"").toLowerCase())){
+    title=titles.find(t=>t.toLowerCase()===chunks[0].replace(/\\.$/,"").toLowerCase());
+    chunks.shift();
+  }
+  if(chunks.length<2)return {legacy:true,full:original};
+  // Common multiword surname particles; preserve the full name regardless.
+  const surnames=new Set(["de","del","da","di","du","van","von","der","den","le","la","bin","al","st"]);
+  let start=chunks.length-1;
+  while(start>1&&surnames.has(chunks[start-1].toLowerCase()))start--;
+  return {title,first:chunks.slice(0,start).join(" "),surname:chunks.slice(start).join(" "),legacy:false};
+}
+function ksNameCompose_(){
+  if(ksNameLegacyMode)return ksNameClean_($("ksNameLegacyInput").value);
+  return [$("ksNameTitle").value,ksNameClean_($("ksNameFirst").value),
+    ksNameClean_($("ksNameSurname").value)].filter(Boolean).join(" ");
+}
+function ksNameInvoice_(){
+  if(ksNameLegacyMode)return ksNameClean_($("ksNameLegacyInput").value);
+  const first=ksNameClean_($("ksNameFirst").value),last=ksNameClean_($("ksNameSurname").value);
+  if(!first||!last)return "";
+  // First initial only, to match e.g. Mr J Smith.
+  const initial=Array.from(first)[0].toLocaleUpperCase("en-GB");
+  return [$("ksNameTitle").value,initial,last].filter(Boolean).join(" ");
+}
+function ksNameRefresh_(){
+  $("name").value=ksNameCompose_();
+  const invoice=ksNameInvoice_();
+  $("ksInvoicePreview").textContent=invoice||"Enter first name and surname";
+  $("ksInvoiceCopy").disabled=!invoice;
+}
+function ksNameShowLegacy_(isLegacy){
+  ksNameLegacyMode=!!isLegacy;
+  $("ksNameLegacyPanel").hidden=!ksNameLegacyMode;
+  for(const id of ["ksNameTitle","ksNameFirst","ksNameSurname"])
+    $(id).disabled=ksNameLegacyMode;
+  $("ksNameHelp").textContent=ksNameLegacyMode
+    ?"Existing name preserved. You can edit it or convert it into separate name fields."
+    :"The CRM saves the full name; copy the abbreviated name into Xero when invoicing.";
+}
+function ksLoadLeadName_(name){
+  const parsed=ksNameParse_(name);
+  $("ksNameTitle").value=parsed.title||"";
+  $("ksNameFirst").value=parsed.first||"";
+  $("ksNameSurname").value=parsed.surname||"";
+  $("ksNameLegacyInput").value=parsed.legacy?parsed.full:ksNameClean_(name);
+  ksNameShowLegacy_(parsed.legacy);
+  ksNameRefresh_();
+}
+for(const id of ["ksNameTitle","ksNameFirst","ksNameSurname","ksNameLegacyInput"])
+  $(id).addEventListener(id==="ksNameTitle"?"change":"input",ksNameRefresh_);
+$("ksNameConvert").onclick=()=>{
+  const parsed=ksNameParse_($("ksNameLegacyInput").value);
+  if(!parsed.legacy){
+    $("ksNameTitle").value=parsed.title||"";
+    $("ksNameFirst").value=parsed.first||"";
+    $("ksNameSurname").value=parsed.surname||"";
+  }else{
+    $("ksNameFirst").value="";
+    $("ksNameSurname").value="";
+  }
+  ksNameShowLegacy_(false);
+  ksNameRefresh_();
+  $("ksNameFirst").focus();
+};
+$("ksInvoiceCopy").onclick=()=>{
+  const value=ksNameInvoice_();
+  if(!value)return;
+  const input=document.createElement("textarea");
+  input.value=value;input.setAttribute("readonly","");
+  input.style.position="fixed";input.style.opacity="0";
+  document.body.append(input);input.select();
+  try{
+    if(document.execCommand("copy")){
+      $("ksNameHelp").textContent="✓ "+value+" copied. Paste it into the Xero contact name.";
+    }else throw Error("Clipboard unavailable");
+  }catch(error){
+    $("ksNameHelp").textContent="Copy unavailable here. Select the invoice name above and copy it manually.";
+  }finally{input.remove();}
+};
+
 function openLead(id){
   const x=DATA.find(a=>a.id===id)||{};EDIT=id||null;
   $('mtitle').textContent=id?'Edit enquiry':'New enquiry';
   ['name','phone','email','postcode','address','service','guide','actual','follow','source','lostReason','notes']
     .forEach(k=>$(k).value=x[k]||'');
+  ksLoadLeadName_(x.name||'');
   $('leadStatus').value=x.status||'New Enquiry';
   $('source').value=x.source||'Website';
   $('del').style.visibility=id?'visible':'hidden';
@@ -762,6 +905,11 @@ $('bookConfirm').onclick=()=>{
 
 $('add').onclick=()=>openLead(null);$('cancel').onclick=()=>{ksAccessHideCode_();$('modal').classList.remove('show')};$('search').oninput=render;$('status').onchange=render;
 $('save').onclick=()=>{
+  ksNameRefresh_();
+  if(!ksNameLegacyMode&&(!ksNameClean_($("ksNameFirst").value)||!ksNameClean_($("ksNameSurname").value))){
+    alert("Please enter the customer's first name and surname.");
+    return;
+  }
   const obj={id:EDIT,name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim(),
     postcode:$('postcode').value.trim(),address:$('address').value.trim(),service:$('service').value.trim(),
     guide:$('guide').value,actual:$('actual').value,status:$('leadStatus').value,follow:$('follow').value,
