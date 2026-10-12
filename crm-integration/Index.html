@@ -792,20 +792,28 @@ $("ksNameConvert").onclick=()=>{
   ksNameRefresh_();
   $("ksNameFirst").focus();
 };
-$("ksInvoiceCopy").onclick=()=>{
+$("ksInvoiceCopy").onclick=async()=>{
   const value=ksNameInvoice_();
   if(!value)return;
-  const input=document.createElement("textarea");
-  input.value=value;input.setAttribute("readonly","");
-  input.style.position="fixed";input.style.opacity="0";
-  document.body.append(input);input.select();
-  try{
-    if(document.execCommand("copy")){
-      $("ksNameHelp").textContent="✓ "+value+" copied. Paste it into the Xero contact name.";
-    }else throw Error("Clipboard unavailable");
-  }catch(error){
-    $("ksNameHelp").textContent="Copy unavailable here. Select the invoice name above and copy it manually.";
-  }finally{input.remove();}
+  let copied=false;
+  // Secure-context clipboard works on modern iPhones; support older Apps Script
+  // browser frames with an explicit legacy copy fallback.
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    try{await navigator.clipboard.writeText(value);copied=true;}catch(error){}
+  }
+  if(!copied){
+    const input=document.createElement("textarea");
+    input.value=value;input.setAttribute("readonly","");
+    input.style.position="fixed";input.style.left="0";input.style.top="0";
+    input.style.width="1px";input.style.height="1px";
+    document.body.append(input);
+    input.focus();input.select();input.setSelectionRange(0,input.value.length);
+    try{copied=!!document.execCommand("copy");}catch(error){}
+    input.remove();
+  }
+  $("ksNameHelp").textContent=copied
+    ?"✓ "+value+" copied. Paste it into the Xero contact name."
+    :"Copy not allowed by this browser. Long-press the invoice name displayed above to copy it.";
 };
 
 function openLead(id){
