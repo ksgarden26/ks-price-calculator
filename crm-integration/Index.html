@@ -5,7 +5,7 @@
 <title>KS Garden Services Admin</title>
 <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ksgarden26/ks-price-calculator/cloudflare-site/KS%20Garden%20Services%20Logo.png">
 <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ksgarden26/ks-price-calculator/cloudflare-site/KS%20Garden%20Services%20Logo.png">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 <style>
 :root{--g:#173d25;--g2:#245b36;--cream:#ebe9cf;--bg:#f4f7f4;--line:#dce5dd;--text:#1d2921;--muted:#6c786f;--red:#a33b3b;--amber:#9a6d00}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}
@@ -296,7 +296,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
   </div>
   <div class="ks-area-tabs">
    <button type="button" class="btn ks-is-active" id="ksAreaManualTab" aria-pressed="true">📏 Length × width</button>
-   <button type="button" class="btn" id="ksAreaMapTab" aria-pressed="false">🛰 Satellite outline</button>
+   <button type="button" class="btn" id="ksAreaMapTab" aria-pressed="false">🗺️ Google Maps</button>
   </div>
   <div id="ksAreaManualPanel" class="ks-area-grid">
    <label>Length (metres)<input id="ksAreaLength" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="e.g. 9.5"></label>
@@ -304,7 +304,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
    <p class="ks-area-muted ks-span-all">For an L-shaped driveway, measure each rectangle separately and add the areas together.</p>
   </div>
   <div id="ksAreaMapPanel" hidden>
-   <p class="ks-area-muted">Move and zoom the map to the property, then tap each corner of the surface. Tap at least 3 points. You can also centre the map using a UK postcode.</p>
+   <p class="ks-area-muted">Find the property in Google Maps, zoom in and tap each corner of the driveway, patio or lawn. Tap at least 3 points or find it using a UK postcode.</p>
    <div class="ks-area-map-buttons">
     <input id="ksAreaPostcode" type="text" placeholder="Customer postcode" aria-label="Find customer postcode">
     <button type="button" class="btn" id="ksAreaFindPostcode">Find postcode</button>
@@ -314,9 +314,8 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
     <button type="button" class="btn" id="ksAreaZoomIn">＋ Zoom in</button>
     <button type="button" class="btn" id="ksAreaZoomOut">－ Zoom out</button>
     <button type="button" class="btn" id="ksAreaExpand" aria-pressed="false">⛶ Larger map</button>
-    <button type="button" class="btn" id="ksAreaFallback" hidden>↻ Fix missing imagery</button>
    </div>
-   <p class="ks-area-muted" id="ksAreaTileStatus" role="status" aria-live="polite">Satellite zoom available. Deep zoom enlarges the best imagery available; it cannot add missing detail.</p>
+   <p class="ks-area-muted" id="ksAreaTileStatus" role="status" aria-live="polite">Google Maps requires its API key to be connected. Manual length × width works without a map.</p>
    <div id="ksAreaMap" aria-label="Map for outlining the measured area"></div>
    <div class="ks-area-map-buttons">
     <button type="button" class="btn" id="ksAreaUndo">↶ Undo point</button>
@@ -529,7 +528,6 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 </div>
 <div id="toast" class="toast"></div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 let DATA=[], EDIT=null, NAV='', notified=false; const $=x=>document.getElementById(x);
 function gbp(v){return v!==''&&v!=null&&!isNaN(Number(v))?new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}).format(Number(v)):'—'}
@@ -1036,19 +1034,17 @@ $("ksShareCopy").onclick=async()=>{
 
 
 /* KS Area Measure. Both methods are estimates; saved to owner-only CRM Measurements tab. */
-let ksAreaMode="manual",ksAreaMapObj=null,ksAreaMapLine=null,ksAreaMapPolygon=null,ksAreaMapPoints=[];
-let ksAreaImageryLayer=null,ksAreaNativeZoom=19,ksAreaMapExpanded=false;
+let ksAreaMode="manual",ksAreaMapPoints=[],ksAreaMapExpanded=false;
 let ksAreaGoogleMapObj=null,ksAreaGooglePolygon=null,ksAreaGoogleLine=null;
-let ksAreaProvider="loading",ksAreaLoadingStarted=false,ksAreaGoogleScriptPromise=null;
-function ksAreaMapReady_(){return !!ksAreaGoogleMapObj||!!ksAreaMapObj}
+let ksAreaLoadingStarted=false,ksAreaGoogleScriptPromise=null;
+function ksAreaMapReady_(){return !!ksAreaGoogleMapObj}
 function ksAreaMoveMap_(lat,lng,zoom){
   if(ksAreaGoogleMapObj){
     ksAreaGoogleMapObj.setCenter({lat,lng});
     if(Number.isFinite(zoom))ksAreaGoogleMapObj.setZoom(zoom);
-  }else if(ksAreaMapObj)ksAreaMapObj.setView([lat,lng],zoom);
+  }
 }
 function ksAreaResizeMap_(){
-  if(ksAreaMapObj)ksAreaMapObj.invalidateSize({pan:false});
   if(ksAreaGoogleMapObj&&window.google?.maps?.event)
     google.maps.event.trigger(ksAreaGoogleMapObj,"resize");
 }
@@ -1068,7 +1064,6 @@ function ksAreaLoadGoogleJavascript_(apiKey){
   return ksAreaGoogleScriptPromise;
 }
 function ksAreaInitGoogle_(){
-  if(ksAreaMapObj)throw Error("Previous satellite map already loaded.");
   if(!window.google?.maps?.Map)throw Error("Google Maps JavaScript service unavailable.");
   ksAreaGoogleMapObj=new google.maps.Map($("ksAreaMap"),{
     center:{lat:53.4527,lng:-2.6405},
@@ -1078,9 +1073,7 @@ function ksAreaInitGoogle_(){
     zoomControl:true,mapTypeControl:false,
     streetViewControl:false,fullscreenControl:false
   });
-  ksAreaProvider="google";
-  $("ksAreaFallback").hidden=true;
-  $("ksAreaTileStatus").textContent="Google Maps satellite view. Zoom in and tap the driveway/patio corners. Imagery detail varies by area.";
+  $("ksAreaTileStatus").textContent="Google Maps ready. Zoom in and tap the surface corners to measure your area in m². Imagery detail varies by area.";
   ksAreaGoogleMapObj.addListener("click",event=>{
     if(!event.latLng)return;
     if(ksAreaMapPoints.length>=60){
@@ -1092,43 +1085,30 @@ function ksAreaInitGoogle_(){
   ksAreaUpdatePolygon();
   setTimeout(ksAreaResizeMap_,100);
 }
-function ksAreaInitLeaflet_(reason){
-  if(ksAreaGoogleMapObj)return;
-  if(ksAreaMapObj)return;
-  ksAreaProvider="esri";
-  $("ksAreaFallback").hidden=false;
-  if(typeof L==="undefined"){
-    $("ksAreaTileStatus").textContent=reason+" The backup map also could not load.";
-    return;
-  }
-  ksAreaMapObj=L.map("ksAreaMap",{
-    zoomControl:true,maxZoom:23,zoomSnap:0.5,touchZoom:true,scrollWheelZoom:true
-  }).setView([53.4527,-2.6405],17);
-  ksAreaSetSatelliteDetail(ksAreaNativeZoom);
-  $("ksAreaTileStatus").textContent=reason+" Backup satellite imagery is available; zoom in and tap the area corners.";
-  ksAreaMapObj.on("click",event=>{
-    if(ksAreaMapPoints.length>=60){$("ksAreaMapHint").textContent="Maximum 60 outline corners.";return;}
-    ksAreaMapPoints.push({lat:event.latlng.lat,lng:event.latlng.lng});
-    ksAreaUpdatePolygon();ksAreaRefresh();
-  });
-  ksAreaUpdatePolygon();
-  setTimeout(ksAreaResizeMap_,100);
+function ksAreaShowGoogleError_(message){
+  ksAreaLoadingStarted=false;
+  $("ksAreaTileStatus").textContent=message+" You can still measure manually using length × width.";
 }
 function ksAreaStartPreferredMap_(){
   if(ksAreaMapReady_()||ksAreaLoadingStarted)return;
   ksAreaLoadingStarted=true;
-  ksAreaProvider="loading";
-  $("ksAreaTileStatus").textContent="Checking Google Maps satellite access…";
+  $("ksAreaTileStatus").textContent="Connecting Google Maps…";
   google.script.run.withSuccessHandler(config=>{
     if(!config?.available||!config.key){
-      ksAreaInitLeaflet_("Google Maps is not connected yet (add its API key in private Script Properties).");
+      ksAreaShowGoogleError_("Google Maps is not connected yet. Add your Google Maps API key to the private Script Properties.");
       return;
     }
     ksAreaLoadGoogleJavascript_(config.key)
-      .then(()=>{try{ksAreaInitGoogle_()}catch(err){ksAreaInitLeaflet_("Google Maps could not start: "+err.message+".")}})
-      .catch(err=>ksAreaInitLeaflet_("Google Maps could not load: "+err.message+"."));
+      .then(()=>{
+        try {ksAreaInitGoogle_()}
+        catch(err){ksAreaShowGoogleError_("Google Maps could not start: "+err.message+".")}
+      })
+      .catch(err=>{
+        ksAreaGoogleScriptPromise=null;
+        ksAreaShowGoogleError_("Google Maps could not load: "+err.message+".");
+      });
   }).withFailureHandler(err=>{
-    ksAreaInitLeaflet_("Google Maps configuration not available: "+(err.message||"Server error")+".");
+    ksAreaShowGoogleError_("Google Maps configuration is unavailable: "+(err.message||"Server error")+".");
   }).ksAreaGoogleMapsConfiguration();
 }
 // Google's authentication callback runs after script load if referrer, billing or
@@ -1136,24 +1116,6 @@ function ksAreaStartPreferredMap_(){
 window.gm_authFailure=()=>{
   $("ksAreaTileStatus").textContent="Google Maps rejected the API key. Check billing, Maps JavaScript API and allowed website restrictions in Google Cloud.";
 };
-const ksAreaImageryUrl="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-function ksAreaSetSatelliteDetail(nativeZoom){
-  // Esri has empty cache levels above ~19 in many UK locations. Leaflet must
-  // enlarge the last real tile rather than requesting a missing z20+ image.
-  ksAreaNativeZoom=nativeZoom;
-  if(!ksAreaMapObj||typeof L==="undefined")return;
-  if(ksAreaImageryLayer)ksAreaMapObj.removeLayer(ksAreaImageryLayer);
-  ksAreaImageryLayer=L.tileLayer(ksAreaImageryUrl,{
-    maxNativeZoom:ksAreaNativeZoom,
-    maxZoom:23,
-    attribution:"Imagery © Esri, Maxar, Earthstar Geographics & contributors",
-    updateWhenIdle:true
-  }).addTo(ksAreaMapObj);
-  $("ksAreaFallback").textContent=nativeZoom===18?"↻ Try sharper imagery":"↻ Fix missing imagery";
-  $("ksAreaTileStatus").textContent=nativeZoom===18
-    ?"Reliable imagery mode: zooms in using the available level-18 satellite image. This may look softer, but avoids unavailable detailed tiles."
-    :"Detailed imagery mode: zoom in freely. Above level 19 the map magnifies existing imagery instead of showing unavailable tiles. If you still see missing imagery, tap Fix missing imagery.";
-}
 function ksAreaOpen(){
   ksAreaMode="manual";
   $("ksAreaLength").value="";$("ksAreaWidth").value="";
@@ -1197,7 +1159,7 @@ function ksAreaSelectMode(mode){
   if(mode==="map") {
     ksAreaStartPreferredMap_();
     if(ksAreaMapReady_())setTimeout(ksAreaResizeMap_,75);
-    else $("ksAreaMapHint").textContent="Preparing satellite imagery…";
+    else $("ksAreaMapHint").textContent="Connecting Google Maps…";
   }
   ksAreaRefresh();
 }
@@ -1226,14 +1188,6 @@ function ksAreaUpdatePolygon(){
         path:ksAreaMapPoints,strokeColor:"#ffd65a",strokeWeight:4,
         clickable:false,map:ksAreaGoogleMapObj
       });
-    }
-  }else if(ksAreaMapObj&&typeof L!=="undefined"){
-    if(ksAreaMapLine){ksAreaMapObj.removeLayer(ksAreaMapLine);ksAreaMapLine=null;}
-    if(ksAreaMapPolygon){ksAreaMapObj.removeLayer(ksAreaMapPolygon);ksAreaMapPolygon=null;}
-    if(ksAreaMapPoints.length>=3){
-      ksAreaMapPolygon=L.polygon(ksAreaMapPoints,{color:"#ebd156",weight:3,fillColor:"#f2d769",fillOpacity:.2}).addTo(ksAreaMapObj);
-    }else if(ksAreaMapPoints.length>=1){
-      ksAreaMapLine=L.polyline(ksAreaMapPoints,{color:"#ffd65a",weight:4}).addTo(ksAreaMapObj);
     }
   }
   $("ksAreaMapHint").textContent=ksAreaMapPoints.length+" corners selected. Tap each corner in order; you can undo or clear.";
@@ -1266,11 +1220,9 @@ $("ksAreaCustomer").addEventListener("change",()=>{
 });
 $("ksAreaZoomIn").onclick=()=>{
   if(ksAreaGoogleMapObj)ksAreaGoogleMapObj.setZoom(Math.min(22,(ksAreaGoogleMapObj.getZoom()||18)+1));
-  else if(ksAreaMapObj)ksAreaMapObj.zoomIn(1);
 };
 $("ksAreaZoomOut").onclick=()=>{
   if(ksAreaGoogleMapObj)ksAreaGoogleMapObj.setZoom(Math.max(1,(ksAreaGoogleMapObj.getZoom()||18)-1));
-  else if(ksAreaMapObj)ksAreaMapObj.zoomOut(1);
 };
 $("ksAreaExpand").onclick=()=>{
   ksAreaMapExpanded=!ksAreaMapExpanded;
@@ -1278,11 +1230,6 @@ $("ksAreaExpand").onclick=()=>{
   $("ksAreaExpand").textContent=ksAreaMapExpanded?"⛶ Smaller map":"⛶ Larger map";
   $("ksAreaExpand").setAttribute("aria-pressed",String(ksAreaMapExpanded));
   if(ksAreaMapReady_())setTimeout(ksAreaResizeMap_,100);
-};
-$("ksAreaFallback").onclick=()=>{
-  if(ksAreaGoogleMapObj){$("ksAreaTileStatus").textContent="Google Maps satellite imagery is active. If detail is unavailable at this location, zoom out slightly.";return;}
-  if(!ksAreaMapObj){$("ksAreaTileStatus").textContent="Switch to Satellite outline first.";return;}
-  ksAreaSetSatelliteDetail(ksAreaNativeZoom===19?18:19);
 };
 $("ksAreaUndo").onclick=()=>{ksAreaMapPoints.pop();ksAreaUpdatePolygon();ksAreaRefresh()};
 $("ksAreaClear").onclick=()=>{ksAreaMapPoints=[];ksAreaUpdatePolygon();ksAreaRefresh()};
