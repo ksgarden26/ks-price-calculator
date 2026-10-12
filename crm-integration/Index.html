@@ -215,6 +215,9 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 .ks-alerts-card button{min-height:46px;justify-self:stretch}
 .ks-alerts-empty{padding:25px 10px;text-align:center;color:#46674d;background:#f6faf7;border-radius:12px}
 
+.ks-plant-id-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.ks-plant-id-actions .btn{min-height:48px;flex:1 1 160px}
+@media(max-width:430px){.ks-plant-id-actions{display:grid;grid-template-columns:1fr 1fr}.ks-plant-id-actions .btn{font-size:14px;padding:12px 7px}}
 </style>
 </head>
 <body>
@@ -452,7 +455,10 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
         </select>
       </label>
       <p class="ks-plant-caption">Take a clear close-up of a leaf or flower, preferably in natural light. Identification sends the photo to Pl@ntNet. You can save a plant name and note to this customer's Garden Passport; the photo is not stored. Avoid faces, house numbers and other personal details.</p>
-      <button type="button" class="btn primary" id="ksPlantIdentify" disabled>Identify plant</button>
+      <div class="ks-plant-id-actions">
+        <button type="button" class="btn primary" id="ksPlantIdentify" disabled>Identify plant</button>
+        <button type="button" class="btn" id="ksPlantClear">↻ Clear &amp; start again</button>
+      </div>
       <div id="ksPlantStatus" class="ks-plant-status" role="status" aria-live="polite">Take a picture or choose one to begin.</div>
       <label class="field">Garden notes (optional)
         <input id="ksPlantNotes" type="text" maxlength="700" placeholder="e.g. Under apple tree, left-hand border" style="width:100%;padding:11px;border:1px solid #ccd8ce;border-radius:9px;margin-top:5px">
@@ -991,7 +997,7 @@ $("ksAreaSave").onclick=()=>{
 };
 
 /* KS Garden Services mobile & desktop private Plant ID. */
-let ksPlantBlobData="",ksPlantObjectUrl="",ksPlantBusy=false;
+let ksPlantBlobData="",ksPlantObjectUrl="",ksPlantBusy=false,ksPlantGeneration=0;
 let ksPlantCustomers=[],ksPlantNearbyIds=[],ksGardenCheckinId="",ksGardenLeadId="";
 const ksPlantModal=$("ksPlantModal"),ksPlantPreview=$("ksPlantPreview"),
   ksPlantIdentify=$("ksPlantIdentify"),ksPlantStatus=$("ksPlantStatus"),
@@ -1005,6 +1011,24 @@ function ksPlantClose(){
   ksPlantModal.classList.remove("show");
   ksPlantModal.setAttribute("aria-hidden","true");
 }
+function ksPlantClear(){
+  // Invalidate any photograph still processing or an older identification response.
+  ++ksPlantGeneration;
+  ksPlantBusy=false;
+  ksPlantBlobData="";
+  if(ksPlantObjectUrl){URL.revokeObjectURL(ksPlantObjectUrl);ksPlantObjectUrl="";}
+  $("ksPlantCamera").value="";
+  $("ksPlantGallery").value="";
+  ksPlantPreview.removeAttribute("src");
+  ksPlantPreview.hidden=true;
+  ksPlantIdentify.disabled=true;
+  $("ksPlantOrgan").value="auto";
+  $("ksPlantNotes").value="";
+  ksPlantResults.replaceChildren();
+  ksPlantStatus.textContent="Cleared. Take or choose a photo to identify another plant.";
+  // Preserve the selected customer and confirmed check-in for the next plant.
+}
+$("ksPlantClear").addEventListener("click",ksPlantClear);
 $("ksPlantOpen").addEventListener("click",ksPlantOpen);
 $("ksCheckinOpen").addEventListener("click",ksPlantOpen);
 $("ksPlantClose").addEventListener("click",ksPlantClose);
@@ -1015,6 +1039,7 @@ $("ksPlantGallery").addEventListener("change",e=>ksPlantPick(e.target.files?.[0]
 ksPlantModal.addEventListener("click",e=>{if(e.target===ksPlantModal&&!ksPlantBusy)ksPlantClose()});
 window.addEventListener("keydown",e=>{if(e.key==="Escape"&&ksPlantModal.classList.contains("show")&&!ksPlantBusy)ksPlantClose()});
 async function ksPlantPick(file){
+  const generation=++ksPlantGeneration;
   ksPlantBlobData="";
   ksPlantResults.replaceChildren();
   ksPlantIdentify.disabled=true;
@@ -1032,6 +1057,7 @@ async function ksPlantPick(file){
     const im=new Image();
     im.src=ksPlantObjectUrl;
     await new Promise((resolve,reject)=>{im.onload=resolve;im.onerror=()=>reject(Error("This image format cannot be read. Take a new photo or choose a JPEG."));});
+    if(generation!==ksPlantGeneration)return;
     const scale=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight));
     const canvas=document.createElement("canvas");
     canvas.width=Math.max(1,Math.round(im.naturalWidth*scale));
@@ -1050,10 +1076,15 @@ async function ksPlantPick(file){
     ksPlantIdentify.disabled=false;
     ksPlantStatus.textContent="Photo ready. Tap Identify plant.";
   } catch(error){
-    ksPlantPreview.hidden=true;
-    ksPlantStatus.textContent=error.message||"Unable to read the image.";
+    if(generation===ksPlantGeneration){
+      ksPlantPreview.hidden=true;
+      ksPlantStatus.textContent=error.message||"Unable to read the image.";
+    }
   } finally {
-    if(ksPlantObjectUrl){URL.revokeObjectURL(ksPlantObjectUrl);ksPlantObjectUrl="";}
+    // Do not revoke a newer photograph if Clear or Choose was used meanwhile.
+    if(generation===ksPlantGeneration&&ksPlantObjectUrl){
+      URL.revokeObjectURL(ksPlantObjectUrl);ksPlantObjectUrl="";
+    }
   }
 }
 function ksPlantDisplay(result){
@@ -1221,13 +1252,16 @@ function ksPlantSaveForCustomer(plant,button){
 
 ksPlantIdentify.addEventListener("click",()=>{
   if(ksPlantBusy||!ksPlantBlobData)return;
+  const generation=++ksPlantGeneration;
   ksPlantBusy=true;ksPlantIdentify.disabled=true;
   ksPlantResults.replaceChildren();
   ksPlantStatus.textContent="Identifying your plant…";
   google.script.run.withSuccessHandler(result=>{
+    if(generation!==ksPlantGeneration)return;
     ksPlantBusy=false;ksPlantIdentify.disabled=false;
     ksPlantDisplay(result);
   }).withFailureHandler(error=>{
+    if(generation!==ksPlantGeneration)return;
     ksPlantBusy=false;ksPlantIdentify.disabled=false;
     ksPlantStatus.textContent=error.message||"Plant ID failed. Please try again.";
   }).identifyKsPlant({photoBase64:ksPlantBlobData,organ:$("ksPlantOrgan").value});
