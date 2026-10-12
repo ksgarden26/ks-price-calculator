@@ -130,3 +130,16 @@ function ksSaveCustomerAccess(payload){
     return {ok:true,leadId:lead.id,reference,hasCode:!!newCode};
   }finally{lock.releaseLock();}
 }
+
+/**
+ * Explicit reveal, separate from normal customer/profile reads.
+ * Only invoke when the private owner presses Reveal access code.
+ */
+function ksRevealCustomerAccessCode(leadId) {
+  ksBookingOwnerOnly_();
+  const lead=ksCustomerAccessLead_(leadId);
+  const sh=ksCustomerAccessSheet_();
+  const found=ksCustomerAccessRecord_(sh,lead.id);
+  if(!found.row)return {ok:true,code:""};
+  return {ok:true,code:String(sh.getRange(found.row,15).getValue()||"")};
+}
