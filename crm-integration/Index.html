@@ -202,6 +202,19 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
   .ks-tile small{font-size:12px}
 }
 
+
+/* In-app alerts work on Chrome/iPhone without browser permission prompts. */
+.ks-alerts-modal{width:min(660px,100%);max-height:94dvh}
+.ks-alerts-modal h2{margin:0}
+.ks-alerts-description{color:#5b705f;font-size:13px;line-height:1.4;margin:7px 0 12px}
+.ks-alerts-summary{font-size:14px;color:#1d4d2b;background:#eff6f0;border:1px solid #dce6dd;border-radius:11px;padding:12px;margin:10px 0}
+.ks-alerts-items{display:grid;gap:10px;margin:14px 0}
+.ks-alerts-card{border:1px solid #d6e3d8;border-radius:12px;background:white;padding:14px;display:grid;gap:8px}
+.ks-alerts-card b{font-size:16px;color:#173d25}
+.ks-alerts-card p{font-size:13px;color:#607264;line-height:1.4;margin:0}
+.ks-alerts-card button{min-height:46px;justify-self:stretch}
+.ks-alerts-empty{padding:25px 10px;text-align:center;color:#46674d;background:#f6faf7;border-radius:12px}
+
 </style>
 </head>
 <body>
@@ -218,7 +231,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 <p class="ks-home-subtitle">Your garden business, all in one place.</p>
 </div>
 <button type="button" class="btn ks-crm-back" id="ksCrmBackHome">← Home</button>
-<header><div><h1>CRM Dashboard</h1><p>Every enquiry, quote and follow-up in one place.</p></div><div class="actions"><button class="btn" type="button" id="ksCheckinOpen">📍 Check in</button><button class="btn" type="button" id="ksPlantOpen">🌿 Plant ID</button><button class="btn" id="notify">🔔 Enable browser alerts</button><button class="btn primary" id="add">+ New Enquiry</button></div></header>
+<header><div><h1>CRM Dashboard</h1><p>Every enquiry, quote and follow-up in one place.</p></div><div class="actions"><button class="btn" type="button" id="ksCheckinOpen">📍 Check in</button><button class="btn" type="button" id="ksPlantOpen">🌿 Plant ID</button><button class="btn" id="notify" type="button">🔔 View alerts</button><button class="btn primary" id="add">+ New Enquiry</button></div></header>
 
 <section class="ks-quick" aria-label="Quick actions">
   <div class="ks-quick-header"><div><h2>Quick actions</h2></div></div>
@@ -234,7 +247,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
     <button type="button" class="ks-tile" id="ksQuickFollow"><span class="ks-tile-icon" aria-hidden="true">🔔</span><strong>Follow-ups</strong><small>See customers to contact</small><span class="ks-count" id="ksDueCount" hidden aria-label="Due follow-ups"></span></button>
     <button type="button" class="ks-tile" id="ksQuickMeasure"><span class="ks-tile-icon" aria-hidden="true">📐</span><strong>Measure Area</strong><small>Driveways, patios and lawns</small></button>
     <button type="button" class="ks-tile" id="ksQuickCalendar"><span class="ks-tile-icon" aria-hidden="true">🗓️</span><strong>Calendar</strong><small>Open your Google diary</small></button>
-    <button type="button" class="ks-tile" id="ksQuickNotify"><span class="ks-tile-icon" aria-hidden="true">⏰</span><strong>Alerts</strong><small>Enable browser reminders</small></button>
+    <button type="button" class="ks-tile" id="ksQuickNotify"><span class="ks-tile-icon" aria-hidden="true">🔔</span><strong>Alerts</strong><small>New enquiries &amp; follow-ups</small><span class="ks-count" id="ksAlertsCount" hidden aria-label="Outstanding alerts"></span></button>
   </div>
 </section>
 
@@ -351,6 +364,24 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 <div class="modalactions"><button class="btn danger" id="del">Delete</button><div class="right"><button class="btn" id="quoteVisitBtn" type="button">▦ Book quote visit</button><button class="btn primary" id="confirmBookingBtn" type="button">✓ Confirm agreed job</button><button class="btn" id="cancel">Cancel</button><button class="btn primary" id="save">Save</button></div></div>
 </div></div>
 
+
+<div class="modalback" id="ksAlertsModal" aria-hidden="true" style="z-index:79">
+  <div class="modal ks-alerts-modal" role="dialog" aria-modal="true" aria-labelledby="ksAlertsTitle">
+    <div class="ks-plant-inline">
+      <div><h2 id="ksAlertsTitle">🔔 Your alerts</h2>
+      <p class="ks-alerts-description">Outstanding new enquiries and due follow-ups in your CRM.</p></div>
+      <button type="button" class="btn" id="ksAlertsClose">Close ×</button>
+    </div>
+    <div class="ks-alerts-summary" id="ksAlertsSummary" aria-live="polite"></div>
+    <div class="ks-alerts-items" id="ksAlertsItems" aria-live="polite"></div>
+    <p class="ks-area-muted">These are alerts inside your admin app, not iPhone push notifications. They update when you open or refresh the app. Your email diary and calendar reminders remain separate.</p>
+    <div class="modalactions">
+      <button type="button" class="btn" id="ksAlertsRefresh">↻ Refresh alerts</button>
+      <button type="button" class="btn primary" id="ksAlertsDone">Done</button>
+    </div>
+  </div>
+</div>
+
 <div id="ksDeleteModal" class="modalback" aria-hidden="true" style="z-index:78">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ksDeleteTitle" style="max-width:470px">
     <h2 id="ksDeleteTitle">Delete enquiry?</h2>
@@ -450,8 +481,9 @@ function ksUpdateCount_(id,count,label) {
 function ksUpdateHomeCounts(){
   ksUpdateCount_("ksNewCount",DATA.filter(x=>x.status==="New Enquiry").length,"new enquiries");
   ksUpdateCount_("ksDueCount",DATA.filter(due).length,"due follow-ups");
+  ksUpdateCount_("ksAlertsCount",ksOutstandingAlerts_().length,"outstanding alerts");
 }
-function load(){google.script.run.withSuccessHandler(x=>{DATA=x||[];render();browserDue()}).withFailureHandler(err=>toast(err.message||err)).getLeads()}
+function load(){google.script.run.withSuccessHandler(x=>{DATA=x||[];render();if($("ksAlertsModal").classList.contains("show"))ksRenderAlerts_()}).withFailureHandler(err=>toast(err.message||err)).getLeads()}
 function render(){
  const q=$('search').value.toLowerCase().trim(),sf=$('status').value;
  const rows=DATA.filter(x=>{if(NAV==='due'&&!due(x))return false;if(NAV&&NAV!=='due'&&x.status!==NAV)return false;if(sf&&x.status!==sf)return false;return !q||[x.name,x.phone,x.email,x.postcode,x.service].join(' ').toLowerCase().includes(q)});
@@ -632,7 +664,72 @@ $("ksDeleteConfirm").onclick=()=>{
   }).ksDeleteEnquiryRecord(selected);
 };
 
-$('notify').onclick=async()=>{if(!('Notification'in window))return alert('Browser notifications are not available here.');const p=await Notification.requestPermission();toast(p==='granted'?'Browser alerts enabled':'Browser alerts not enabled');browserDue()};
+
+/* Alerts panel uses existing private CRM records, not unsupported iPhone browser notifications. */
+function ksOutstandingAlerts_(){
+  return DATA.filter(x=>x&&x.id&&(x.status==="New Enquiry"||due(x)))
+    .slice().sort((a,b)=>{
+      const aa=due(a)?0:1,bb=due(b)?0:1;
+      return aa-bb||String(a.name||"").localeCompare(String(b.name||""),"en-GB");
+    });
+}
+function ksRenderAlerts_(){
+  const items=$("ksAlertsItems");
+  items.replaceChildren();
+  const alerts=ksOutstandingAlerts_();
+  const newCount=DATA.filter(x=>x.status==="New Enquiry").length;
+  const dueCount=DATA.filter(due).length;
+  $("ksAlertsSummary").textContent=
+    newCount+" new enquir"+(newCount===1?"y":"ies")+" · "+dueCount+
+    " due follow-up"+(dueCount===1?"":"s");
+  if(!alerts.length){
+    const empty=document.createElement("p");
+    empty.className="ks-alerts-empty";
+    empty.textContent="All clear — no new enquiries or overdue follow-ups.";
+    items.append(empty);return;
+  }
+  alerts.forEach(x=>{
+    const card=document.createElement("article");card.className="ks-alerts-card";
+    const name=document.createElement("b");name.textContent=String(x.name||"Unnamed enquiry");
+    const status=document.createElement("p");
+    const notes=[];
+    if(x.status==="New Enquiry")notes.push("New enquiry");
+    if(due(x))notes.push("Follow-up due"+(x.follow?" "+d(x.follow):""));
+    status.textContent=notes.join(" · ");
+    const service=document.createElement("p");
+    service.textContent=String(x.service||"Garden enquiry")+(x.postcode?" · "+String(x.postcode):"");
+    const button=document.createElement("button");button.type="button";
+    button.className="btn primary";button.textContent="Open enquiry";
+    button.addEventListener("click",()=>{
+      ksAlertsClose_();openLead(x.id);
+    });
+    card.append(name,status,service,button);items.append(card);
+  });
+}
+function ksAlertsOpen_(){
+  ksRenderAlerts_();
+  $("ksAlertsModal").classList.add("show");
+  $("ksAlertsModal").setAttribute("aria-hidden","false");
+}
+function ksAlertsClose_(){
+  $("ksAlertsModal").classList.remove("show");
+  $("ksAlertsModal").setAttribute("aria-hidden","true");
+}
+$("ksQuickNotify").onclick=ksAlertsOpen_;
+$("notify").onclick=ksAlertsOpen_;
+$("ksAlertsClose").onclick=ksAlertsClose_;
+$("ksAlertsDone").onclick=ksAlertsClose_;
+$("ksAlertsRefresh").onclick=()=>{
+  $("ksAlertsSummary").textContent="Checking your CRM…";
+  google.script.run.withSuccessHandler(rows=>{
+    DATA=Array.isArray(rows)?rows:[];
+    render();
+    ksRenderAlerts_();
+  }).withFailureHandler(err=>{
+    $("ksAlertsSummary").textContent="Could not refresh alerts: "+(err.message||String(err));
+  }).getLeads();
+};
+
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');NAV=b.dataset.filter;render()});
 
 
@@ -701,7 +798,7 @@ $("ksQuickBook").onclick=()=>ksQuickChooseCustomer("job");
 $("ksQuickCheckin").onclick=()=>$("ksCheckinOpen").click();
 $("ksQuickPlant").onclick=()=>$("ksPlantOpen").click();
 $("ksQuickCalendar").onclick=()=>window.open("https://calendar.google.com/calendar/u/0/r","_blank","noopener,noreferrer");
-$("ksQuickNotify").onclick=()=>$("notify").click();
+// The Alerts tile opens the in-app alerts panel directly.
 $("ksMobileLeads").addEventListener("click",e=>{
   const button=e.target.closest("button[data-ks-lead]");
   if(button)openLead(button.getAttribute("data-ks-lead"));
