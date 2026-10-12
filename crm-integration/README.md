@@ -16,7 +16,7 @@ The private CRM owner interface now includes a Garden access & customer keys sec
 
 ## Google Maps satellite measuring (private app)
 
-The area-measuring screen can now use **Google Maps satellite imagery** as its first choice. Tapping driveway/patio corners still calculates and saves area in square metres in the existing Measurements sheet. If the Google Maps key is missing or the library cannot load, the earlier Esri satellite-outline map remains available as a fallback.
+The area-measuring screen now offers **Length × width** and **Google Maps**. The previous Esri **Satellite outline** option, its imagery fallback button and the Leaflet dependency have been removed. Tapping corners on Google Maps calculates an estimated area in square metres and the existing Measurements sheet still saves it. Google Maps requires its own API key; without that connection, manual Length × width remains available.
 
 To activate Google Maps on the private Apps Script admin deployment:
 
