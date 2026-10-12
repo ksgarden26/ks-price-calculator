@@ -1146,6 +1146,7 @@ window.gm_authFailure=()=>{
 function ksAreaOpen(){
   ksAreaMode="manual";
   $("ksAreaLength").value="";$("ksAreaWidth").value="";
+  $("ksAreaRectangles").querySelectorAll(".ks-area-rectangle-extra").forEach(node=>node.remove());
   $("ksAreaNotes").value="";$("ksAreaSaved").textContent="";
   $("ksAreaSurface").value="driveway";
   const customer=$("ksAreaCustomer");
@@ -1219,19 +1220,84 @@ function ksAreaUpdatePolygon(){
   }
   $("ksAreaMapHint").textContent=ksAreaMapPoints.length+" corners selected. Tap each corner in order; you can undo or clear.";
 }
+function ksAreaGetRectangles_(){
+  const sections=[...$("ksAreaRectangles").querySelectorAll(".ks-area-rectangle")];
+  const rows=sections.map(section=>{
+    const len=section.querySelector('input[data-dimension="length"]');
+    const wid=section.querySelector('input[data-dimension="width"]');
+    const rawLength=len.value.trim(),rawWidth=wid.value.trim();
+    const length=Number(rawLength),width=Number(rawWidth);
+    const valid=rawLength!==""&&rawWidth!==""&&Number.isFinite(length)
+      &&Number.isFinite(width)&&length>0&&width>0&&length<=10000&&width<=10000;
+    return {length,width,valid,subtotal:valid?length*width:0};
+  });
+  const total=rows.reduce((sum,r)=>sum+r.subtotal,0);
+  return {rows,total,complete:rows.length>0&&rows.every(r=>r.valid)
+    &&total>0&&total<=1000000};
+}
+function ksAreaRenderManual_(){
+  const data=ksAreaGetRectangles_();
+  $("ksAreaRectangles").querySelectorAll(".ks-area-rectangle").forEach((section,i)=>{
+    section.querySelector("strong").textContent="Area "+(i+1);
+    section.querySelector(".ks-area-rectangle-subtotal").textContent=
+      data.rows[i].valid?data.rows[i].subtotal.toFixed(2)+" m²":"— m²";
+    section.querySelector('input[data-dimension="length"]').setAttribute(
+      "aria-label","Area "+(i+1)+" length in metres");
+    section.querySelector('input[data-dimension="width"]').setAttribute(
+      "aria-label","Area "+(i+1)+" width in metres");
+  });
+  $("ksAreaManualTotal").textContent=data.complete?data.total.toFixed(2):"—";
+  const missing=data.rows.findIndex(r=>!r.valid);
+  $("ksAreaRectangleHelp").textContent=missing>=0
+    ?"Enter valid length and width for Area "+(missing+1)+"."
+    :data.total>1000000?"Combined area exceeds the maximum allowed."
+    :data.rows.length+" rectangle"+(data.rows.length===1?"":"s")+" added. Do not count overlapping sections twice.";
+  $("ksAreaAddRectangle").disabled=data.rows.length>=25;
+  return data;
+}
+function ksAreaAddRectangle_(){
+  const total=$("ksAreaRectangles").querySelectorAll(".ks-area-rectangle").length;
+  if(total>=25){$("ksAreaRectangleHelp").textContent="Maximum 25 rectangles.";return;}
+  const section=document.createElement("section");
+  section.className="ks-area-rectangle ks-area-rectangle-extra";
+  const header=document.createElement("div");header.className="ks-area-rectangle-title";
+  const title=document.createElement("strong");title.textContent="Area "+(total+1);
+  const subtotal=document.createElement("span");
+  subtotal.className="ks-area-rectangle-subtotal";subtotal.textContent="— m²";
+  header.append(title,subtotal);
+  const inputs=document.createElement("div");inputs.className="ks-area-grid";
+  for(const dimension of ["length","width"]){
+    const label=document.createElement("label");
+    label.textContent=dimension==="length"?"Length (metres)":"Width (metres)";
+    const input=document.createElement("input");
+    input.type="number";input.min="0.01";input.max="10000";
+    input.step="0.01";input.inputMode="decimal";
+    input.dataset.dimension=dimension;
+    input.placeholder=dimension==="length"?"e.g. 3.5":"e.g. 2";
+    input.addEventListener("input",ksAreaRefresh);
+    label.append(input);inputs.append(label);
+  }
+  const remove=document.createElement("button");
+  remove.type="button";remove.className="btn ks-area-rectangle-remove";
+  remove.textContent="× Remove this rectangle";
+  remove.addEventListener("click",()=>{section.remove();ksAreaRefresh()});
+  section.append(header,inputs,remove);
+  $("ksAreaRectangles").append(section);
+  ksAreaRefresh();
+  section.querySelector("input").focus();
+}
 function ksAreaDimensions(){
-  const length=Number($("ksAreaLength").value),width=Number($("ksAreaWidth").value);
-  return {length,width,valid:$("ksAreaLength").value!==""&&$("ksAreaWidth").value!==""&&
-    Number.isFinite(length)&&Number.isFinite(width)&&length>0&&width>0&&
-    length<=10000&&width<=10000};
+  const first=ksAreaGetRectangles_().rows[0];
+  return {length:first.length,width:first.width,valid:first.valid};
 }
 function ksAreaCurrentArea(){
   if(ksAreaMode==="map")return ksAreaMapArea();
-  const d=ksAreaDimensions();
-  return d.valid?d.length*d.width:0;
+  const data=ksAreaGetRectangles_();
+  return data.complete?data.total:0;
 }
 function ksAreaRefresh(){
-  const area=ksAreaCurrentArea();
+  const data=ksAreaRenderManual_();
+  const area=ksAreaMode==="map"?ksAreaMapArea():(data.complete?data.total:0);
   $("ksAreaResult").textContent=area>0?area.toFixed(2):"—";
 }
 $("ksQuickMeasure").onclick=ksAreaOpen;
@@ -1241,6 +1307,13 @@ $("ksAreaManualTab").onclick=()=>ksAreaSelectMode("manual");
 $("ksAreaMapTab").onclick=()=>ksAreaSelectMode("map");
 $("ksAreaLength").addEventListener("input",ksAreaRefresh);
 $("ksAreaWidth").addEventListener("input",ksAreaRefresh);
+$("ksAreaAddRectangle").onclick=ksAreaAddRectangle_;
+$("ksAreaClearRectangles").onclick=()=>{
+  $("ksAreaRectangles").querySelectorAll(".ks-area-rectangle-extra").forEach(node=>node.remove());
+  $("ksAreaLength").value="";$("ksAreaWidth").value="";
+  ksAreaRefresh();
+  $("ksAreaLength").focus();
+};
 $("ksAreaCustomer").addEventListener("change",()=>{
   const lead=DATA.find(x=>String(x.id)===$("ksAreaCustomer").value);
   if(lead&&lead.postcode)$("ksAreaPostcode").value=lead.postcode;
