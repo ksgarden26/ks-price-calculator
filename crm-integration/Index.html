@@ -230,6 +230,9 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 .ks-access-clear label{font-size:13px;display:flex;align-items:center;gap:8px}
 .ks-access-caution{color:#7b4c19;background:#fff7e8;border:1px solid #f3dfb3;border-radius:8px;padding:10px 12px;margin:0;font-size:12px;line-height:1.5}
 .ks-access-status{font-size:13px;color:#245b36;line-height:1.5;margin:8px 0 0}
+.ks-access-revealed{padding:9px;background:#fff7e8;border:1px solid #efd69c;border-radius:8px;font-size:16px;word-break:break-word;display:block;margin-top:8px}
+.ks-access-revealed[hidden]{display:none}
+#ksAccessReveal{font-size:12px;padding:7px 10px;margin-top:8px;min-height:43px}
 </style>
 </head>
 <body>
@@ -393,6 +396,8 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 <div class="field"><label for="ksAccessCode">Gate/key-safe code (optional)</label>
   <input type="password" id="ksAccessCode" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="90" placeholder="Leave empty to keep current code">
   <small id="ksAccessCodeStatus">No code saved</small>
+  <button type="button" class="btn" id="ksAccessReveal" disabled>Show saved code</button>
+  <span id="ksAccessRevealed" class="ks-access-revealed" aria-live="polite" hidden></span>
 </div>
 <div class="field ks-access-clear"><label><input type="checkbox" id="ksAccessClearCode"> Remove previously saved code</label></div>
 <div class="field full"><p class="ks-access-caution">Security: access codes are stored in your restricted Customer Keys spreadsheet, not encrypted end-to-end. Anyone with access to that sheet may be able to read them. Never include codes in general CRM notes, messages or Xero invoices.</p>
@@ -570,7 +575,42 @@ function ksCurrentCustomerPreferences(){
   return {communicationLevel:$('prefLevel').value,preferredContact:$('prefContact').value,
     daytimeTracking:$('prefTracking').checked,postVisitReports:$('prefReports').checked};
 }
-let ksAccessLinked=false,ksAccessLoaded=true;
+let ksAccessLinked=false,ksAccessLoaded=true,ksAccessRevealTimer=null,ksAccessRevealId=0;
+function ksAccessHideCode_(){
+  ++ksAccessRevealId;
+  if(ksAccessRevealTimer)clearTimeout(ksAccessRevealTimer);
+  ksAccessRevealTimer=null;
+  $("ksAccessRevealed").textContent="";
+  $("ksAccessRevealed").hidden=true;
+  $("ksAccessReveal").textContent="Show saved code";
+}
+$("ksAccessReveal").addEventListener("click",()=>{
+  if(!$("ksAccessRevealed").hidden){
+    ksAccessHideCode_();return;
+  }
+  if(!EDIT)return;
+  const id=String(EDIT);
+  const requestId=++ksAccessRevealId;
+  $("ksAccessReveal").disabled=true;
+  $("ksAccessCodeStatus").textContent="Checking your saved access code…";
+  google.script.run.withSuccessHandler(result=>{
+    if(String(EDIT)!==id||requestId!==ksAccessRevealId)return;
+    $("ksAccessReveal").disabled=false;
+    const code=String(result?.code||"");
+    if(!code){
+      $("ksAccessCodeStatus").textContent="No code saved";return;
+    }
+    $("ksAccessCodeStatus").textContent="Code saved in private Customer Keys register";
+    $("ksAccessRevealed").textContent=code;
+    $("ksAccessRevealed").hidden=false;
+    $("ksAccessReveal").textContent="Hide saved code";
+    ksAccessRevealTimer=setTimeout(ksAccessHideCode_,15000);
+  }).withFailureHandler(err=>{
+    if(String(EDIT)!==id||requestId!==ksAccessRevealId)return;
+    $("ksAccessReveal").disabled=false;
+    $("ksAccessCodeStatus").textContent="Unable to show code: "+(err.message||String(err));
+  }).ksRevealCustomerAccessCode(id);
+});
 function ksAccessFromForm_(){
  return {
    type:$("ksAccessType").value,
@@ -583,6 +623,7 @@ function ksAccessFromForm_(){
  };
 }
 function ksAccessFormReset_(){
+ ksAccessHideCode_();
  ksAccessLinked=false;
  ksAccessLoaded=true;
  $("ksAccessType").value="";
@@ -592,6 +633,7 @@ function ksAccessFormReset_(){
  $("ksAccessPets").value="";
  $("ksAccessCode").value="";
  $("ksAccessCodeStatus").textContent="No code saved";
+ $("ksAccessReveal").disabled=true;
  $("ksAccessClearCode").checked=false;
  $("ksAccessSaveStatus").textContent="";
  ksAccessToggleKeyQty_();
@@ -623,6 +665,7 @@ function ksAccessFetch_(leadId){
    $("ksAccessPets").value=details?.pets||"";
    $("ksAccessCode").value="";
    $("ksAccessCodeStatus").textContent=details?.hasCode?"Code saved in private Customer Keys register":"No code saved";
+   $("ksAccessReveal").disabled=!details?.hasCode;
    $("ksAccessClearCode").checked=false;
    ksAccessToggleKeyQty_();
    $("ksAccessSaveStatus").textContent=details?.linked?"Linked to Customer Keys: "+details.reference:"No garden access arrangements recorded yet.";
@@ -726,7 +769,7 @@ $('bookConfirm').onclick=()=>{
  }).confirmGardenBooking(payload);
 };
 
-$('add').onclick=()=>openLead(null);$('cancel').onclick=()=>$('modal').classList.remove('show');$('search').oninput=render;$('status').onchange=render;
+$('add').onclick=()=>openLead(null);$('cancel').onclick=()=>{ksAccessHideCode_();$('modal').classList.remove('show')};$('search').oninput=render;$('status').onchange=render;
 $('save').onclick=()=>{
   const obj={id:EDIT,name:$('name').value.trim(),phone:$('phone').value.trim(),email:$('email').value.trim(),
     postcode:$('postcode').value.trim(),address:$('address').value.trim(),service:$('service').value.trim(),
