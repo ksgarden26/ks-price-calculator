@@ -290,6 +290,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 <section class="cards">
 <div class="kpi"><span>New enquiries</span><strong id="kNew">0</strong></div><div class="kpi"><span>Open quotes</span><strong id="kOpen">0</strong></div><div class="kpi"><span>Won</span><strong id="kWon">0</strong></div><div class="kpi"><span>Conversion</span><strong id="kConv">0%</strong></div><div class="kpi"><span>Won value</span><strong id="kVal">£0</strong></div>
 </section>
+<p id="ksCustomerDataStatus" role="alert" hidden style="color:#9c2c34;font-weight:700"></p>
 <section class="panel" id="ksLeadList" aria-label="Customers and follow-ups">
 <div class="ks-list-heading"><button type="button" id="ksBackHome" class="btn">← Home</button><h2 id="ksListTitle">Customers</h2></div>
 <div class="toolbar"><input id="search" placeholder="Search customer, postcode or service"><select id="status"><option value="">All statuses</option><option>New Enquiry</option><option>Contacted</option><option>Site Visit / Photos Needed</option><option>Quote Sent</option><option>Follow-up</option><option>Won</option><option>Lost</option><option>On Hold</option></select></div>
@@ -587,11 +588,38 @@ function ksUpdateHomeCounts(){
   ksUpdateCount_("ksDueCount",DATA.filter(due).length,"due follow-ups");
   ksUpdateCount_("ksAlertsCount",ksOutstandingAlerts_().length,"outstanding alerts");
 }
-function load(){google.script.run.withSuccessHandler(x=>{DATA=x||[];render();if($("ksAlertsModal").classList.contains("show"))ksRenderAlerts_()}).withFailureHandler(err=>toast(err.message||err)).getLeads()}
+function ksLeadById_(id){
+  if(id===null||id===undefined||String(id)==='')return null;
+  const key=String(id),matches=DATA.filter(x=>x.id!==null&&x.id!==undefined&&String(x.id)===key);
+  return matches.length===1?matches[0]:null;
+}
+function ksCustomerLoadFailed_(err){
+  DATA=[];render();
+  const status=$('ksCustomerDataStatus');status.hidden=false;
+  status.textContent='Customers could not be loaded: '+(err.message||String(err));
+  toast('Customer list unavailable. Please refresh or check the message above.');
+}
+function load(){
+  google.script.run.withSuccessHandler(rows=>{
+    try{
+      if(!Array.isArray(rows))throw Error('Unexpected customer list response.');
+      const seen=new Set();
+      const next=rows.map(x=>{
+        if(!x||x.id===null||x.id===undefined||String(x.id)===''||['undefined','null'].includes(String(x.id)))
+          throw Error('A customer has no usable reference. Install CustomerIdentityAddon.gs and refresh.');
+        const id=String(x.id);
+        if(seen.has(id))throw Error('Two customers share the same reference. Please check their Enquiry IDs.');
+        seen.add(id);return {...x,id};
+      });
+      DATA=next;$('ksCustomerDataStatus').hidden=true;render();
+      if($('ksAlertsModal').classList.contains('show'))ksRenderAlerts_();
+    }catch(err){ksCustomerLoadFailed_(err);}
+  }).withFailureHandler(ksCustomerLoadFailed_).getKsLeadsForAdmin();
+}
 function render(){
  const q=$('search').value.toLowerCase().trim(),sf=$('status').value;
  const rows=DATA.filter(x=>{if(NAV==='due'&&!due(x))return false;if(NAV&&NAV!=='due'&&x.status!==NAV)return false;if(sf&&x.status!==sf)return false;return !q||[x.name,x.phone,x.email,x.postcode,x.service].join(' ').toLowerCase().includes(q)});
- $('rows').innerHTML=rows.map(x=>`<tr><td>${d(x.date)}</td><td><b>${esc(x.name)}</b><br><small>${esc(x.phone)}</small></td><td>${esc(x.service||'—')}</td><td>${esc(x.postcode||'—')}</td><td>${gbp(x.guide)}</td><td>${gbp(x.actual)}</td><td><span class="badge ${x.status.toLowerCase().replaceAll(' ','-')}">${esc(x.status)}</span></td><td>${due(x)?'⚠️ ':''}${d(x.follow)}</td><td>${esc(x.source||'—')}</td><td><button class="btn" onclick="openLead('${x.id}')">Open</button></td></tr>`).join('');
+ $('rows').innerHTML=rows.map(x=>`<tr><td>${d(x.date)}</td><td><b>${esc(x.name)}</b><br><small>${esc(x.phone)}</small></td><td>${esc(x.service||'—')}</td><td>${esc(x.postcode||'—')}</td><td>${gbp(x.guide)}</td><td>${gbp(x.actual)}</td><td><span class="badge ${x.status.toLowerCase().replaceAll(' ','-')}">${esc(x.status)}</span></td><td>${due(x)?'⚠️ ':''}${d(x.follow)}</td><td>${esc(x.source||'—')}</td><td><button class="btn" type="button" data-ks-lead="${esc(x.id)}">Open</button></td></tr>`).join('');
 
  $("ksMobileLeads").innerHTML=rows.length?rows.map(x=>
    '<article class="ks-lead-card"><b>'+esc(x.name)+'</b><p>'+esc(x.service||"Garden enquiry")+' · '+esc(x.postcode||"No postcode")+'</p><p>'+esc(x.status||"New Enquiry")+'</p>'+
@@ -817,7 +845,11 @@ $("ksInvoiceCopy").onclick=async()=>{
 };
 
 function openLead(id){
-  const x=DATA.find(a=>a.id===id)||{};EDIT=id||null;
+  const isNew=id===null||id===undefined;
+  const lead=isNew?null:ksLeadById_(id);
+  if(!isNew&&!lead){toast('Customer reference is missing or ambiguous. Refresh the customer list.');return false;}
+  id=isNew?null:String(lead.id);
+  const x=lead||{};EDIT=id;
   $('mtitle').textContent=id?'Edit enquiry':'New enquiry';
   ['name','phone','email','postcode','address','service','guide','actual','follow','source','lostReason','notes']
     .forEach(k=>$(k).value=x[k]||'');
@@ -840,13 +872,14 @@ function openLead(id){
     $('save').disabled=false;
     toast('Customer preferences unavailable: '+(e.message||e));
   }).getKsCustomerPreferences(id);
+  return true;
 }
 window.openLead=openLead;
 
 let BOOKING_REFERENCE=null, BOOKING_KIND="job";
 function ksOpenConfirmBooking(kind="job"){
  if(!EDIT){toast('Save the customer record first, then confirm the booking.');return;}
- const lead=DATA.find(x=>x.id===EDIT);
+ const lead=ksLeadById_(EDIT);
  if(!lead){toast('Refresh the CRM and open the customer again.');return;}
  if(!lead.name){toast('Customer name required.');return;}
  BOOKING_KIND=kind==="quote"?"quote":"job";
@@ -878,13 +911,13 @@ $('confirmBookingBtn').onclick=()=>ksOpenConfirmBooking("job");
 $('quoteVisitBtn').onclick=()=>ksOpenConfirmBooking("quote");
 $('bookFrequency').onchange=ksBookingCountToggle;
 $('bookContact').onchange=()=>{
-  const emailAllowed=$('bookContact').value==='email' && !!(DATA.find(x=>x.id===EDIT)||{}).email;
+  const emailAllowed=$('bookContact').value==='email' && !!(ksLeadById_(EDIT)||{}).email;
   $('bookInvite').disabled=!emailAllowed;
   if(!emailAllowed)$('bookInvite').checked=false;
 };
 $('bookCancel').onclick=()=>{$('bookingModal').classList.remove('show');$('bookingModal').setAttribute('aria-hidden','true');};
 $('bookConfirm').onclick=()=>{
- const btn=$('bookConfirm'),lead=DATA.find(x=>x.id===EDIT);
+ const btn=$('bookConfirm'),lead=ksLeadById_(EDIT);
  if(!lead||!BOOKING_REFERENCE){$('bookStatus').textContent='Please reopen the customer booking.';return;}
  const payload={bookingId:BOOKING_REFERENCE,leadId:lead.id,kind:BOOKING_KIND,contactMethod:$('bookContact').value,date:$('bookDate').value,
    start:$('bookStart').value,end:$('bookEnd').value,frequency:$('bookFrequency').value,
@@ -959,7 +992,7 @@ $('save').onclick=()=>{
 /* Owner-only enquiry deletion with mobile-friendly confirmation and actual server result checking. */
 let KS_DELETE_SELECTED=null;
 $("del").onclick=()=>{
-  const lead=DATA.find(x=>String(x.id)===String(EDIT));
+  const lead=ksLeadById_(EDIT);
   if(!lead){toast("Open a saved customer enquiry first.");return;}
   KS_DELETE_SELECTED={id:String(lead.id),name:String(lead.name)};
   $("ksDeleteTitle").textContent="Delete "+lead.name+"?";
@@ -1122,10 +1155,11 @@ function ksQuickClosePicker(){
 $("ksQuickPickCancel").onclick=ksQuickClosePicker;
 $("ksQuickPickContinue").onclick=()=>{
   const id=$("ksQuickPickSelect").value;
-  if(!DATA.some(x=>String(x.id)===id)){toast("Please choose a customer.");return;}
-  ksQuickClosePicker();
-  openLead(id);
+  if(!ksLeadById_(id)){toast("Please choose a customer with a unique reference.");return;}
+  if(!openLead(id))return;
   ksOpenConfirmBooking(ksQuickBookingKind);
+  if(!$("bookingModal").classList.contains("show"))return;
+  ksQuickClosePicker();
   $("modal").classList.remove("show");
 };
 $("ksQuickAdd").onclick=()=>$("add").click();
@@ -1137,6 +1171,10 @@ $("ksQuickCheckin").onclick=()=>$("ksCheckinOpen").click();
 $("ksQuickPlant").onclick=()=>$("ksPlantOpen").click();
 $("ksQuickCalendar").onclick=()=>window.open("https://calendar.google.com/calendar/u/0/r","_blank","noopener,noreferrer");
 // The Alerts tile opens the in-app alerts panel directly.
+$("rows").addEventListener("click",e=>{
+  const button=e.target.closest("button[data-ks-lead]");
+  if(button)openLead(button.getAttribute("data-ks-lead"));
+});
 $("ksMobileLeads").addEventListener("click",e=>{
   const button=e.target.closest("button[data-ks-lead]");
   if(button)openLead(button.getAttribute("data-ks-lead"));
