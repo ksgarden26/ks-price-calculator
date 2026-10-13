@@ -367,7 +367,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
   </div>
 </div>
 
-<div id="modal" class="modalback"><div class="modal"><h2 id="mtitle">Enquiry</h2><div class="grid">
+<div id="modal" class="modalback"><div class="modal"><h2 id="mtitle">Enquiry</h2><p id="ksProfileStatus" role="status" aria-live="polite" style="color:#9c2c34;font-weight:700" hidden></p><div class="grid">
 <div class="field full ks-name-section">
   <h3 class="ks-name-heading">Customer name</h3>
   <div class="ks-name-fields">
@@ -503,7 +503,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 <p id="bookingHelp" style="background:#eef5ef;padding:12px;border-radius:9px;font-size:14px">This action adds an appointment to your Google Calendar.</p>
 <div class="grid">
 <div class="field"><label>First confirmed date<input id="bookDate" type="date" required></label></div>
-<div class="field"><label>Frequency<select id="bookFrequency"><option value="once">One-off visit</option><option value="1">Weekly maintenance</option><option value="2">Every 2 weeks</option><option value="3">Every 3 weeks</option><option value="4">Every 4 weeks</option><option value="monthly">Monthly</option></select></label></div>
+<div class="field" id="bookFrequencyField"><label>Frequency<select id="bookFrequency"><option value="once">One-off visit</option><option value="1">Weekly maintenance</option><option value="2">Every 2 weeks</option><option value="3">Every 3 weeks</option><option value="4">Every 4 weeks</option><option value="monthly">Monthly</option></select></label></div>
 <div class="field"><label>Start of visit window<input id="bookStart" type="time" value="08:00"></label></div>
 <div class="field"><label>End of visit window<input id="bookEnd" type="time" value="12:00"></label></div>
 <div class="field" id="bookCountField"><label>Number of planned visits<input id="bookCount" type="number" min="2" max="52" step="1" value="8"></label></div>
@@ -738,8 +738,10 @@ function ksAccessFetch_(leadId){
    $("ksAccessSaveStatus").textContent=details?.linked?"Linked to Customer Keys: "+details.reference:"No garden access arrangements recorded yet.";
  }).withFailureHandler(err=>{
    if(String(EDIT)!==String(leadId))return;
-   ksAccessLoaded=true;
-   $("ksAccessSaveStatus").textContent="Key register could not load: "+(err.message||String(err))+". Install CustomerAccessAddon.gs in your private Apps Script.";
+   ksAccessLoaded=false;
+   $("ksAccessSaveStatus").textContent="Garden access details could not be loaded. Saving is paused to protect existing information.";
+   ksProfileIssue_('Garden access details are unavailable; the customer profile is still available.');
+   console.warn('Customer access unavailable',err);
  }).ksGetCustomerAccess(leadId);
 }
 /* Keep the full CRM name for existing booking/search logic, but give the
@@ -844,15 +846,21 @@ $("ksInvoiceCopy").onclick=async()=>{
     :"Copy not allowed by this browser. Long-press the invoice name displayed above to copy it.";
 };
 
+function ksProfileIssue_(message){
+  const status=$('ksProfileStatus');
+  status.hidden=false;
+  status.textContent=[status.textContent,message].filter(Boolean).join(' ');
+}
 function openLead(id){
   const isNew=id===null||id===undefined;
   const lead=isNew?null:ksLeadById_(id);
   if(!isNew&&!lead){toast('Customer reference is missing or ambiguous. Refresh the customer list.');return false;}
   id=isNew?null:String(lead.id);
   const x=lead||{};EDIT=id;
-  $('mtitle').textContent=id?'Edit enquiry':'New enquiry';
+  $('mtitle').textContent=id?'Customer profile':'New customer';
+  $('ksProfileStatus').textContent='';$('ksProfileStatus').hidden=true;
   ['name','phone','email','postcode','address','service','guide','actual','follow','source','lostReason','notes']
-    .forEach(k=>$(k).value=x[k]||'');
+    .forEach(k=>$(k).value=x[k]??'');
   ksLoadLeadName_(x.name||'');
   $('leadStatus').value=x.status||'New Enquiry';
   $('source').value=x.source||'Website';
@@ -861,17 +869,33 @@ function openLead(id){
   $('quoteVisitBtn').style.display=id?'inline-flex':'none';
   ksApplyCustomerPreferences(null);
   ksAccessFormReset_();
-  if(id)ksAccessFetch_(id);
   $('save').disabled=!!id;
+  // Show core customer details before requesting separate preferences/keys.
+  // Apps Script omits RPC methods for add-ons that are not installed/deployed.
   $('modal').classList.add('show');
-  if(id)google.script.run.withSuccessHandler(prefs=>{
-    if(EDIT!==id)return;
-    ksApplyCustomerPreferences(prefs);$('save').disabled=false;
-  }).withFailureHandler(e=>{
-    if(EDIT!==id)return;
-    $('save').disabled=false;
-    toast('Customer preferences unavailable: '+(e.message||e));
-  }).getKsCustomerPreferences(id);
+  $('modal').setAttribute('aria-hidden','false');
+  if(id){
+    try{
+      ksAccessFetch_(id);
+    }catch(error){
+      ksAccessLoaded=false;
+      $('ksAccessSaveStatus').textContent='Garden access details are unavailable. Saving is paused to protect existing information.';
+      ksProfileIssue_('Garden access details could not be loaded; the customer profile is still available.');
+      console.warn('Customer access unavailable',error);
+    }
+    const failed=error=>{
+      if(EDIT!==id)return;
+      $('save').disabled=true;
+      ksProfileIssue_('Communication preferences could not be loaded. Saving is paused to protect existing information.');
+      console.warn('Customer preferences unavailable',error);
+    };
+    try{
+      google.script.run.withSuccessHandler(prefs=>{
+        if(EDIT!==id)return;
+        ksApplyCustomerPreferences(prefs);$('save').disabled=false;
+      }).withFailureHandler(failed).getKsCustomerPreferences(id);
+    }catch(error){failed(error);}
+  }
   return true;
 }
 window.openLead=openLead;
@@ -893,7 +917,8 @@ function ksOpenConfirmBooking(kind="job"){
  $('bookStatus').textContent='';
  $('bookDate').value='';
  $('bookStart').value='08:00';
- $('bookEnd').value='12:00';
+ $('bookEnd').value=BOOKING_KIND==="quote"?'08:30':'12:00';
+ $('bookFrequencyField').hidden=BOOKING_KIND==="quote";
  $('bookFrequency').value='once';
  $('bookFrequency').disabled=BOOKING_KIND==="quote";
  $('bookCount').value=8;
