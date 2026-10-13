@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Appointments & Calendar | KS Garden Services</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1d3525;background:#f6f8f5;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;padding:12px 2px 28px}main{max-width:1030px;margin:auto}
+h1{font-size:clamp(26px,3vw,37px);letter-spacing:-.035em;margin:5px 0 8px}h2{font-size:20px;margin:0 0 16px}
+p{line-height:1.55;color:#516456}.eyebrow{font-weight:800;letter-spacing:.13em;font-size:11px;color:#35754b;margin:0}
+.panel{background:#fff;border:1px solid #dce7df;box-shadow:0 4px 24px #24452d0a;border-radius:17px;padding:clamp(18px,3vw,27px);margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+label{display:block;font-size:13px;font-weight:750;color:#294732}
+label input,label select,label textarea{font:inherit;color:#1d3525;background:#fff;border:1px solid #b9cabd;border-radius:9px;width:100%;min-height:45px;padding:11px;margin-top:7px}
+label textarea{min-height:80px}input:focus,select:focus,textarea:focus{outline:2px solid #4f9468;outline-offset:1px}
+.wide{grid-column:1/-1}.note{padding:14px;border-radius:12px;background:#eff5f0;font-size:14px;line-height:1.5;color:#455f4e;margin:16px 0}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 7px}
+button,.button{font:inherit;border-radius:10px;background:#244b36;color:#fff;border:1px solid #244b36;font-weight:800;padding:13px 17px;cursor:pointer;font-size:14px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+button.secondary,.button.secondary{color:#244b36;background:#fff;border-color:#a6bdb0}
+button:disabled{opacity:.4;cursor:not-allowed}
+#appointmentStatus{font-size:14px;min-height:24px;color:#23663d;font-weight:650}
+#appointmentSummary{font-weight:700;color:#244b36}.hidden{display:none!important}
+small{font-size:12px;color:#5c7161}
+@media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.actions>*{flex:1 1 100%}body{padding:7px 0 20px}}
+</style><script defer src="appointment-calendar.js"></script></head>
+<body><main>
+<p class="eyebrow">KS GARDEN SERVICES · CUSTOMER CARE</p><h1>Appointment calendar</h1>
+<p>Prepare a calendar invitation for a single job or a confirmed regular maintenance schedule. Nothing is saved or sent until you choose to share it.</p>
+<form id="appointmentForm" class="panel">
+<h2>Visit details</h2><div class="grid">
+<label>Customer's first name (for message only)<input name="customer" maxlength="80" placeholder="e.g. Abbie"></label>
+<label>Service<select name="service"><option>Regular garden maintenance</option><option>Garden tidy-up</option><option>Hedge cutting</option><option>Lawn care</option><option>Pressure washing</option><option>Garden clearance</option><option>Other agreed garden work</option></select></label>
+<label>First confirmed visit date<input name="date" type="date" required></label>
+<label>Visit window<select name="window"><option value="morning">Morning (8:00–12:00)</option><option value="afternoon">Afternoon (12:00–17:00)</option><option value="day">Daytime (8:00–17:00)</option><option value="exact">Agreed times (enter below)</option></select></label>
+<label id="startLabel" class="hidden">Agreed start time<input name="start" type="time" value="09:00"></label>
+<label id="endLabel" class="hidden">Agreed end time<input name="end" type="time" value="10:00"></label>
+<label class="wide">Job address (optional — appears only in the customer's invite)<input name="address" maxlength="230" placeholder="Customer's property address"></label>
+</div><h2 style="margin-top:24px">Repeat schedule</h2>
+<div class="grid">
+<label>How often?<select name="frequency">
+<option value="once">One-off visit</option>
+<option value="1">Every week</option>
+<option value="2">Every 2 weeks (fortnightly)</option>
+<option value="3">Every 3 weeks</option>
+<option value="4">Every 4 weeks</option>
+<option value="monthly">Monthly (same calendar date)</option>
+</select></label>
+<label id="countLabel" class="hidden">Number of visits in this calendar series<input name="count" type="number" min="2" max="52" step="1" value="8"></label>
+</div>
+<div class="note" id="repeatNote">One-off: the customer will see a single booking in their calendar.</div>
+<div class="note"><strong>Appointment reminder:</strong> the calendar file includes a reminder 24 hours beforehand. Visit times are planned windows, not guaranteed arrival times. Weather and diary changes still need separate customer communication; downloaded calendar files do not update automatically.</div>
+</form>
+<section class="panel">
+<h2>Prepare & share</h2><p id="appointmentSummary">Choose a date to prepare the calendar appointment.</p>
+<div class="actions">
+<button id="downloadInvite" type="button">Download calendar invite (.ics)</button>
+<button id="shareInvite" class="secondary" type="button">Share invite from phone</button>
+<button id="googleInvite" class="secondary" type="button">Open in Google Calendar</button>
+<button id="copyConfirmation" class="secondary" type="button">Copy confirmation message</button>
+<button id="resetAppointment" class="secondary" type="button">New appointment</button>
+</div>
+<p id="appointmentStatus" role="status" aria-live="polite"></p>
+<small>Apple Calendar, Outlook and Google Calendar can import the .ics file. For regular maintenance, the repeat schedule is included in that file. When sharing by email or WhatsApp, check the recipient and attachment before sending. This tool does not send reminders automatically or sync subsequent schedule changes.</small>
+</section></main></body></html>
