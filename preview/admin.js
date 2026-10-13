@@ -29,7 +29,7 @@ async function api(path,method="GET",payload){
 function tab(name){
   currentTab=name;
   document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===name)));
-  for(const t of ["reviews","photos","news","quotes"])$("tab-"+t).hidden=t!==name;
+  for(const t of ["reviews","photos","news","quotes","newsletter"])$("tab-"+t).hidden=t!==name;
   window.location.hash=name;
 }
 async function session(){
@@ -40,6 +40,7 @@ async function reload(){
   if(currentTab==="reviews")await loadReviews();
   if(currentTab==="photos")await loadPhotos();
   if(currentTab==="news")await loadNews();
+  if(currentTab==="newsletter")await loadNewsletter();
   if(currentTab==="quotes")document.getElementById("ksQuoteFrame")?.contentWindow?.postMessage({type:"ks-refresh-quotes"},location.origin);
 }
 loginForm.addEventListener("submit",async event=>{
@@ -58,7 +59,7 @@ document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",as
   alertStatus("");
   try{await reload()}catch(e){alertStatus(e.message,true)}
 }));
-if(["reviews","news","photos","quotes"].includes(location.hash.slice(1)))tab(location.hash.slice(1));
+if(["reviews","news","photos","quotes","newsletter"].includes(location.hash.slice(1)))tab(location.hash.slice(1));
 
 function makeReview(r,legacy=false){
   const card=element("article","ks-admin-card");
@@ -232,5 +233,18 @@ window.addEventListener("message",e=>{
     document.getElementById("ksQuoteFrame").style.height=Math.max(750,Math.min(7000,e.data.height+12))+"px";
   }
 });
+async function loadNewsletter(){
+  const count=$("ksNewsletterCount"),status=$("ksNewsletterConnection"),last=$("ksNewsletterLastIssue");
+  count.textContent="—";status.textContent="Checking Brevo…";last.textContent="";
+  try{
+    const result=await api("/api/admin/newsletter/stats");
+    if(!result.connected){status.textContent="Brevo newsletter is not connected yet. Signup is disabled until configured.";return;}
+    count.textContent=Number(result.count||0).toLocaleString("en-GB");
+    status.textContent=result.autoSendEnabled?"Connected · Sunday sending enabled":"Connected · automatic Sunday sending not enabled yet";
+    if(result.lastIssue)last.textContent="Last run: "+result.lastIssue.issue_date+" · "+result.lastIssue.status;
+    else last.textContent="No newsletter campaigns have been sent yet.";
+  }catch(error){status.textContent=error.message||"Subscriber count currently unavailable.";}
+}
+$("ksNewsletterRefresh")?.addEventListener("click",loadNewsletter);
 session();
 })();
