@@ -28,3 +28,18 @@ REVIEW_ADMIN_URL = "https://ksgardenservices.co.uk/review-admin.html"
 # [[routes]]
 # pattern = "www.ksgardenservices.co.uk/api/*"
 # zone_name = "ksgardenservices.co.uk"
+
+# Sunday 08:00 UTC (08:00 GMT / 09:00 BST). Runs are safe until fully configured.
+[triggers]
+crons = ["0 8 * * SUN"]
+
+# Newsletter needs Cloudflare secrets BREVO_API_KEY and BREVO_DOI_TEMPLATE_ID,
+# plus the Brevo list id, verified sender, and optional news JSON URL below.
+# Keep automatic sending off until setup and a successful test.
+# BREVO_API_KEY must be set using `wrangler secret put BREVO_API_KEY`.
+# Append to [vars] above when ready:
+# BREVO_LIST_ID = "YOUR_LIST_ID"
+# BREVO_DOI_TEMPLATE_ID = "YOUR_TEMPLATE_ID"
+# BREVO_SENDER_EMAIL = "info@ksgardenservices.co.uk"
+# NEWSLETTER_AUTO_SEND = "false"
+# NEWSLETTER_NEWS_JSON_URL = "https://ksgardenservices.co.uk/news-data.json"
