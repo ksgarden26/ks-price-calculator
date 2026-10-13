@@ -86,7 +86,7 @@ function monthlyTip(month){
 async function recentArticles(env,now){
   let combined=[];
   if(env.DB){
-    const db=await env.DB.prepare("SELECT id,title,category,body,image_url,source_url,created_at,updated_at,published FROM news_posts WHERE published=1 ORDER BY created_at DESC LIMIT 80").all();
+    const db=await env.DB.prepare("SELECT id,title,category,body,image_url,source_url,created_at,updated_at,published FROM news_posts ORDER BY created_at DESC LIMIT 80").all();
     combined.push(...(db.results||[]));
   }
   const source=env.NEWSLETTER_NEWS_JSON_URL||"https://ksgardenservices.co.uk/news-data.json";
@@ -94,8 +94,9 @@ async function recentArticles(env,now){
     try{const r=await fetch(source,{headers:{"accept":"application/json"}});if(r.ok){const json=await r.json();if(Array.isArray(json.articles))combined.push(...json.articles)}}catch(e){console.warn("Newsletter seed fetch failed:",String(e))}
   }
   const articles=new Map();
-  for(const a of combined)if(a&&a.id&&a.title&&a.body&&a.published!==0&&a.published!==false)articles.set(a.id,a);
-  return [...articles.values()].filter(a=>{
+  // The private owner dashboard overrides the static archive, including unpublishing a seed article.
+  for(const a of combined.reverse())if(a&&a.id)articles.set(a.id,a);
+  return [...articles.values()].filter(a=>a.title&&a.body&&a.published!==0&&a.published!==false).filter(a=>{
     const time=Date.parse(a.created_at||a.updated_at||"");
     return Number.isFinite(time)&&time<=now&&time>=now-7*86400000;
   }).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at))).slice(0,5);
