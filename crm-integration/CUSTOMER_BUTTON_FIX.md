@@ -2,6 +2,8 @@ KS Garden Services — customer profile and booking repair
 
 Status: tested with fictional data; not applied to the live Apps Script project.
 
+13 October profile-opening update: if you installed the previous ID fix, replace only Index and redeploy the existing private admin deployment as a New version. Keep CustomerIdentityAddon in place; no ID repair rerun is needed. Customer profiles now open before separate access/preferences requests. Unavailable details show a visible message, and saving remains blocked where needed to protect saved information. Quote visits hide maintenance frequency and default to a 30-minute visit; agreed jobs keep maintenance scheduling.
+
 Install in the existing PRIVATE admin Apps Script project:
 1. Replace the contents of the HTML file named Index with Index.html from this package.
 2. Add a Script file named CustomerIdentityAddon and paste CustomerIdentityAddon.gs into it.
