@@ -14,7 +14,7 @@
 nav{display:grid;gap:7px;margin-top:20px}nav button{border:0;background:transparent;color:#d6e3d9;padding:12px;text-align:left;border-radius:10px;cursor:pointer}nav button.active,nav button:hover{background:#ffffff18;color:white}
 main{padding:26px;min-width:0}header{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px}h1{margin:0;color:var(--g)}header p{margin:5px 0 0;color:var(--muted)}.actions{display:flex;gap:9px;flex-wrap:wrap}
 .btn{border:1px solid var(--line);background:white;color:var(--g);border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer}.btn.primary{background:var(--g2);color:white;border-color:var(--g2)}.btn.danger{color:var(--red)}
-.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:18px}.kpi{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 7px 20px #173d2510}.kpi span{font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700}.kpi strong{display:block;color:var(--g);font-size:27px;margin-top:8px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:18px}.kpi{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 7px 20px #173d2510}.kpi span{font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:700}.kpi strong{display:block;color:var(--g);font-size:27px;margin-top:8px}
 .panel{background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 7px 20px #173d2510}.toolbar{padding:14px;display:flex;gap:10px;justify-content:space-between;border-bottom:1px solid var(--line);flex-wrap:wrap}.toolbar input,.toolbar select{padding:10px 11px;border:1px solid #ccd8ce;border-radius:9px}
 .tablewrap{overflow:auto}table{width:100%;min-width:1080px;border-collapse:collapse}th,td{padding:12px 13px;border-bottom:1px solid #edf1ed;text-align:left;font-size:13px}th{background:#f8faf8;color:#536158;font-size:11px;text-transform:uppercase}tr:hover td{background:#fbfcfb}.badge{display:inline-block;padding:6px 9px;border-radius:999px;font-weight:700;font-size:11px;background:#edf4ee;color:var(--g2)}.won{background:#e2f5e6;color:#1b6c31}.lost{background:#fde8e8;color:#993434}.follow-up{background:#fff1cc;color:#805c00}.quote-sent{background:#e8f1ff;color:#315d99}
 .empty{padding:42px;text-align:center;color:var(--muted)}.empty b{display:block;color:var(--g);font-size:18px;margin-bottom:7px}
@@ -274,7 +274,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
   <div class="ks-tiles">
     <button type="button" class="ks-tile ks-tile-featured" id="ksQuickAdd"><span class="ks-tile-icon" aria-hidden="true">✚</span><strong>New enquiry</strong><small>Add a customer or new job</small></button>
     <button type="button" class="ks-tile" id="ksQuickSendForm"><span class="ks-tile-icon" aria-hidden="true">📨</span><strong>Send customer form</strong><small>WhatsApp, text or email</small></button>
-    <button type="button" class="ks-tile" id="ksQuickCustomers"><span class="ks-tile-icon" aria-hidden="true">👥</span><strong>Customers</strong><small>Find and update records</small></button>
+    <button type="button" class="ks-tile" id="ksQuickCustomers"><span id="ksCustomersCount" class="ks-count" hidden></span><span class="ks-tile-icon" aria-hidden="true">👥</span><strong>Customers</strong><small>Find and update records</small></button>
     <button type="button" class="ks-tile" id="ksQuickCRM"><span class="ks-tile-icon" aria-hidden="true">📊</span><strong>CRM Dashboard</strong><small>All enquiries, quotes and figures</small><span class="ks-count" id="ksNewCount" hidden aria-label="New enquiries"></span></button>
     <button type="button" class="ks-tile" id="ksQuickQuote"><span class="ks-tile-icon" aria-hidden="true">📋</span><strong>Quote visit</strong><small>Book a garden assessment</small></button>
     <button type="button" class="ks-tile ks-tile-featured" id="ksQuickBook"><span class="ks-tile-icon" aria-hidden="true">📅</span><strong>Book a job</strong><small>One-off or regular maintenance</small></button>
@@ -288,6 +288,7 @@ border:1px solid #bfd2c4;background:#fff;border-radius:9px;padding:11px}
 </section>
 
 <section class="cards">
+<div class="kpi"><span>Customer records</span><strong id="kCustomers">0</strong></div>
 <div class="kpi"><span>New enquiries</span><strong id="kNew">0</strong></div><div class="kpi"><span>Open quotes</span><strong id="kOpen">0</strong></div><div class="kpi"><span>Won</span><strong id="kWon">0</strong></div><div class="kpi"><span>Conversion</span><strong id="kConv">0%</strong></div><div class="kpi"><span>Won value</span><strong id="kVal">£0</strong></div>
 </section>
 <p id="ksCustomerDataStatus" role="alert" hidden style="color:#9c2c34;font-weight:700"></p>
@@ -584,6 +585,8 @@ function ksUpdateCount_(id,count,label) {
   node.setAttribute("aria-label",n+" "+label);
 }
 function ksUpdateHomeCounts(){
+  ksUpdateCount_("ksCustomersCount",DATA.length,"customer records");
+  $("kCustomers").textContent=String(DATA.length);
   ksUpdateCount_("ksNewCount",DATA.filter(x=>x.status==="New Enquiry").length,"new enquiries");
   ksUpdateCount_("ksDueCount",DATA.filter(due).length,"due follow-ups");
   ksUpdateCount_("ksAlertsCount",ksOutstandingAlerts_().length,"outstanding alerts");
