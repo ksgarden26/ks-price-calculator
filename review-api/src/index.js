@@ -1,3 +1,4 @@
+import {handleNewsletter,sendWeeklyNewsletter} from "./newsletter.js";
 // KS Garden Services review API — Cloudflare Worker + D1.
 // Configure DB, SESSION_SECRET, ADMIN_PASSWORD and RESEND_API_KEY before deploying.
 const COOKIE = "ks_review_session";
@@ -71,10 +72,11 @@ function publicReview(r) {
   return {id:r.id,name:r.name,rating:r.rating,message:r.message,created_at:r.created_at,owner_reply:r.owner_reply,replied_at:r.replied_at};
 }
 async function handle(request,env) {
-  if(!env.DB || !env.SESSION_SECRET) return response({error:"Review system not configured."},503);
   const url=new URL(request.url);
   const path=url.pathname.replace(/\/+$/,"");
   const method=request.method;
+  if(path.startsWith("/api/newsletter/") || path==="/api/admin/newsletter/stats") return handleNewsletter(request,env,userSession);
+  if(!env.DB || !env.SESSION_SECRET) return response({error:"Review system not configured."},503);
   if(method==="GET" && path==="/api/reviews") {
     const result=await env.DB.prepare("SELECT id,name,rating,message,created_at,owner_reply,replied_at FROM reviews ORDER BY created_at DESC LIMIT 150").all();
     return response({reviews:(result.results||[]).map(publicReview)});
@@ -301,6 +303,9 @@ async function handle(request,env) {
   return response({error:"Not found."},404);
 }
 export default {
+  async scheduled(event,env,ctx) {
+    ctx.waitUntil(sendWeeklyNewsletter(env).then(out=>console.log("KS Garden Weekly",out.status)).catch(err=>console.error("KS Garden Weekly schedule failed",err)));
+  },
   async fetch(request, env) {
     try { return await handle(request,env); }
     catch(error) { console.error("Review API error",error); return response({error:"The review system is temporarily unavailable."},500); }
