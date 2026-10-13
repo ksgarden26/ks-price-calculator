@@ -22,7 +22,7 @@
 <main class="ks-admin-main">
   <section id="adminLogin" class="ks-admin-login">
     <p class="eyebrow">PRIVATE ACCESS</p><h1>Your website, one place.</h1>
-    <p>Sign in to manage customer reviews, garden photos, news and customer quotes.</p>
+    <p>Sign in to manage customer reviews, garden photos, news, newsletter subscribers and customer quotes.</p>
     <form id="adminLoginForm" class="ks-admin-panel">
       <label for="adminPassword">Owner password</label>
       <input id="adminPassword" type="password" autocomplete="current-password" required minlength="16" placeholder="Your secure password">
@@ -41,6 +41,7 @@
       <button type="button" data-tab="photos" aria-selected="false"> <span aria-hidden="true">▧</span> Photos</button>
       <button type="button" data-tab="news" aria-selected="false"> <span aria-hidden="true">✎</span> News & advice</button>
       <button type="button" data-tab="quotes" aria-selected="false"> <span aria-hidden="true">▤</span> Quotes & measuring</button>
+      <button type="button" data-tab="newsletter" aria-selected="false"><span aria-hidden="true">✉</span> Newsletter</button>
     </nav>
     <p id="globalStatus" class="ks-admin-status" role="status" aria-live="polite"></p>
     <div id="tab-reviews" class="ks-admin-section">
@@ -61,6 +62,18 @@
       </div>
       <div id="adminPhotoList" class="ks-admin-grid"></div>
       <p class="ks-admin-subnote">Previously uploaded GitHub gallery photos can still be managed in the <a href="gallery-manager/" target="_blank" rel="noopener">existing Gallery Manager</a>. Photos uploaded here use the new owner login.</p>
+    </div>
+    <div id="tab-newsletter" class="ks-admin-section" hidden>
+      <div class="ks-admin-section-head"><div><h2>The KS Garden Weekly</h2><p>Monitor confirmed newsletter subscribers and the Sunday email schedule. Subscribers are managed privately by Brevo, not in your customer CRM.</p></div><a href="newsletter.html" target="_blank" rel="noopener">View signup page ↗</a></div>
+      <div class="ks-admin-panel">
+        <p class="eyebrow">CONFIRMED SUBSCRIBERS</p>
+        <h2 id="ksNewsletterCount" style="font-size:clamp(42px,7vw,64px);margin:6px 0">—</h2>
+        <p id="ksNewsletterConnection" class="ks-admin-muted">Checking newsletter connection…</p>
+        <p id="ksNewsletterLastIssue" class="ks-admin-muted"></p>
+        <button class="btn outline" id="ksNewsletterRefresh" type="button">Refresh subscriber count</button>
+        <p class="ks-admin-subnote">The subscriber count comes from the Brevo newsletter mailing list after email confirmation. It does not include everyone in your CRM.</p>
+        <p class="ks-admin-subnote">Automatic weekly sending remains disabled until your Brevo account, double opt-in template, sender verification and a test email are configured.</p>
+      </div>
     </div>
     <div id="tab-quotes" class="ks-admin-section" hidden>
       <div class="ks-admin-section-head"><div><h2>Quotes & driveway measuring</h2><p>Measure awkward areas, plan cleaning materials, and prepare professional quotes for customers.</p></div><a href="quote-builder.html" target="_blank" rel="noopener">Open full screen ↗</a></div>
