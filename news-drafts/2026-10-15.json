@@ -1,0 +1,62 @@
+{
+  "status": "DRAFT_ONLY_NOT_PUBLISHED",
+  "checked_at": "2026-10-15T08:46:00Z",
+  "compared_against": "preview/news-data.json as of 15 October 2026",
+  "articles": [
+    {
+      "id": "defra-bird-populations-2026",
+      "title": "UK Bird Numbers Fall 19%: Five Ways Gardens Can Help",
+      "category": "Wildlife & gardening",
+      "created_at": "2026-10-15T08:46:00Z",
+      "published": 0,
+      "body": "New figures published by Defra on 13 October show that the UK's breeding bird indicator has fallen by 19% since 1970. Farmland and woodland birds have experienced major long-term declines, with renewed pressure on several groups in recent years. The figures measure changes in a basket of species, rather than a count of every bird in the country.\n\nLocal gardeners can make small but useful changes: keep some seedheads and berry-bearing shrubs through winter, grow varied plants, retain safe shelter, and keep bird water clean. Avoid removing all the cover from borders during autumn tidy-ups. A wildlife-friendly garden can still look cared for.\n\nKS Garden Services tip: Clear paths and lawns where needed, but leave selected stems and sheltered corners for wildlife.",
+      "source_url": "https://www.gov.uk/government/statistics/wild-bird-populations-in-the-uk/wild-bird-populations-in-the-uk-and-england-1970-to-2025",
+      "image_suggestion": "Original photograph of a UK robin or blue tit in a garden hedge; alternatively, properly licensed bird photography from a wildlife charity.",
+      "source_date": "2026-10-13"
+    },
+    {
+      "id": "rhs-climate-benefits-garden-trees-2026",
+      "title": "RHS Research: Which Garden Trees Offer the Best Climate Benefits?",
+      "category": "RHS news & plant advice",
+      "created_at": "2026-10-15T08:45:00Z",
+      "published": 0,
+      "body": "New research released on 12 October by the RHS and tree nursery Frank P Matthews tested 19 popular garden trees for benefits such as cooling, shelter, rain interception and wildlife support. Every tree provided a measurable benefit in at least one area. Callery pear 'Chanticleer', flowering cherry 'Fugenzō' and red maple 'Brandywine' performed strongly for cooling; Italian cypress 'Garda' stood out for rainfall interception and screening.\n\nThe cooling measurements were taken with irrigated trees, so performance may differ in dry soil. Choose a tree for its mature size, roots, soil requirements and the space available, not simply for one research result.\n\nKS Garden Services tip: Autumn is a good time to plan tree planting, but wait until soil conditions are suitable and make room for the eventual canopy.",
+      "source_url": "https://www.frankpmatthews.com/news/garden-trees-for-the-future/",
+      "image_suggestion": "Original garden photograph of a small flowering cherry or autumn-coloured ornamental tree; label the exact cultivar only if verified.",
+      "source_date": "2026-10-12"
+    },
+    {
+      "id": "st-helens-potato-festival-oct17-2026",
+      "title": "St Helens Great Potato Festival Returns This Saturday",
+      "category": "Local gardening news",
+      "created_at": "2026-10-15T08:44:00Z",
+      "published": 0,
+      "body": "Chester Lane Library in St Helens is hosting the Great Potato Festival on Saturday 17 October, from 11am to 3.30pm. The free community event brings together local growers, performers and families for a celebration of the humble spud, with potato printing, crafts, games and activities.\n\nIt is a timely reminder that growing vegetables can be sociable, affordable and enjoyable for all ages. Anyone interested in starting a small vegetable patch next year can begin planning a sunny spot with good soil and drainage now.\n\nKS Garden Services tip: When lifting the last of your potatoes, remove damaged tubers and store sound ones in cool, dark, frost-free conditions. Check the official event page for ticket and attendance details before travelling.",
+      "source_url": "https://artsinlibraries.sthelens.gov.uk/article/15448/The-St-Helens-Great-Potato-Festival",
+      "image_suggestion": "Original photo of freshly harvested British potatoes in a trug, or the organiser's approved festival publicity image with permission.",
+      "source_date": "2026-10-15"
+    },
+    {
+      "id": "hedgehog-national-surveys-oct2026",
+      "title": "New Hedgehog Study Finds Major Rural Declines — But Gardens Can Help",
+      "category": "Wildlife & research",
+      "created_at": "2026-10-15T08:43:00Z",
+      "published": 0,
+      "body": "A new study published in Ecology and Evolution in October brings together five national hedgehog recording schemes. One long-running rural survey estimates a 70.7% fall in hedgehog abundance between 1981 and 2023, while another found an 80.4% decline in rural occurrence between 2002 and 2023. Some predominantly urban surveys showed modest increases, highlighting the importance of gardens and connected green spaces.\n\nGardeners can help by leaving a quiet log or leaf pile, keeping gaps under fences for hedgehog movement where safe, and checking thoroughly before strimming or clearing dense vegetation. Never disturb an occupied nest.\n\nKS Garden Services tip: Before a major autumn clearance, inspect long grass, compost heaps and leaf piles carefully for wildlife.",
+      "source_url": "https://pubmed.ncbi.nlm.nih.gov/42851717/",
+      "image_suggestion": "Licensed close-up photograph of a European hedgehog among autumn leaves, or an original wildlife-safe garden habitat photograph.",
+      "source_date": "2026-10-08"
+    },
+    {
+      "id": "stiga-vista-software-oct2026",
+      "title": "Robot Mowers Get Smarter: STIGA Announces New Vista Features",
+      "category": "Machinery & equipment",
+      "created_at": "2026-10-15T08:42:00Z",
+      "published": 0,
+      "body": "Garden machinery manufacturer STIGA has announced two software updates for its Vista robotic mower range, scheduled before the end of 2026. Planned features include improved camera-based obstacle avoidance, mowing schedules for individual garden zones, new cutting patterns and encrypted live video through the STIGA.GO app. The upgrades are intended for existing Vista machines as well as new ones.\n\nThe announcement shows how robotic mowing is becoming more adaptable, but automated machines still need appropriate setup, safe operation and routine checks. Traditional mowing, edging and seasonal lawn care remain important for many gardens.\n\nKS Garden Services tip: When comparing robot mowers, check connectivity charges, obstacle detection, servicing and suitability for uneven lawns rather than relying on headline features alone.",
+      "source_url": "https://thedirt.news/stiga-upgrades-vista-robot-mowers/",
+      "image_suggestion": "STIGA Vista robot mower publicity photograph used only with manufacturer permission, or original photograph of an unbranded robotic mower on a lawn.",
+      "source_date": "2026-10-14"
+    }
+  ]
+}
