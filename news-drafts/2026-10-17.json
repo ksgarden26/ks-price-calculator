@@ -1,0 +1,59 @@
+{
+  "status": "DRAFT_ONLY_NOT_PUBLISHED",
+  "checked_at": "2026-10-17",
+  "compared_against": "preview/news-data.json (11 published articles, last update 2026-10-15)",
+  "articles": [
+    {
+      "id": "newton-family-food-growing-workshops-oct2026",
+      "title": "Free Family Food-Growing Workshops Coming to Newton-le-Willows and St Helens",
+      "category": "Local gardening news",
+      "source_date": "2026-10-16",
+      "body": "Families in Newton-le-Willows and St Helens can get hands-on with food growing during Green Libraries Week. The Coalfields Regeneration Trust's free workshops explore how changing weather patterns affect fruit and vegetable growing, with seed sowing, take-home activities and children's puzzles.\n\nNewton-le-Willows Library hosts a session on Saturday 24 October, 11am–noon; Chester Lane Library in St Helens follows on Monday 26 October, 2–3pm. Places must be booked in advance with the relevant library, by email or at the counter.\n\nKS Garden Services tip: Even a small sunny patch or a few containers can be a good starting point for growing food at home.",
+      "source_url": "https://www.haltonsthelensvca.org.uk/updates/family-food-growing-workshops-explore-climate-facts-greener-future",
+      "image_suggestion": "Original photograph of children sowing vegetable seeds in pots, with consent where people are identifiable; alternatively a close-up of seed trays, compost and seedlings.",
+      "published": 0
+    },
+    {
+      "id": "ivy-most-popular-pollinator-flower-oct2026",
+      "title": "Common Ivy Tops UK Pollinator Survey: Why Autumn Flowers Matter",
+      "category": "Wildlife & research",
+      "source_date": "2026-10-15",
+      "body": "An eight-year UK Pollinator Monitoring Scheme analysis has found that common ivy received the most insect visits among 14 widespread flower types recorded in ten-minute surveys. Hogweed, bramble, buddleja, knapweeds and thistles were also popular. The findings, highlighted by wildlife charity Buglife on 15 October, show why late-season flowers are valuable when other nectar sources are scarce.\n\nGardeners need not leave every climber unchecked: manage ivy where it threatens structures or smothers young plants, while keeping safe flowering patches where practical. Buddleja can support butterflies but should be deadheaded after flowering to limit self-seeding.\n\nKS Garden Services tip: Before autumn cutting, look for ivy in flower and consider leaving some blooms for visiting insects.",
+      "source_url": "https://www.buglife.org.uk/news/national-pollinator-survey-reveals-insects-favoured-flowers/",
+      "image_suggestion": "Original close-up of flowering common ivy (Hedera helix) with a bee or hoverfly; identify the plant accurately.",
+      "published": 0
+    },
+    {
+      "id": "frances-tophill-gardeners-world-16oct2026",
+      "title": "Frances Tophill Leads Gardeners’ World with Autumn Garlic and Perennial Vegetables",
+      "category": "Gardening TV & personalities",
+      "source_date": "2026-10-16",
+      "body": "The 16 October edition of BBC Two's Gardeners' World put Frances Tophill in the lead, with practical autumn jobs including growing garlic in containers and establishing perennial vegetables. The episode also explored plants that maintain colour and interest later in the year, as well as propagation and shade-loving planting.\n\nFor smaller gardens, container garlic offers a way to try home-grown produce without dedicating a full vegetable bed. Perennial edibles can return for multiple seasons when matched to the site and maintained properly.\n\nKS Garden Services tip: October is a good time to plan next year's productive planting areas, improve drainage and choose suitable containers before winter.",
+      "source_url": "https://www.bbc.co.uk/programmes/m0032wnd",
+      "supporting_source_url": "https://www.theguardian.com/tv-and-radio/2026/oct/16/tv-tonight-quentin-tarantino-makes-a-rare-appearance-on-graham-nortons-sofa",
+      "image_suggestion": "Original photograph of garlic cloves planted in a deep outdoor container; do not use a presenter portrait or BBC publicity still without permission.",
+      "published": 0
+    },
+    {
+      "id": "autumn-container-makeover-oct2026",
+      "title": "Autumn Container Makeovers: Simple Planting Ideas for Colour Through Winter",
+      "category": "Seasonal garden advice",
+      "source_date": "2026-10-16",
+      "body": "A fresh 16 October gardening feature highlights autumn as a good moment to rethink tired pots. Rather than replacing everything, a longer-lasting display can combine a structural evergreen or ornamental grass with hardy perennials, trailing foliage and spring bulbs. Large containers give roots more space and can be easier to manage through seasonal changes.\n\nThe RHS recommends winter-friendly options such as violas, pansies, compact daffodils, heucheras and hardy ferns. Use peat-free compost suited to the plants, ensure drainage holes are clear and raise pots on feet so they do not stand in winter water.\n\nKS Garden Services tip: A well-planted entrance pot can brighten a garden without committing to a complete border redesign.",
+      "source_url": "https://www.theguardian.com/lifeandstyle/2026/oct/16/container-gardens-autumn-makeover",
+      "supporting_source_url": "https://www.rhs.org.uk/container-gardening/winter-selection",
+      "image_suggestion": "Original photograph of a frost-proof patio pot planted with violas, heuchera, small evergreen foliage and spring bulbs.",
+      "published": 0
+    },
+    {
+      "id": "rhs-bridgewater-yangzhou-garden-2026",
+      "title": "New Chinese Scholars’ Garden Opens at RHS Bridgewater Near Manchester",
+      "category": "RHS & regional gardening news",
+      "source_date": "2026-09-24",
+      "body": "RHS Garden Bridgewater in Salford opened its Yangzhou Scholars’ Garden to visitors on 26 September 2026. More than eight years in the making, it is the centrepiece of the Chinese Streamside Garden and brings traditional Yangzhou garden design, craftsmanship and planting to Greater Manchester.\n\nThe surrounding landscape features more than 200 trees and shrubs and nearly 4,000 perennials, selected for seasonal interest and cultural meaning. For North West gardeners, it offers a nearby opportunity to see how paths, water, structure and planting can work together in a thoughtfully designed space.\n\nKS Garden Services tip: Even a modest garden can borrow the design principle of framing a view with a path, feature plant or seating area.",
+      "source_url": "https://www.rhs.org.uk/gardens/bridgewater/articles/yangzhou-scholars-garden-opens",
+      "image_suggestion": "Original visitor photograph of the Yangzhou Scholars’ Garden with permission where needed; otherwise a licensed image supplied by the RHS for editorial use.",
+      "published": 0
+    }
+  ]
+}
