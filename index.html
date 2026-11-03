@@ -343,7 +343,7 @@ td:last-child{
   <p>
     Choose your service, approximate size and condition,
     then enter your postcode to check coverage and receive
-    your instant estimate.
+    your guide estimate. Final fixed prices are confirmed after assessing the work.
   </p>
 </div>
 
@@ -365,6 +365,7 @@ td:last-child{
     <option value="treatment">Lawn Treatment</option>
     <option value="leaves">Leaf Clearance</option>
     <option value="pressure">Pressure Washing</option>
+    <option value="gutter">Gutter Clearing</option>
   </select>
 </div>
 
@@ -413,7 +414,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="Borders"
-             data-extra="10"
+             data-extra="5"
              checked>
       Border weeding &amp; tidying
     </label>
@@ -422,8 +423,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="Routine hedge and shrub trimming"
-             data-extra="20"
-             checked>
+             data-extra="15">
       Routine hedge &amp; shrub trimming
     </label>
 
@@ -431,7 +431,7 @@ td:last-child{
       <input type="checkbox"
              class="maintWork"
              value="General tidy"
-             data-extra="10"
+             data-extra="5"
              checked>
       General tidy-up &amp; blow down
     </label>
@@ -439,7 +439,7 @@ td:last-child{
   </div>
 
   <div class="help">
-    The garden size gives the starting visit price. Extra routine work such as border care, hedge/shrub trimming and a general tidy-up is then allowed for in the estimate, so a fuller maintenance visit can cost more than a lawn-only visit.
+    The garden size gives the starting visit price. Light weeding and tidying are priced for straightforward visits. Only select routine hedge/shrub trimming when needed on each visit; full seasonal hedge cuts are quoted separately. Final prices depend on the actual workload.
   </div>
 
   <label style="margin-top:14px">Would you like any treatments used if needed?</label>
@@ -585,6 +585,15 @@ td:last-child{
   </div>
 </div>
 
+<div class="field" id="gutterField" style="display:none">
+  <label>3. Gutter height and access</label>
+  <select id="gutterAccess">
+    <option value="standard">Standard accessible guttering</option>
+    <option value="difficult">High, restricted or difficult access — site quote required</option>
+  </select>
+  <div class="help">Guide prices cover ordinary gutter debris clearance, subject to safe access. Choose a larger size for several longer runs of guttering.</div>
+</div>
+
 <div class="field">
 
   <label id="conditionLabel">
@@ -707,6 +716,9 @@ td:last-child{
 Every garden is different. Garden size, access, slopes,
 obstacles, growth, hedge height, waste volume and the
 amount of work required can affect the final price.
+Online estimates cover one selected service. Larger hedge runs,
+combined property-preparation work and substantial green waste
+removal are assessed and individually quoted.
 Where suitable and agreed, we can use your own green
 waste bin. Removal of green waste is chargeable.
 </p>
@@ -799,6 +811,11 @@ const P = {
   pressure:[
     "Pressure Washing",
     50,75,110,150,210
+  ],
+
+  gutter:[
+    "Gutter Clearing",
+    45,75,100,145,200
   ]
 
 };
@@ -871,7 +888,8 @@ const helps = {
   tidy:"garden tidy-up",
   clearance:"garden clearance",
   leaves:"leaf-clearance job",
-  pressure:"patio/paved area"
+  pressure:"patio/paved area",
+  gutter:"gutter-clearing job"
 
 };
 
@@ -1410,6 +1428,8 @@ function help(){
 
   $("pressureField").style.display =
     v==="pressure" ? "block" : "none";
+  $("gutterField").style.display =
+    v==="gutter" ? "block" : "none";
 
   $("sizeField").style.display =
     v==="pressure" ? "none" : "block";
@@ -1449,7 +1469,8 @@ function help(){
     scarify:["Routine seasonal work","Heavy thatch / moss","Very poor lawn condition"],
     treatment:["Routine treatment","Problem areas present","Significant lawn problems"],
     leaves:["Light leaf fall","Moderate leaf fall","Heavy leaf fall"],
-    pressure:["Light dirt / light algae","Moderate dirt / moss / algae","Heavy buildup / staining — manual quote"]
+    pressure:["Light dirt / light algae","Moderate dirt / moss / algae","Heavy buildup / staining — manual quote"],
+    gutter:["Light debris / routine clearing","Moderate leaves or moss","Heavily blocked / neglected"]
   };
   const conditionText = conditionOptions[v] || conditionOptions.maintenance;
   condition.options[0].text = conditionText[0];
@@ -1467,11 +1488,12 @@ function help(){
     scarify:"Routine = normal thatch removal. Heavy = noticeable moss/thatch. Very poor = extensive moss/thatch or lawn needing renovation.",
     treatment:"Routine = general seasonal treatment. Problem areas = weeds/moss in several areas. Significant problems = widespread issues that may need a tailored treatment plan.",
     leaves:"Light = thin covering. Moderate = substantial covering across several areas. Heavy = deep/wet leaf build-up or large volumes.",
-    pressure:"Light = everyday dirt or a light green film. Moderate = obvious algae/moss and ingrained dirt. Heavy = thick moss/weeds, oil/paint, black-spot type staining or a heavily neglected surface — this needs photos or a site quote rather than an instant price."
+    pressure:"Light = everyday dirt or a light green film. Moderate = obvious algae/moss and ingrained dirt. Heavy = thick moss/weeds, oil/paint, black-spot type staining or a heavily neglected surface — this needs photos or a site quote rather than an instant price.",
+    gutter:"Light = routine debris clearing. Moderate = leaves/moss in several runs. Heavy = blocked or neglected gutters. Any work is subject to safe access."
   };
   $("conditionHelp").textContent = conditionHelpText[v] || "";
 
-  const wasteRelevant = !["treatment","pressure"].includes(v);
+  const wasteRelevant = !["treatment","pressure","gutter"].includes(v);
   $("wasteField").style.display = wasteRelevant ? "block" : "none";
   if(!wasteRelevant) $("waste").value = "no";
 
@@ -1482,7 +1504,8 @@ function help(){
       v==="grass" ||
       v==="maintenance" ||
       v==="hedge" ||
-      v==="pressure"
+      v==="pressure" ||
+      v==="gutter"
     )
 
     ?
@@ -1824,6 +1847,20 @@ function update(){
      MANUAL QUOTE REQUIRED
   ====================================== */
 
+  if(v==="gutter" && $("gutterAccess").value==="difficult"){
+    resultBox.className = "result blocked";
+    price.textContent = "Site Quote Required";
+    $("break").innerHTML = '<div class="row"><span>Service</span><strong>Gutter Clearing</strong></div>'+
+      '<div class="row"><span>Access</span><strong>High, restricted or difficult</strong></div>'+
+      '<div class="row"><span>Next step</span><strong>Safe access assessment</strong></div>';
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+    wa.textContent = "✉️ Request a Gutter Clearing Quote";
+    setEmail(v,s,maint,"Manual quote required");
+    help();
+    return;
+  }
+
   if(v==="pressure" && condition.value==="overgrown"){
     resultBox.className = "result blocked";
     price.textContent = "Manual Quote Required";
@@ -1950,6 +1987,9 @@ function setEmail(v,s,maint,result){
     serviceDetailText =
       "\nHedge length: "+$("hedgeSize").options[$("hedgeSize").selectedIndex].text+
       "\nHedge access: "+$("hedgeAccess").options[$("hedgeAccess").selectedIndex].text;
+  }
+  if(v==="gutter"){
+    serviceDetailText = "\nGutter access: "+$("gutterAccess").options[$("gutterAccess").selectedIndex].text;
   }
   if(v==="shrubs"){
     serviceDetailText = "\nShrub work: "+$("shrubAmount").options[$("shrubAmount").selectedIndex].text;
@@ -2497,6 +2537,7 @@ function resetQuoteSubmission(){
   $("pressureType"),
   $("pressureSurface"),
   $("pressureArea"),
+  $("gutterAccess"),
   ...document.querySelectorAll(".maintWork"),
   ...document.querySelectorAll(".maintTreatment")
 ].filter(Boolean).forEach(element => {
@@ -2649,8 +2690,8 @@ $("resetBtn").addEventListener("click",()=>{
   condition.value="normal";
   $("waste").value="no";
   $("lawns").value="one";
-  $("maintArea").value="front";
-  document.querySelectorAll(".maintWork").forEach(el=>{ el.checked=true; });
+  $("maintArea").value="both";
+  document.querySelectorAll(".maintWork").forEach(el=>{ el.checked=el.value!=="Routine hedge and shrub trimming"; });
   document.querySelectorAll(".maintTreatment").forEach(el=>{ el.checked=false; });
   $("frequency").value="fortnightly";
   $("hedgeSize").value="small";
@@ -2662,6 +2703,7 @@ $("resetBtn").addEventListener("click",()=>{
   $("pressureType").value="patio";
   $("pressureSurface").value="block";
   $("pressureArea").value="s";
+  $("gutterAccess").value="standard";
   post.value="";
   $("custName").value="";
   $("custAddress").value="";
