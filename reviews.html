@@ -210,9 +210,11 @@
       <strong>Thank you for taking the time to leave a review!</strong>
       <p>I've received your feedback for review. It won't appear publicly unless you've given permission.</p>
     </div>
-    <div id="ksrf-error" class="ksrf-error" role="alert" hidden><strong>Sorry, we couldn't send your review.</strong><p class="ksrf-error-message"></p><a id="ksrf-email-fallback" href="mailto:info@ksgardenservices.co.uk">Email your review instead</a></div>
-    <div class="ksrf-mail-notice" role="note"><strong>Reviews are currently being sent by email.</strong> Complete the form below and tap the button to open your email app with your answers filled in. Please press <strong>Send</strong> in your email app to finish.</div>
-    <form id="ksrf-form" action="#" method="post" onsubmit="return false;" class="ksrf-form">
+    <form id="ksrf-form" action="https://formsubmit.co/info@ksgardenservices.co.uk" method="POST" class="ksrf-form">
+      <input type="hidden" name="_subject" value="New KS Garden Services website review">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="https://www.ksgardenservices.co.uk/reviews/?submitted=1#leave-a-review">
+      <input type="hidden" name="_url" value="https://www.ksgardenservices.co.uk/reviews/#leave-a-review">
       <div class="ksrf-trap" aria-hidden="true"><label>Leave this empty<input type="text" name="_honey" tabindex="-1" autocomplete="off"></label></div>
       <fieldset class="ksrf-rating">
         <legend>How would you rate your experience? <span class="ksrf-required">*</span></legend>
@@ -277,23 +279,12 @@
         <label><input type="radio" name="Permission to publish review" value="Yes - first name and town only" required> Yes, you can share my review</label>
         <label><input type="radio" name="Permission to publish review" value="No - private feedback only" required> No, please keep it private</label>
       </fieldset>
-      <button class="ksrf-submit" type="submit">Open email to send my review <span aria-hidden="true">→</span></button>
-      <button class="ksrf-copy" id="ksrf-copy" type="button">Copy review text instead</button>
-      <p class="ksrf-copy-result" id="ksrf-copy-result" role="status" hidden></p>
-      <p class="ksrf-fine">Your review will be sent directly to info@ksgardenservices.co.uk after you press <strong>Send</strong> in your email app. It is not automatically published. If your email app doesn't open, copy your review above and send it to <a href="mailto:info@ksgardenservices.co.uk">info@ksgardenservices.co.uk</a>. Please see the <a href="/privacy-policy/">privacy policy</a>.</p>
+      <button class="ksrf-submit" type="submit">Submit my review <span aria-hidden="true">→</span></button>
+      <p class="ksrf-fine">Your feedback is emailed securely for manual review and is not automatically posted. The form is processed by FormSubmit; please see the <a href="/privacy-policy/">privacy policy</a>. On first use, KS Garden Services must activate its receiving address.</p>
     </form>
   </div>
 </section>
 <style>
-.ksrf-mail-notice{padding:17px 20px;margin:0 0 20px;border-radius:12px;border:1px solid #c6d9cb;background:#f2f7f2;color:#254b30;font-size:15px;line-height:1.6}
-.ksrf-mail-notice strong{font-weight:750}
-.ksrf-copy{border:1px solid #326340;border-radius:12px;padding:14px 18px;background:#fff;color:#28583a;font:700 15px "Raleway",Arial,sans-serif;cursor:pointer}
-.ksrf-copy-result{font-size:14px;color:#235634;margin:0!important}
-.ksrf-error{padding:18px 22px;margin:0 0 20px;border-radius:12px;border:1px solid #e0b4a9;background:#fff7f4;color:#69352b;line-height:1.6}
-.ksrf-error strong{display:block;font-size:16px;margin-bottom:5px}
-.ksrf-error p{font-size:14px;margin:4px 0 9px!important;color:#69352b!important}
-.ksrf-error a{color:#245b38;text-decoration:underline;font-weight:700}
-.ksrf-submit:disabled{opacity:.65;cursor:wait}
 .ksrf-section{scroll-margin-top:105px;padding:25px 18px 75px;background:linear-gradient(180deg,#fff 0%,#f4f7f3 100%);font-family:"Raleway",Arial,sans-serif;color:#24362a}
 .ksrf-shell{max-width:850px;margin:0 auto}
 .ksrf-intro{text-align:center;margin-bottom:28px}
@@ -336,103 +327,13 @@
 </style>
 <script>
 (function(){
-  var form=document.getElementById('ksrf-form');
-  if(!form)return;
-  var ratingText=document.getElementById('ksrf-rating-text');
-  var inputs=form.querySelectorAll('input[name="Overall rating"]');
+  var inputs=document.querySelectorAll('#ksrf-form input[name="Overall rating"]');
   var desc={'1 star':'1 of 5 · Poor','2 stars':'2 of 5 · Fair','3 stars':'3 of 5 · Good','4 stars':'4 of 5 · Very good','5 stars':'5 of 5 · Excellent'};
-  var names={
-    'Overall rating':'a star rating','Customer name':'your name',
-    'Service received':'the work carried out',
-    'Would recommend':'whether you would recommend KS Garden Services',
-    'Customer review':'your review (at least 10 characters)',
-    'Permission to publish review':'whether your review can be shared',
-    'email':'a valid email address, or leave it blank'
-  };
-  var errorBox=document.getElementById('ksrf-error');
-  var fallback=document.getElementById('ksrf-email-fallback');
-  var copyButton=document.getElementById('ksrf-copy');
-  var copyResult=document.getElementById('ksrf-copy-result');
-  function choice(name){
-    var el=form.querySelector('input[name="'+name+'"]:checked');
-    return el?el.value:'';
-  }
-  function val(id){
-    var el=document.getElementById(id);
-    return el?el.value.trim():'';
-  }
-  function reviewText(){
-    return [
-      'Customer name: '+val('ksrf-name'),
-      'Town: '+val('ksrf-town'),
-      'Overall rating: '+choice('Overall rating'),
-      'Service received: '+val('ksrf-service'),
-      'Would recommend: '+val('ksrf-recommend'),
-      '',
-      'Customer review:',
-      val('ksrf-feedback'),
-      '',
-      'Suggestions to improve:',
-      val('ksrf-improve'),
-      '',
-      'Permission to publish review: '+choice('Permission to publish review'),
-      'Customer email (optional): '+val('ksrf-email')
-    ].join('\n');
-  }
-  function mailFallback(){
-    var href='mailto:info@ksgardenservices.co.uk?subject='+
-      encodeURIComponent('KS Garden Services customer review')+'&body='+encodeURIComponent(reviewText());
-    if(fallback)fallback.href=href;
-    return href;
-  }
-  function error(message){
-    if(!errorBox)return;
-    errorBox.querySelector('.ksrf-error-message').textContent=message;
-    errorBox.hidden=false;
-    mailFallback();
-    errorBox.scrollIntoView({behavior:'smooth',block:'center'});
-  }
-  function valid(){
-    if(form.checkValidity())return true;
-    var fields=Array.prototype.filter.call(form.elements,function(el){return el.willValidate&&!el.validity.valid;});
-    var missing=Array.from(new Set(fields.map(function(el){return names[el.name]||el.name;})));
-    error('Please complete: '+missing.join(', ')+'. Your review has not been sent yet.');
-    var first=fields[0];
-    if(first)(first.closest('fieldset')||first.closest('.ksrf-field')||first).scrollIntoView({behavior:'smooth',block:'center'});
-    return false;
-  }
-  inputs.forEach(function(input){input.addEventListener('change',function(){if(ratingText)ratingText.textContent=desc[input.value]||input.value;});});
-  form.addEventListener('input',function(){if(errorBox)errorBox.hidden=true;if(copyResult)copyResult.hidden=true;});
-  form.addEventListener('change',function(){if(errorBox)errorBox.hidden=true;if(copyResult)copyResult.hidden=true;});
-  form.addEventListener('submit',function(event){
-    event.preventDefault();
-    if(!valid())return;
-    window.location.href=mailFallback();
-    // Do not show a success message: customers must press Send in their email app.
-  });
-  if(copyButton){
-    copyButton.addEventListener('click',async function(){
-      if(!valid())return;
-      var content='To: info@ksgardenservices.co.uk\nSubject: KS Garden Services customer review\n\n'+reviewText();
-      try{
-        if(navigator.clipboard && navigator.clipboard.writeText){
-          await navigator.clipboard.writeText(content);
-        }else{
-          var temp=document.createElement('textarea');
-          temp.value=content;
-          temp.style.position='fixed';temp.style.opacity='0';
-          document.body.appendChild(temp);
-          temp.select();
-          var copied=document.execCommand('copy');
-          temp.remove();
-          if(!copied)throw new Error('copy unavailable');
-        }
-        copyResult.textContent='Copied. Please paste into a new email to info@ksgardenservices.co.uk and press Send.';
-      }catch(ex){
-        copyResult.textContent='Copy failed. Please select and copy your answers manually and email info@ksgardenservices.co.uk.';
-      }
-      copyResult.hidden=false;
-    });
+  var ratingText=document.getElementById('ksrf-rating-text');
+  inputs.forEach(function(input){input.addEventListener('change',function(){ratingText.textContent=desc[input.value] || input.value;});});
+  if(new URLSearchParams(location.search).get('submitted')==='1'){
+    var notice=document.getElementById('ksrf-success');
+    if(notice){notice.hidden=false;document.getElementById('ksrf-form').hidden=true;}
   }
 })();
 </script>
