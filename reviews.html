@@ -281,7 +281,7 @@
         <label><input type="radio" name="Permission to publish review" value="No - private feedback only" required> No, please keep it private</label>
       </fieldset>
       <button class="ksrf-submit" type="submit">Submit my review <span aria-hidden="true">→</span></button>
-      <p class="ksrf-fine">Your feedback is emailed securely for manual review and is not automatically posted. The form is processed by FormSubmit; please see the <a href="/privacy-policy/">privacy policy</a>. On first use, KS Garden Services must activate its receiving address.</p>
+      <p class="ksrf-fine">Your feedback is emailed securely for manual review and is not automatically posted. The form is processed by FormSubmit; please see the <a href="/privacy-policy/">privacy policy</a>. If the form does not work, you can <a id="ksrf-email-fallback-inline" href="mailto:info@ksgardenservices.co.uk">email your review instead</a>.</p>
     </form>
   </div>
 </section>
@@ -381,6 +381,8 @@
       'Customer email (optional): '+val('ksrf-email')
     ];
     fallback.href='mailto:info@ksgardenservices.co.uk?subject='+encodeURIComponent('KS Garden Services customer review')+'&body='+encodeURIComponent(lines.join('\n'));
+    var inlineFallback=document.getElementById('ksrf-email-fallback-inline');
+    if(inlineFallback){inlineFallback.href=fallback.href;}
   }
   function showError(message){
     errorBox.querySelector('.ksrf-error-message').textContent=message;
@@ -406,41 +408,18 @@
   });
   form.addEventListener('input',function(){errorBox.hidden=true;});
   form.addEventListener('change',function(){errorBox.hidden=true;});
-  form.addEventListener('submit',async function(event){
-    event.preventDefault();
-    if(!form.checkValidity()){
-      showError('Please complete all required fields before submitting.');
-      return;
-    }
+  // Allow the browser to send the form as a standard HTML POST.
+  // This avoids cross-origin fetch failures in Safari and WhatsApp's in-app browser.
+  // FormSubmit handles any CAPTCHA/activation and redirects to _next after submission.
+  form.addEventListener('submit',function(){
     errorBox.hidden=true;
     submitButton.disabled=true;
     submitButton.textContent='Sending your review…';
-    try{
-      var payload={};
-      new FormData(form).forEach(function(value,key){payload[key]=value;});
-      var response=await fetch('https://formsubmit.co/ajax/info@ksgardenservices.co.uk',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify(payload)
-      });
-      var result=await response.json();
-      if(!response.ok || !(result.success===true || result.success==='true')){
-        var detail=String(result.message||'');
-        if(/activat|confirm/i.test(detail)){
-          throw new Error('The review service needs its email address activated before it can accept reviews. Please email your review to Karl using the link below for now.');
-        }
-        throw new Error('The review could not be sent. '+(detail||'Please try again or email your review to Karl using the link below.'));
-      }
-      var notice=document.getElementById('ksrf-success');
-      form.hidden=true;
-      if(notice){notice.hidden=false;notice.scrollIntoView({behavior:'smooth',block:'center'});}
-    }catch(err){
-      showError(err && err.message ? err.message : 'Sorry, the review could not be sent. Please try again or email your review to Karl using the link below.');
-    }finally{
-      submitButton.disabled=false;
-      submitButton.innerHTML='Submit my review <span aria-hidden="true">→</span>';
-    }
   });
+  // Keep an email alternative available if the form service is unavailable.
+  form.addEventListener('input',mailFallback);
+  form.addEventListener('change',mailFallback);
+  mailFallback();
   if(new URLSearchParams(location.search).get('submitted')==='1'){
     var notice=document.getElementById('ksrf-success');
     if(notice){notice.hidden=false;form.hidden=true;}
