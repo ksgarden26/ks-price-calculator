@@ -413,8 +413,7 @@
   // FormSubmit handles any CAPTCHA/activation and redirects to _next after submission.
   form.addEventListener('submit',function(){
     errorBox.hidden=true;
-    submitButton.disabled=true;
-    submitButton.textContent='Sending your review…';
+    // Do not disable the submit button: Safari may cancel the native submission.
   });
   // Keep an email alternative available if the form service is unavailable.
   form.addEventListener('input',mailFallback);
