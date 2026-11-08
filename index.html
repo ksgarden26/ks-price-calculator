@@ -564,20 +564,20 @@ td:last-child{
     <option value="slabs">Concrete paving / slabs</option>
     <option value="stone">Natural stone</option>
     <option value="porcelain">Porcelain paving</option>
-    <option value="concrete">Concrete</option>
+    <option value="concrete">Concrete (including exposed aggregate)</option>
     <option value="other">Other / not sure</option>
   </select>
 
   <label style="margin-top:14px">Approximate area</label>
   <select id="pressureArea">
-    <option value="s">Up to 20m² — roughly 2 car parking spaces</option>
-    <option value="m">21–40m² — roughly 2–4 car parking spaces</option>
-    <option value="l">41–70m² — roughly 4–6 car parking spaces</option>
-    <option value="xl">71–100m² — roughly 6–9 car parking spaces</option>
-    <option value="xxl">Over 100m² — roughly 9+ car parking spaces</option>
+    <option value="s">Up to 15m² — small area / around one car</option>
+    <option value="m">16–40m² — typical two-car driveway</option>
+    <option value="l">41–70m² — large driveway or patio</option>
+    <option value="xl">71–100m² — very large driveway or patio</option>
+    <option value="xxl">Over 100m² — individual quote required</option>
   </select>
   <div class="help">
-    Not sure of the square metres? Use the parking-space comparison as a rough visual guide — it does not need to be exact.
+    To estimate the area, multiply length by width in metres (for example, 5m × 5m = 25m²). A typical two-car driveway is usually in the 16–40m² band. If unsure, choose the closest size and send photos when enquiring.
   </div>
 
   <div class="help" id="pressureSandNote">
@@ -686,10 +686,10 @@ td:last-child{
   <div class="break" id="break"></div>
 
   <p class="note" id="resultNote">
-    Enter and check your postcode above to see your estimate. Your final price will always be confirmed before work begins.
+    This is an online guide estimate, not a confirmed quote. If Karl has already provided a personalised quote after seeing the job or photos, please refer to that price. All final prices are agreed before work begins.
   </p>
 
-  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request This Quote</button><div id="quoteSuccess" style="display:none;margin-top:12px;padding:15px;border-radius:10px;background:#edf7ef;border:1px solid #b8d8bf;color:#173d25;line-height:1.5">
+  <button class="wa hidden" id="wa" type="button" style="width:100%;border:0;cursor:pointer;font-size:16px">✉️ Request a Confirmed Quote</button><div id="quoteSuccess" style="display:none;margin-top:12px;padding:15px;border-radius:10px;background:#edf7ef;border:1px solid #b8d8bf;color:#173d25;line-height:1.5">
     <strong>✅ Details received</strong><br>
     Next, please attach 2–4 clear photos of the garden or area you would like quoted. Wide shots are best, plus any close-ups of problem areas or access.
     <button id="openEmailBtn" type="button" class="travelbtn" style="margin-top:12px">📷 Open Email &amp; Add Photos</button>
@@ -721,6 +721,8 @@ combined property-preparation work and substantial green waste
 removal are assessed and individually quoted.
 Where suitable and agreed, we can use your own green
 waste bin. Removal of green waste is chargeable.
+Pressure-washing guide prices depend on the measured area, surface condition and access.
+An individual price confirmed by Karl after checking the job takes precedence over an online estimate.
 </p>
 
 <b>
@@ -810,7 +812,7 @@ const P = {
 
   pressure:[
     "Pressure Washing",
-    50,75,110,150,210
+    50,70,110,150,210
   ],
 
   gutter:[
@@ -1880,6 +1882,26 @@ function update(){
   }
 
   /* ======================================
+     VERY LARGE PRESSURE-WASHING AREA
+     MANUAL QUOTE REQUIRED
+  ====================================== */
+
+  if(v==="pressure" && s==="xxl"){
+    resultBox.className = "result blocked";
+    price.textContent = "Manual Quote Required";
+    $("break").innerHTML =
+      '<div class="row"><span>Service</span><strong>Pressure Washing</strong></div>'+
+      '<div class="row"><span>Area</span><strong>Over 100m²</strong></div>'+
+      '<div class="row"><span>Next step</span><strong>Send photos / site assessment</strong></div>';
+    wa.classList.remove("hidden");
+    $("contactFields").style.display="block";
+    wa.textContent = "✉️ Request a Pressure Washing Quote";
+    setEmail(v,s,maint,"Manual quote required");
+    help();
+    return;
+  }
+
+  /* ======================================
      VERY LARGE LAWN
      MANUAL QUOTE REQUIRED
   ====================================== */
@@ -1948,7 +1970,7 @@ function update(){
 
 
   wa.textContent =
-    "✉️ Request This Quote";
+    "✉️ Request a Confirmed Quote";
 
 
   setEmail(
@@ -2711,7 +2733,7 @@ $("resetBtn").addEventListener("click",()=>{
   $("custEmail").value="";
   $("details").value="";
   resetQuoteSubmission();
-  wa.textContent="✉️ Request This Quote";
+  wa.textContent="✉️ Request a Confirmed Quote";
   postcodeChecked=false;
   areaStatus="unchecked";
   areaMessage="";
